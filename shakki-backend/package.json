@@ -1,0 +1,25 @@
+{
+  "name": "shakki-backend",
+  "version": "1.0.0",
+  "description": "fullstackopen-2020 harjoitustyö",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "\u0016\u0016https://github.com/Koxanybak/shakkipeli"
+  },
+  "author": "Leevi Heikkilä",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  },
+  "dependencies": {
+    "apollo-server": "^2.12.0",
+    "cross-env": "^7.0.2",
+    "graphql": "^15.0.0"
+  }
+}
