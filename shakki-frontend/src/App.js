@@ -1,15 +1,24 @@
 import React from "react"
-import Board from "./components/Board"
+import Board from "./components/chess/Board"
+import { Switch, Route } from "react-router-dom"
+import Footer from "./components/Footer"
+import LoginForm from "./components/LoginForm"
+import Menu from "./components/Menu"
 
 const App = () => {
+  console.log("App renderöidään")
   return (
     <div>
-      <Board />
-      <div style={{
-        height: 50,
-        width: 50,
-        backgroundColor: "#e04c4c",
-      }}></div>
+      <Menu />
+      <Switch>
+        <Route path="/play">
+          <Board />
+        </Route>
+        <Route path="/login">
+          <LoginForm />
+        </Route>
+      </Switch>
+      <Footer />
     </div>
   )
 }
