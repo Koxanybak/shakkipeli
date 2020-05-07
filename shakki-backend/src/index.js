@@ -1,9 +1,25 @@
-const { ApolloServer, gql, PubSub } = require("apollo-server")
+const { ApolloServer, gql, PubSub, UserInputError, } = require("apollo-server")
 const Game = require("./chess/game")
+const { MONGODB_URI } = require("./config")
+const mongoose = require("mongoose")
+const User = require("../data/models/user")
+const bcrypt = require("bcrypt")
+
+
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("Connected to MongoDB")
+  })
+  .catch(error => {
+    console.log("Error connecting to MongoDB " + error.message)
+  })
+
 
 const pubsub = new PubSub()
 
 const game = new Game()
+
+// type definitions
 
 const typeDefs = gql`
   type Game {
@@ -22,6 +38,8 @@ const typeDefs = gql`
   }
   type User {
     username: String!
+    tag: String!
+    friends: [User!]
     id: ID!
   }
   type Token {
@@ -54,6 +72,11 @@ const typeDefs = gql`
     oldLocation: LocationInput
     newLocation: LocationInput
   }
+  input UserInput {
+    username: String!
+    tag: String!
+    password: String!
+  }
 
 
 
@@ -65,6 +88,7 @@ const typeDefs = gql`
 
   type Mutation {
     makeMove(move: MoveInput!): Game!
+    addUser(user: UserInput!): User!
   }
 
 
@@ -74,6 +98,11 @@ const typeDefs = gql`
     moveMade: Game!
   }
 `
+
+
+
+
+// resolvers
 
 const resolvers = {
   Query: {
@@ -88,6 +117,14 @@ const resolvers = {
       }
 
       return game
+    },
+
+    addUser: (root, args) => {
+      if (args.password.length < 8) {
+        throw new UserInputError("Password too short")
+      }
+      const saltRounds = 10
+      //const passwordHash
     }
   },
 
@@ -106,6 +143,11 @@ const resolvers = {
     }
   }
 }
+
+
+
+
+// initializing server
 
 const server = new ApolloServer({
   typeDefs,

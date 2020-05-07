@@ -9,13 +9,13 @@ const Menu = () => {
         <IconButton edge="start" color="inherit" aria-label="menu">
         </IconButton>
         <Button color="inherit" component={Link} to="/play">
-          Play
+          Pelaa
         </Button>
         <Button color="inherit" component={Link} to="/info">
-          About
+          Tietoa
         </Button>
         <Button color="inherit" component={Link} to="/login">
-          Login
+          Kirjaudu
         </Button>
       </Toolbar>
     </AppBar>

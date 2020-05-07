@@ -4,8 +4,8 @@
   "description": "fullstackopen-2020 harjoitustyö",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node index.js",
-    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "start": "cross-env NODE_ENV=production node src/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,8 +21,11 @@
   },
   "dependencies": {
     "apollo-server": "^2.12.0",
+    "bcrypt": "^4.0.1",
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
-    "graphql": "^15.0.0"
+    "graphql": "^15.0.0",
+    "mongoose": "^5.9.12",
+    "mongoose-unique-validator": "^2.0.3"
   }
 }

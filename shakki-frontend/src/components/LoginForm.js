@@ -1,10 +1,13 @@
 import React, { useState } from "react"
 import { TextField, Button, } from "@material-ui/core"
+import { useHistory } from "react-router-dom"
 
 
 const LoginForm = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+
+  const history = useHistory()
 
   const onSubmit = event => {
     event.preventDefault()
@@ -27,6 +30,14 @@ const LoginForm = () => {
           </Button>
         </div>
       </form>
+      <div>
+        tai
+      </div>
+      <div>
+        <Button variant="contained" color="primary" onClick={() => history.push("/register")}>
+          Luo uusi käyttäjä
+        </Button>
+      </div>
     </div>
   )
 }
