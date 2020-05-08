@@ -5,8 +5,10 @@ const Knight = require("./pieces/knight")
 const Bishop = require("./pieces/bishop")
 const Pawn = require("./pieces/pawn")
 
+const { UserInputError } = require("apollo-server")
+
 const initializeBoard = () => {
-  const board = Array.from(Array(8), (e, i) => {
+  const board = Array.from(Array(8), () => {
     const row = new Array(8)
 
     for (let j = 0; j < 8; j++) {
@@ -46,4 +48,13 @@ const initializeBoard = () => {
   return board
 }
 
-module.exports = { initializeBoard }
+const findGame = (id, games) => {
+  const game = games.find(g => g.id === id)
+  if (!game) {
+    throw new UserInputError("Game not found, probably malformatted id.")
+  }
+
+  return game
+}
+
+module.exports = { initializeBoard, findGame }

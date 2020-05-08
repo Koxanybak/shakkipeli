@@ -1,10 +1,19 @@
-const { ApolloServer, gql, PubSub, UserInputError, AuthenticationError, } = require("apollo-server")
+const {
+  ApolloServer,
+  gql,
+  PubSub,
+  UserInputError,
+  AuthenticationError,
+  withFilter,
+} = require("apollo-server")
 const Game = require("./chess/game")
 const { MONGODB_URI, SECRET } = require("./config")
 const mongoose = require("mongoose")
 const User = require("../data/models/user")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const uuid = require("uuid")
+const { findGame } = require("./chess/gameHelper")
 
 
 mongoose.connect(MONGODB_URI, {
@@ -22,7 +31,7 @@ mongoose.connect(MONGODB_URI, {
 
 const pubsub = new PubSub()
 
-const game = new Game()
+const gamesInProgress = []
 
 // type definitions
 
@@ -32,6 +41,7 @@ const typeDefs = gql`
     blackPlayer: User
     whitePlayer: User
     lastMove: Move
+    id: ID!
   }
   type Piece {
     type: String!
@@ -46,6 +56,7 @@ const typeDefs = gql`
     tag: String!
     friends: [User!]
     id: ID!
+    currentGameId: String
   }
   type UserWithToken {
     username: String!
@@ -53,9 +64,6 @@ const typeDefs = gql`
     friends: [User!]
     token: String!
     id: ID!
-  }
-  type Token {
-    value: String
   }
   type Location {
     row: Int!
@@ -80,10 +88,10 @@ const typeDefs = gql`
     column: Int!
   }
   input MoveInput {
-    piece: PieceInput
-    oldLocation: LocationInput
-    newLocation: LocationInput
-    player: ID
+    piece: PieceInput!
+    oldLocation: LocationInput!
+    newLocation: LocationInput!
+    gameId: String!
   }
   input NewUserInput {
     username: String!
@@ -93,23 +101,25 @@ const typeDefs = gql`
 
 
   type Query {
-    getGame: Game!
+    getGame(gameId: String!): Game!
     getLoggedUser(token: String): User
   }
 
 
 
   type Mutation {
+    createGame: Game!
     makeMove(move: MoveInput!): Game!
     addUser(user: NewUserInput!): User!
     login(username: String!, password: String!): UserWithToken!
+    joinGame(gameId: String!): Game!
   }
 
 
 
 
   type Subscription {
-    moveMade: Game!
+    moveMade(gameId: String!): Game!
   }
 `
 
@@ -120,7 +130,11 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    getGame: () => game,
+    getGame: (root, args) => {
+      const game = findGame(args.gameId, gamesInProgress)
+
+      return game
+    },
     
     getLoggedUser: async (root, args) => {
       if (args.token) {
@@ -135,7 +149,7 @@ const resolvers = {
       } else {
         return null
       }
-    }
+    },
   },
 
   Mutation: {
@@ -143,11 +157,12 @@ const resolvers = {
       if (!currentUser) {
         throw new AuthenticationError("Invalid token")
       }
+      const game = findGame(args.gameId, gamesInProgress)
       game.makeMove(
         args.move.piece,
         args.move.oldLocation,
         args.move.newLocation,
-        args.move.player
+        currentUser,
       )
 
       if (game.lastMove.success) {
@@ -201,11 +216,37 @@ const resolvers = {
         id: userInDB._id.toString()
       }
     },
+
+    createGame: async (root, args, { currentUser }) => {
+      if (!currentUser) {
+        throw new AuthenticationError("Invalid token")
+      }
+      const game = new Game(uuid(), currentUser)
+      gamesInProgress.push(game)
+
+      return game
+    },
+
+    joinGame: async (root, args, { currentUser }) => {
+      if (!currentUser) {
+        throw new AuthenticationError("Invalid token")
+      }
+      const game = findGame(args.gameId, gamesInProgress)
+      if (game.isFull()) {
+        throw new UserInputError("The game is already full :(")
+      }
+      game.addPlayer(currentUser)
+    },
   },
 
   Subscription: {
     moveMade: {
-      subscribe: () => pubsub.asyncIterator(["MOVE_MADE"])
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(["MOVE_MADE"]),
+        (payload, variables) => {
+          return payload.moveMade.id === variables.gameId
+        }
+      )
     }
   },
 

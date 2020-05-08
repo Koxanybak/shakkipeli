@@ -12,12 +12,13 @@ const Pawn = require("./pieces/pawn")
 // class that represents a single chess game
 
 class Game {
-  constructor(whitePlayer, blackPlayer) {
+  constructor(id, whitePlayer, blackPlayer) {
     this.whitePlayer = whitePlayer
     this.blackPlayer = blackPlayer
     this.board = gameHelper.initializeBoard()
     this.lastMove = null
     this.currentPlayer = this.whitePlayer
+    this.id = id
   }
 
 
@@ -30,6 +31,12 @@ class Game {
     player,
   ) {
 
+    // the wrong player tries to move
+    if (this.currentPlayer.id !== player.id) {
+      return
+    }
+    
+    // the frontend is out of sync
     if ((!this.board[oldRow][oldColumn])
       || (this.board[oldRow][oldColumn].getType() !== pieceMoved.type)
       || (this.board[oldRow][oldColumn].getSide() !== pieceMoved.side)
@@ -37,6 +44,7 @@ class Game {
       throw new UserInputError("No such piece in that location")
     }
 
+    // the piece wasn't moved
     if ((oldRow === newRow) && (oldColumn === newColumn)) {
       this.lastMove = {
         success: false,
@@ -45,6 +53,7 @@ class Game {
       return
     }
 
+    // moves the piece
     if (this.board[oldRow][oldColumn].move(this.board, newRow, newColumn)) {
       this.lastMove = {
         success: true,
@@ -55,10 +64,21 @@ class Game {
       return
     }
 
+    // move was against the rules
     this.lastMove = {
       success: false,
       message: "Ootko paska ku yritit tehdä väärän siirron?",
     }
+  }
+
+
+
+  addPlayer(player) {
+    this.blackPlayer = player
+  }
+
+  isFull() {
+    return this.blackPlayer && this.whitePlayer
   }
 
 

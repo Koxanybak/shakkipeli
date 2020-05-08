@@ -15,7 +15,7 @@ const Menu = () => {
           Pelaa
         </Button>
         <Button color="inherit" component={Link} to="/info">
-          Tietoa
+          Ohjeet
         </Button>
         {!user 
           ?
