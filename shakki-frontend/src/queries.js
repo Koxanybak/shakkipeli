@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-const TYPE_DEFS = gql`
+/*const TYPE_DEFS = gql`
   input PieceInput {
     type: String!
     side: Side!
@@ -16,7 +16,7 @@ const TYPE_DEFS = gql`
     oldLocation: LocationInput
     newLocation: LocationInput
   }
-`
+`*/
 
 export const GET_GAME = gql`
   query getGame {
@@ -25,6 +25,21 @@ export const GET_GAME = gql`
         type
         side
       }
+    }
+  }
+`
+
+export const GET_LOGGED_USER = gql`
+  query getLoggedUser($token: String) {
+    getLoggedUser(
+      token: $token
+    ) {
+      username
+      tag
+      friends {
+        tag
+      }
+      id
     }
   }
 `
@@ -51,6 +66,38 @@ export const MOVE_MADE = gql`
       }
       lastMove {
         success
+      }
+    }
+  }
+`
+
+export const LOGIN = gql`
+  mutation login($username: String!, $password: String!) {
+    login(
+      username: $username,
+      password: $password
+    ) {
+      username
+      tag
+      friends {
+        tag
+      }
+      token
+      id
+    }
+  }
+`
+
+export const ADD_USER = gql`
+  mutation addUser($user: NewUserInput!) {
+    addUser(
+      user: $user
+    ) {
+      username
+      tag
+      id
+      friends {
+        tag
       }
     }
   }

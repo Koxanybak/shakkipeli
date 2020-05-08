@@ -17,12 +17,19 @@ class Game {
     this.blackPlayer = blackPlayer
     this.board = gameHelper.initializeBoard()
     this.lastMove = null
+    this.currentPlayer = this.whitePlayer
   }
 
 
 
   // tries to make a move
-  makeMove(pieceMoved, { row: oldRow, column: oldColumn }, { row: newRow, column: newColumn }) {
+  makeMove(
+    pieceMoved,
+    { row: oldRow, column: oldColumn },
+    { row: newRow, column: newColumn },
+    player,
+  ) {
+
     if ((!this.board[oldRow][oldColumn])
       || (this.board[oldRow][oldColumn].getType() !== pieceMoved.type)
       || (this.board[oldRow][oldColumn].getSide() !== pieceMoved.side)
@@ -42,6 +49,9 @@ class Game {
       this.lastMove = {
         success: true,
       }
+      this.currentPlayer = this.currentPlayer === this.whitePlayer
+        ? this.blackPlayer
+        : this.whitePlayer
       return
     }
 

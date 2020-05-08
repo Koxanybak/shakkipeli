@@ -19,6 +19,7 @@ const userSchema = mongoose.Schema({
   tag: {
     type: String,
     required: true,
+    unique: true,
   },
 })
 

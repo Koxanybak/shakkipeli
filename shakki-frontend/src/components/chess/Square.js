@@ -5,7 +5,7 @@ import {
   BLACKSQUARE_COLOR,
   WHITESQUARE_COLOR,
   HIGHLIGHTED_COLOR,
-} from "../../globals"
+} from "../../utils/constants"
 import { King, Queen, Rook, Knight, Bishop, Pawn, dragged } from "./pieces"
 
 // a single chess square
