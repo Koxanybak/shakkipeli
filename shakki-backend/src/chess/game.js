@@ -1,5 +1,5 @@
 const gameHelper = require("./gameHelper")
-const { UserInputError } = require("apollo-server")
+const { UserInputError } = require("apollo-server-express")
 
 const King = require("./pieces/king")
 const Queen = require("./pieces/queen")

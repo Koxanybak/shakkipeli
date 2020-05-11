@@ -5,7 +5,7 @@ const Knight = require("./pieces/knight")
 const Bishop = require("./pieces/bishop")
 const Pawn = require("./pieces/pawn")
 
-const { UserInputError } = require("apollo-server")
+const { UserInputError } = require("apollo-server-express")
 
 const initializeBoard = () => {
   const board = Array.from(Array(8), () => {

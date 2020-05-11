@@ -364,10 +364,20 @@ const PORT = process.env.PORT || 4000
 
 const app = express()
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static("public"))
+  /*app.use(express.static("public"))
   app.get("*", (req, res) => {
-    res.sendFile("../public/index.html")
-  })
+    res.sendFile(path.resolve(__dirname, "../public/index.html"))
+  })*/
+  let root = path.join(__dirname, "..", "public/")
+  console.log(path.join(__dirname, "..", "public/"))
+  app.use(express.static(root))
+
+  // ei mitään käryä, miksi tämä koodinpätkä korjasi production buildin syntaksivirheen
+  app.use(function(req, res, next) {
+    if (req.method === "GET" && req.accepts("html") && !req.is("json") && !req.path.includes(".")) {
+      res.sendFile("index.html", { root })
+    } else next()
+})
 }
 server.applyMiddleware({ app })
 

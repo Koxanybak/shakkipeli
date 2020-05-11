@@ -1,27 +1,9 @@
 {
-  "name": "shakki-backend",
+  "name": "shakkipeli",
   "version": "1.0.0",
-  "description": "fullstackopen-2020 harjoitustyö",
+  "description": "Harjoitustyö kurssille Fullstack Open 2020",
   "main": "index.js",
-  "scripts": {
-    "start": "cross-env NODE_ENV=production node shakki-backend/src/index.js",
-    "dev": "cross-env NODE_ENV=development nodemon shakki-backend/src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf shakki-backend/public && cd C:/Users/Leevi/Documents/GitHub/shakkipeli/shakki-frontend && npm run build && mv build ../shakki-backend/public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "\u0016\u0016https://github.com/Koxanybak/shakkipeli"
-  },
-  "author": "Leevi Heikkilä",
-  "license": "ISC",
-  "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-plugin-graphql": "^3.1.1",
-    "nodemon": "^2.0.3"
-  },
   "dependencies": {
-    "apollo-server": "^2.12.0",
     "apollo-server-express": "^2.13.0",
     "bcrypt": "^4.0.1",
     "cross-env": "^7.0.2",
@@ -30,10 +12,30 @@
     "graphql": "^15.0.0",
     "http": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.9.12",
+    "mongoose": "^5.9.13",
     "mongoose-unique-validator": "^2.0.3",
     "path": "^0.12.7",
-    "qs-middleware": "^1.0.3",
     "uuid": "^8.0.0"
-  }
+  },
+  "devDependencies": {
+    "eslint": "^7.0.0",
+    "eslint-plugin-graphql": "^3.1.1",
+    "nodemon": "^2.0.3"
+  },
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node shakki-backend/src/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon shakki-backend/src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf shakki-backend/public && cd C:/Users/Leevi/Documents/GitHub/shakkipeli/shakki-frontend && npm run build && mv build ../shakki-backend/public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Koxanybak/shakkipeli.git"
+  },
+  "author": "Leevi Heikkilä",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Koxanybak/shakkipeli/issues"
+  },
+  "homepage": "https://github.com/Koxanybak/shakkipeli#readme"
 }
