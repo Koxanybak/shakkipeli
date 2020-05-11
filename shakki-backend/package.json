@@ -6,7 +6,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node src/index.js",
     "dev": "cross-env NODE_ENV=development nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf public && cd C:/Users/Leevi/Documents/GitHub/shakkipeli/shakki-frontend && npm run build && mv build ../shakki-backend/public"
   },
   "repository": {
     "type": "git",
@@ -21,13 +22,18 @@
   },
   "dependencies": {
     "apollo-server": "^2.12.0",
+    "apollo-server-express": "^2.13.0",
     "bcrypt": "^4.0.1",
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "graphql": "^15.0.0",
+    "http": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.12",
     "mongoose-unique-validator": "^2.0.3",
+    "path": "^0.12.7",
+    "qs-middleware": "^1.0.3",
     "uuid": "^8.0.0"
   }
 }

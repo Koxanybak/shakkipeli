@@ -5,7 +5,7 @@ const {
   UserInputError,
   AuthenticationError,
   withFilter,
-} = require("apollo-server")
+} = require("apollo-server-express")
 const Game = require("./chess/game")
 const { MONGODB_URI, SECRET } = require("./config")
 const mongoose = require("mongoose")
@@ -14,6 +14,9 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const { v4: uuid } = require("uuid")
 const { findGame } = require("./chess/gameHelper")
+const express = require("express")
+const http = require("http")
+const path = require("path")
 
 
 mongoose.connect(MONGODB_URI, {
@@ -357,7 +360,21 @@ const server = new ApolloServer({
   }
 })
 
-server.listen({ port: process.env.PORT || 4000 }).then(({ url, subscriptionsUrl, }) => {
-  console.log(`Server ready at ${url}`)
-  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
+const PORT = process.env.PORT || 4000
+
+const app = express()
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("./public"))
+  app.get("*", (req, res) => {
+    res.sendFile("C:/Users/Leevi/Documents/GitHub/shakkipeli/shakki-backend/public/index.html")
+  })
+}
+server.applyMiddleware({ app })
+
+const httpServer = http.createServer(app)
+server.installSubscriptionHandlers(httpServer)
+
+httpServer.listen(PORT, () => {
+  console.log(`Server ready at http://localhost:${PORT}${server.graphqlPath}`)
+  console.log(`Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`)
 })
