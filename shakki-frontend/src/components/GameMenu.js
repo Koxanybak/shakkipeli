@@ -41,7 +41,7 @@ const GameMenu = () => {
         <div>
           Jaa tämä linkki kaverillesi. Sen kautta pääset pelaamaan.{"  "}
           <Link href={link}>
-            {link}
+            https://maailman-paras-shakkipeli.herokuapp.com{link}
           </Link>
         </div>
         :
