@@ -26,7 +26,8 @@
     "start": "cross-env NODE_ENV=production node shakki-backend/src/index.js",
     "dev": "cross-env NODE_ENV=development nodemon shakki-backend/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf shakki-backend/public && cd C:/Users/Leevi/Documents/GitHub/shakkipeli/shakki-frontend && npm run build && mv build ../shakki-backend/public"
+    "build:ui": "rm -rf shakki-backend/public && cd C:/Users/Leevi/Documents/GitHub/shakkipeli/shakki-frontend && npm run build && mv build ../shakki-backend/public",
+    "deploy": "npm run build:ui && git add . && git commit -m herokudeployment && git push heroku master"
   },
   "repository": {
     "type": "git",

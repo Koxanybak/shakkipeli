@@ -20,11 +20,11 @@ const authLink = setContext((_, { headers }) => {
 })
 
 const httpLink = new HttpLink({
-  uri: "/"
+  uri: "/graphql"
 })
 
 const wsLink = new WebSocketLink({
-  uri: "/",
+  uri: "/graphql",
   options: {
     reconnect: true
   }
