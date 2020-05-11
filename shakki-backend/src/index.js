@@ -364,9 +364,9 @@ const PORT = process.env.PORT || 4000
 
 const app = express()
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static("./public"))
+  app.use(express.static("public"))
   app.get("*", (req, res) => {
-    res.sendFile("C:/Users/Leevi/Documents/GitHub/shakkipeli/shakki-backend/public/index.html")
+    res.sendFile("../public/index.html")
   })
 }
 server.applyMiddleware({ app })

@@ -4,8 +4,8 @@
   "description": "fullstackopen-2020 harjoitustyö",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node src/index.js",
-    "dev": "cross-env NODE_ENV=development nodemon src/index.js",
+    "start": "cross-env NODE_ENV=production node shakki-backend/src/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon shakki-backend/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf shakki-backend/public && cd C:/Users/Leevi/Documents/GitHub/shakkipeli/shakki-frontend && npm run build && mv build ../shakki-backend/public"
   },

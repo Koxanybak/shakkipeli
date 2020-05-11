@@ -1,4 +1,4 @@
-require("dotenv").config()
+require("dotenv/types").config()
 
 const MONGODB_URI = process.env.MONGODB_URI
 const SECRET = process.env.SECRET
