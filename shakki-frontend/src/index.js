@@ -19,12 +19,21 @@ const authLink = setContext((_, { headers }) => {
   }
 })
 
+let loc = window.location, newUri
+if (loc.protocol === "https:") {
+  newUri = "wss:"
+} else {
+  newUri = "ws:"
+}
+newUri += "//" + loc.host
+console.log(`${newUri}/graphql`)
+
 const httpLink = new HttpLink({
   uri: "/graphql"
 })
 
 const wsLink = new WebSocketLink({
-  uri: "/graphql",
+  uri: `${newUri}/graphql`,
   options: {
     reconnect: true
   }
