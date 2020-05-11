@@ -3,7 +3,7 @@ import { TextField, Button, } from "@material-ui/core"
 import { useHistory } from "react-router-dom"
 import { LOGIN } from "../queries"
 import { useMutation } from "@apollo/client"
-import UserContext from "../utils/UserContext"
+import { UserContext } from "../utils/context"
 
 
 const LoginForm = () => {
@@ -33,7 +33,7 @@ const LoginForm = () => {
       setPassword("")
 
       console.log(loginResult.data.login.token)
-      window.localStorage.setItem("loggedChessUser", loginResult.data.login.token)
+      window.sessionStorage.setItem("loggedChessUser", loginResult.data.login.token)
       setUser(loginResult.data.login)
 
       history.push("/")

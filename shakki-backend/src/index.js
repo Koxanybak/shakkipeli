@@ -12,7 +12,7 @@ const mongoose = require("mongoose")
 const User = require("../data/models/user")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
-const uuid = require("uuid")
+const { v4: uuid } = require("uuid")
 const { findGame } = require("./chess/gameHelper")
 
 
@@ -38,8 +38,12 @@ const gamesInProgress = []
 const typeDefs = gql`
   type Game {
     board: [[Piece]!]!
-    blackPlayer: User
-    whitePlayer: User
+    blackPlayer: String
+    whitePlayer: String
+    currentPlayer: String
+    winner: String
+    promotionPlayerID: String
+    gameOver: Boolean!
     lastMove: Move
     id: ID!
   }
@@ -57,6 +61,7 @@ const typeDefs = gql`
     friends: [User!]
     id: ID!
     currentGameId: String
+    guest: Boolean
   }
   type UserWithToken {
     username: String!
@@ -64,9 +69,10 @@ const typeDefs = gql`
     friends: [User!]
     token: String!
     id: ID!
+    guest: Boolean
   }
   type Location {
-    row: Int!
+    row: Int
     column: Int!
   }
   type Move {
@@ -102,7 +108,7 @@ const typeDefs = gql`
 
   type Query {
     getGame(gameId: String!): Game!
-    getLoggedUser(token: String): User
+    getLoggedUser(token: String): UserWithToken
   }
 
 
@@ -113,6 +119,7 @@ const typeDefs = gql`
     addUser(user: NewUserInput!): User!
     login(username: String!, password: String!): UserWithToken!
     joinGame(gameId: String!): Game!
+    promote(gameId: String!, pieceType: String!): Game!
   }
 
 
@@ -140,6 +147,12 @@ const resolvers = {
       if (args.token) {
         try {
           const userFromToken = jwt.verify(args.token, SECRET)
+          if (userFromToken.guest) {
+            return {
+              token: args.token,
+              ...userFromToken
+            }
+          }
           const currentUser = await User.findById(userFromToken.id)
   
           return currentUser
@@ -147,29 +160,66 @@ const resolvers = {
           return null
         }
       } else {
-        return null
+        const id = uuid()
+        const userForToken = {
+          id: id,
+          guest: true,
+          username: `Guest${id}`,
+          tag: `Guest${id}`
+        }
+        const token = jwt.sign(userForToken, SECRET)
+        
+        console.log("created a new guest")
+  
+        return {
+          token,
+          ...userForToken
+        }
       }
     },
   },
 
   Mutation: {
     makeMove: (root, args, { currentUser }) => {
-      if (!currentUser) {
+      const game = findGame(args.move.gameId, gamesInProgress)
+
+      if (!currentUser
+        || (currentUser.id !== game.whitePlayer && currentUser.id !== game.blackPlayer)) {
         throw new AuthenticationError("Invalid token")
       }
-      const game = findGame(args.gameId, gamesInProgress)
+
       game.makeMove(
         args.move.piece,
         args.move.oldLocation,
         args.move.newLocation,
-        currentUser,
+        currentUser.id,
       )
 
       if (game.lastMove.success) {
+        //console.log("was published")
         pubsub.publish("MOVE_MADE", { moveMade: game })
       }
 
       return game
+    },
+
+    promote: (root, args, { currentUser }) => {
+      const game = findGame(args.gameId, gamesInProgress)
+      console.log("tässä")
+
+      if (!currentUser
+        || (currentUser.id !== game.whitePlayer && currentUser.id !== game.blackPlayer)) {
+        throw new AuthenticationError("Invalid token")
+      }
+      console.log("tässäkin")
+
+      if (game.promote(args.pieceType, currentUser.id)) {
+        pubsub.publish("MOVE_MADE", { moveMade: game })
+        return game
+      }
+      console.log("ja myös tässä")
+
+      throw new UserInputError("Nothing to promote my friend")
     },
 
     addUser: async (root, args) => {
@@ -221,7 +271,7 @@ const resolvers = {
       if (!currentUser) {
         throw new AuthenticationError("Invalid token")
       }
-      const game = new Game(uuid(), currentUser)
+      const game = new Game(uuid())
       gamesInProgress.push(game)
 
       return game
@@ -232,18 +282,25 @@ const resolvers = {
         throw new AuthenticationError("Invalid token")
       }
       const game = findGame(args.gameId, gamesInProgress)
+      if (game.whitePlayer === currentUser.id || game.blackPlayer === currentUser.id) {
+        throw new UserInputError("You are already in the game")
+      }
       if (game.isFull()) {
         throw new UserInputError("The game is already full :(")
       }
-      game.addPlayer(currentUser)
+      game.addPlayer(currentUser.id)
+
+      return game
     },
   },
 
   Subscription: {
     moveMade: {
       subscribe: withFilter(
-        () => pubsub.asyncIterator(["MOVE_MADE"]),
+        () => pubsub.asyncIterator("MOVE_MADE"),
         (payload, variables) => {
+          //console.log("payload:", payload.moveMade.id)
+          //console.log("variables:", variables.gameId)
           return payload.moveMade.id === variables.gameId
         }
       )
@@ -256,7 +313,16 @@ const resolvers = {
     },
     lastMove: (root) => {
       return root.lastMove
-    }
+    },
+    whitePlayer: (root) => {
+      return root.whitePlayer
+    },
+    blackPlayer: (root) => {
+      return root.blackPlayer
+    },
+    currentPlayer: (root) => {
+      return root.currentPlayer
+    },
   }
 }
 
@@ -275,7 +341,12 @@ const server = new ApolloServer({
       const token = auth.substring(7)
       try {
         const userFromToken = jwt.verify(token, SECRET)
-        const currentUser = await User.findById(userFromToken.id)
+        if (userFromToken.guest) {
+          return { currentUser: userFromToken }
+        }
+        let currentUser = await User.findById(userFromToken.id)
+
+        currentUser = currentUser.toJSON()
 
         return { currentUser }
       // eslint-disable-next-line no-empty
@@ -286,7 +357,7 @@ const server = new ApolloServer({
   }
 })
 
-server.listen().then(({ url, subscriptionsUrl, }) => {
+server.listen({ port: process.env.PORT || 4000 }).then(({ url, subscriptionsUrl, }) => {
   console.log(`Server ready at ${url}`)
   console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })

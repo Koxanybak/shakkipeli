@@ -19,6 +19,7 @@ class Game {
     this.lastMove = null
     this.currentPlayer = this.whitePlayer
     this.id = id
+    this.gameOver = false
   }
 
 
@@ -30,10 +31,20 @@ class Game {
     { row: newRow, column: newColumn },
     player,
   ) {
-
+    if (this.gameOver) {
+      throw new UserInputError("Game is over")
+    }
+    //game is not yet full
+    if (!this.isFull()) {
+      throw new UserInputError("Other player missing")
+    }
     // the wrong player tries to move
-    if (this.currentPlayer.id !== player.id) {
-      return
+    if (this.currentPlayer !== player) {
+      throw new UserInputError("It is not your turn")
+    }
+    // the player tries to move the opponents piece
+    if ((pieceMoved.side !== "white" && this.currentPlayer === this.whitePlayer) || (pieceMoved.side !== "black" && this.currentPlayer === this.blackPlayer)) {
+      throw new UserInputError("That is not your piece")
     }
     
     // the frontend is out of sync
@@ -53,11 +64,47 @@ class Game {
       return
     }
 
+    let toBeEatenIsKing = false
+    if (this.board[newRow][newColumn] && this.board[newRow][newColumn].getType() === "king") {
+      toBeEatenIsKing = true
+    }
+    /*let pawnIs = false
+    if (this.board[newRow][newColumn] && this.board[newRow][newColumn].getType() === "king") {
+      toBeEatenIsKing = true
+    }*/
+
     // moves the piece
     if (this.board[oldRow][oldColumn].move(this.board, newRow, newColumn)) {
       this.lastMove = {
         success: true,
       }
+
+      // clear en passant
+      this.clearEnPassant(newRow, newColumn)
+
+      // checks for gameOver
+      if (toBeEatenIsKing) {
+        this.gameOver = true
+        this.winner = this.currentPlayer
+        return
+      }
+
+      // checks for pawn promotion
+      const movedPiece = this.board[newRow][newColumn]
+      if (
+        movedPiece.getType() === "pawn" &&
+        (
+          (movedPiece.getSide() === "black" && newRow === 7) ||
+          (movedPiece.getSide() === "white" && newRow === 0)
+        )
+      ) {
+        this.promotionPlayerID = this.currentPlayer
+        this.pieceToPromote = movedPiece
+        console.log(this.pieceToPromote)
+        return
+      }
+
+      // switches turn
       this.currentPlayer = this.currentPlayer === this.whitePlayer
         ? this.blackPlayer
         : this.whitePlayer
@@ -74,33 +121,75 @@ class Game {
 
 
   addPlayer(player) {
-    this.blackPlayer = player
+    if (!this.blackPlayer && !this.whitePlayer) {
+      console.log("id", player, "on valkoiset ja ensimmäinen vuoro")
+      this.whitePlayer = player
+      this.currentPlayer = this.whitePlayer
+    } else {
+      console.log("id", player, "on mustat ja toinen vuoro")
+      this.blackPlayer = player
+    }
   }
 
   isFull() {
     return this.blackPlayer && this.whitePlayer
   }
 
+  clearEnPassant(newRow, newColumn) {
+    this.board.forEach(row => {
+      row.forEach(piece => {
+        if (
+          (piece && piece.getType() === "pawn") &&
+          (newRow !== piece.row && newColumn !== piece.column)
+        ) {
+          piece.vulnerableToEnPassant === false
+        }
+      })
+    })
+  }
+
 
 
   // makes a chess class out of the given pieceObject
-  static makePiece(piece) {
-    switch(piece.type) {
+  makePiece(type, side, location) {
+    switch(type) {
     case "pawn":
-      return new Pawn(piece.side)
+      return new Pawn(side, location)
     case "rook":
-      return new Rook(piece.side)
+      return new Rook(side, location)
     case "knight":
-      return new Knight(piece.side)
+      return new Knight(side, location)
     case "bishop":
-      return new Bishop(piece.side)
+      return new Bishop(side, location)
     case "queen":
-      return new Queen(piece.side)
+      return new Queen(side, location)
     case "king":
-      return new King(piece.side)
+      return new King(side, location)
     default:
       return null
     }
+  }
+
+  // promotes a pawn
+  promote(type, player) {
+    if (player !== this.promotionPlayerID) {
+      return false
+    }
+
+    const row = this.pieceToPromote.row
+    const column = this.pieceToPromote.column
+    this.board[row][column]
+      = this.makePiece(type, this.promotionPlayerID === this.whitePlayer ? "white" : "black", { row, column })
+
+    // switches turn
+    this.currentPlayer = this.currentPlayer === this.whitePlayer
+      ? this.blackPlayer
+      : this.whitePlayer
+
+    this.promotionPlayerID = null
+    this.pieceToPromote = null
+
+    return true
   }
 
   // gets the board for the frontend to use

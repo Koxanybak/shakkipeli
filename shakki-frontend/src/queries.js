@@ -19,12 +19,21 @@ import { gql } from "@apollo/client"
 `*/
 
 export const GET_GAME = gql`
-  query getGame {
-    getGame {
+  query getGame($gameId: String!) {
+    getGame(
+      gameId: $gameId
+    ) {
       board {
         type
         side
       }
+      id
+      currentPlayer
+      whitePlayer
+      blackPlayer
+      winner
+      gameOver
+      promotionPlayerID
     }
   }
 `
@@ -40,6 +49,8 @@ export const GET_LOGGED_USER = gql`
         tag
       }
       id
+      token
+      guest
     }
   }
 `
@@ -58,15 +69,24 @@ export const MAKE_MOVE = gql`
 `
 
 export const MOVE_MADE = gql`
-  subscription moveMade {
-    moveMade {
+  subscription moveMade($gameId: String!) {
+    moveMade(
+      gameId: $gameId
+    ) {
       board {
         type
         side
       }
+      id
       lastMove {
         success
       }
+      currentPlayer
+      whitePlayer
+      blackPlayer
+      winner
+      gameOver
+      promotionPlayerID
     }
   }
 `
@@ -99,6 +119,59 @@ export const ADD_USER = gql`
       friends {
         tag
       }
+    }
+  }
+`
+
+export const CREATE_GAME = gql`
+  mutation createGame {
+    createGame {
+      board {
+        type
+        side
+      }
+      id
+    }
+  }
+`
+
+export const JOIN_GAME = gql`
+  mutation joinGame($gameId: String!) {
+    joinGame(
+      gameId: $gameId
+    ) {
+      board {
+        type
+        side
+      }
+      id
+      currentPlayer
+      whitePlayer
+      blackPlayer
+      winner
+      gameOver
+      promotionPlayerID
+    }
+  }
+`
+
+export const PROMOTE = gql`
+  mutation promote($gameId: String!, $pieceType: String!) {
+    promote(
+      gameId: $gameId,
+      pieceType: $pieceType
+    ) {
+      board {
+        type
+        side
+      }
+      id
+      currentPlayer
+      whitePlayer
+      blackPlayer
+      winner
+      gameOver
+      promotionPlayerID
     }
   }
 `

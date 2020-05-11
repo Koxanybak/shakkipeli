@@ -1,7 +1,7 @@
 import React, { useContext } from "react"
 import { AppBar, Toolbar, IconButton, Button, Typography } from "@material-ui/core"
 import { Link, } from "react-router-dom"
-import UserContext from "../utils/UserContext"
+import { UserContext } from "../utils/context"
 
 const Menu = () => {
   const { user } = useContext(UserContext)

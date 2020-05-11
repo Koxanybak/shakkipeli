@@ -1,50 +1,86 @@
-import React from "react"
+import React, { useEffect, useContext } from "react"
+import { useParams } from "react-router-dom"
 import { useQuery, useMutation, useSubscription, useApolloClient } from "@apollo/client"
-import { GET_GAME, MAKE_MOVE, MOVE_MADE } from "../../queries"
+import { GET_GAME, MAKE_MOVE, MOVE_MADE, JOIN_GAME, PROMOTE } from "../../queries"
 import Square from "./Square"
-
-const BOARD_WIDTH = 8
+import { updateGameState } from "../../utils/cacheUpdaters"
+import { GameContext, UserContext } from "../../utils/context"
+import { Button } from "@material-ui/core"
+//import { Queen, Rook, Bishop, Knight, } from "./pieces"
 
 
 // Chessboard
 
 const Board = () => {
   const client = useApolloClient()
-  const initialResult = useQuery(GET_GAME)
+  const { id } = useParams()
+  const { setGameId } = useContext(GameContext)
+  const { user } = useContext(UserContext)
+  const initialResult = useQuery(GET_GAME, {
+    variables: { gameId: id },
+    onError: err => {
+      if (!err.graphQLErrors) {
+        console.log(err.message)
+      } else {
+        console.log(err.graphQLErrors[0].message)
+      }
+    },
+    onCompleted: data => {
+      setGameId(data.getGame.id)
+    }
+  })
   const [makeMove] = useMutation(MAKE_MOVE)
-
-  const updateInitialGame = (newGameData) => {
-    let gameInStore = client.readQuery({ query: GET_GAME })
-    gameInStore = { getGame: newGameData.moveMade }
-
-    console.log("newGameData:", newGameData)
-    client.writeQuery({
-      query: GET_GAME,
-      data: gameInStore
-    })
-    console.log(client.readQuery({
-      query: GET_GAME
-    }))
-  }
-
-  useSubscription(MOVE_MADE, {
-    onSubscriptionData: ({ subscriptionData }) => {
-      console.log("subscriptionData:", subscriptionData)
-      console.log("board:", subscriptionData.data.moveMade.board)
-      updateInitialGame(subscriptionData.data)
+  const [promote] = useMutation(PROMOTE)
+  const [joinGame] = useMutation(JOIN_GAME, {
+    variables: { gameId: id },
+    onError: err => {
+      if (!err.graphQLErrors) {
+        console.log(err.message)
+      } else {
+        console.log(err.graphQLErrors[0].message)
+      }
+    },
+    onCompleted: data => {
+      updateGameState(data, client, id)
     }
   })
 
-  if (initialResult.loading) {
-    return "loading"
+  useSubscription(MOVE_MADE, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      updateGameState(subscriptionData.data, client, id)
+    },
+    variables: { gameId: id }
+  })
+
+  useEffect(() => {
+    joinGame()
+  }, [joinGame])
+
+  const sendPromotedType = type => {
+    promote({ variables: { gameId: id, pieceType: type } })
   }
 
-  const board = initialResult.data.getGame.board
+  if (initialResult.loading) {
+    return "loading..."
+  }
+
+  if (!initialResult.data) {
+    return initialResult.error.toString()
+  }
+
+  const {
+    board,
+    whitePlayer,
+    currentPlayer,
+    gameOver,
+    winner,
+    promotionPlayerID,
+  } = initialResult.data.getGame
 
   const dragHelperMap = new Map()
   board.forEach((row, i) => {
     row.forEach((piece, j) => {
-      dragHelperMap.set(BOARD_WIDTH * i + j, piece)
+      dragHelperMap.set(8 * i + j, piece)
     })
   })
 
@@ -62,12 +98,16 @@ const Board = () => {
     return row
   })
 
-  console.log("board renderöidään")
-  // board on shakkinappulat sisältävä matriisi
-  // squares on ruutujen värijäen matriisi
+  //console.log("board renderöidään")
 
   return (
     <div>
+      <div>
+        Olet {user.id === whitePlayer
+          ? "valkoiset"
+          : "mustat"}. {user.id === currentPlayer
+          ? "On sinun vuorosi." : "Odotetaan vastustajan siirtoa."}
+      </div>
       <table>
         <tbody>
           {board.map((row, i) => {
@@ -76,7 +116,7 @@ const Board = () => {
                 {
                   row.map((piece, j) => {
                     return <Square
-                      key={BOARD_WIDTH * i + j}
+                      key={8 * i + j}
                       color={squares[i][j].color}
                       makeMove={makeMove}
                       location={{ row: i, column: j }}
@@ -90,19 +130,40 @@ const Board = () => {
           })}
         </tbody>
       </table>
+      <div>
+        {
+          user.id === promotionPlayerID
+            ?
+            <div>
+              Valitse nappula, joksi haluat muuttaa sotilaan
+              <Button onClick={() => sendPromotedType("queen")}>
+                Kuningatar
+              </Button>
+              <Button onClick={() => sendPromotedType("rook")}>
+                Torni
+              </Button>
+              <Button onClick={() => sendPromotedType("knight")}>
+                Ratsu
+              </Button>
+              <Button onClick={() => sendPromotedType("bishop")}>
+                Lähetti
+              </Button>
+            </div>
+            :
+            null
+        }
+      </div>
+      <div>
+        {
+          gameOver
+            ? winner === user.id
+              ? "Voitit pelin! Onneksi olkoon!"
+              : "Ootko paska ku hävisit :D"
+            : null
+        }
+      </div>
     </div>
   )
 }
-
-/*<tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-            <td>f</td>
-            <td>g</td>
-            <td>h</td>
-          </tr>*/
 
 export default Board

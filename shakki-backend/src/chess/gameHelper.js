@@ -51,7 +51,7 @@ const initializeBoard = () => {
 const findGame = (id, games) => {
   const game = games.find(g => g.id === id)
   if (!game) {
-    throw new UserInputError("Game not found, probably malformatted id.")
+    throw new UserInputError("Game not found, probably malformatted id or the server has been restarted.")
   }
 
   return game

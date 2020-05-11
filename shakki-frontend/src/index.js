@@ -10,7 +10,7 @@ import { getMainDefinition } from "@apollo/client/utilities"
 import { WebSocketLink } from "@apollo/link-ws"
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem("loggedChessUser")
+  const token = sessionStorage.getItem("loggedChessUser")
   return {
     headers: {
       ...headers,

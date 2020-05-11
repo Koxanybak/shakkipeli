@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import {
   SQUARE_HEIGHT,
   SQUARE_WIDTH,
@@ -7,10 +7,12 @@ import {
   HIGHLIGHTED_COLOR,
 } from "../../utils/constants"
 import { King, Queen, Rook, Knight, Bishop, Pawn, dragged } from "./pieces"
+import { GameContext } from "../../utils/context"
 
 // a single chess square
 
 const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
+  const { gameId } = useContext(GameContext)
 
   //squarestyles
   const white = {
@@ -55,7 +57,7 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
 
     try {
       const res = await makeMove({
-        variables: { move: { piece, oldLocation, newLocation } }
+        variables: { move: { piece, oldLocation, newLocation, gameId } }
       })
       if (!res.data.makeMove.lastMove.success) {
         console.log(res.data.makeMove.lastMove.message)
