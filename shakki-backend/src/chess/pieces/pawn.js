@@ -1,8 +1,8 @@
 const Piece = require("./piece")
 
 class Pawn extends Piece {
-  constructor(side, location) {
-    super(side, location)
+  constructor(side, location, id, board) {
+    super(side, location, id, board)
     this.moved = false
     this.vulnerableToEnPassant = false
   }
@@ -12,6 +12,9 @@ class Pawn extends Piece {
   }
 
   move(board, newRow, newColumn) {
+    if (this.didntMove(newRow, newColumn)) {
+      return false
+    }
     if (this.sameSide(board, newRow, newColumn)) {
       return false
     }
@@ -196,6 +199,93 @@ class Pawn extends Piece {
     this.row = newRow
     this.column = newColumn
     board[newRow][newColumn] = this
+  }
+
+  canMove(board, newRow, newColumn) {
+    if (this.didntMove(newRow, newColumn)) {
+      return false
+    }
+    if (this.sameSide(board, newRow, newColumn)) {
+      return false
+    }
+
+    if (this.moved) {
+      //piece has been moved
+      if (this.side === "white") {
+        // side is white
+        if (
+          (newRow === this.row - 1 && newColumn === this.column) &&
+          !board[newRow][newColumn]
+        ) {
+          return true
+        }
+        
+        if (
+          (newRow === this.row - 1 &&
+            (newColumn === this.column - 1 || newColumn === this.column + 1)
+          )
+        ) {
+          return true
+        }
+      }
+
+      // side is black
+      if (
+        (newRow === this.row + 1 && newColumn === this.column) &&
+        !board[newRow][newColumn]
+      ) {
+        return true
+      }
+      //console.log("newRow:", newRow)
+      //console.log("newColumn:", newColumn)
+      if (
+        (newRow === this.row + 1 &&
+          (newColumn === this.column - 1 || newColumn === this.column + 1)
+        )
+      ) {
+        //console.log("this should be logged")
+        return true
+      }
+    }
+
+    // piece has not been moved
+    if (this.side === "white") {
+      // side is white
+      if (
+        ((newRow === this.row - 2 || newRow === this.row - 1) && newColumn === this.column) &&
+        !board[newRow][newColumn]
+      ) {
+        if (!this.obstaclesInWay(board, newRow, newColumn)) {
+          return true
+        }
+      }
+      
+      if (
+        (newRow === this.row - 1 &&
+          (newColumn === this.column - 1 || newColumn === this.column + 1)
+        )
+      ) {
+        return true
+      }
+    }
+
+    // side is black
+    if (
+      ((newRow === this.row + 2 || newRow === this.row + 1) && newColumn === this.column) &&
+      !board[newRow][newColumn]
+    ) {
+      if (!this.obstaclesInWay(board, newRow, newColumn)) {
+        return true
+      }
+    }
+    
+    if (
+      (newRow === this.row + 1 &&
+        (newColumn === this.column - 1 || newColumn === this.column + 1)
+      )
+    ) {
+      return true
+    }
   }
 }
 

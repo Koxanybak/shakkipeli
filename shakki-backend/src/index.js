@@ -190,13 +190,16 @@ const resolvers = {
         || (currentUser.id !== game.whitePlayer && currentUser.id !== game.blackPlayer)) {
         throw new AuthenticationError("Invalid token")
       }
-
+      try {
       game.makeMove(
         args.move.piece,
         args.move.oldLocation,
         args.move.newLocation,
         currentUser.id,
       )
+      } catch (e) {
+        console.log(e.stack)
+      }
 
       if (game.lastMove.success) {
         //console.log("was published")
@@ -208,19 +211,16 @@ const resolvers = {
 
     promote: (root, args, { currentUser }) => {
       const game = findGame(args.gameId, gamesInProgress)
-      console.log("tässä")
 
       if (!currentUser
         || (currentUser.id !== game.whitePlayer && currentUser.id !== game.blackPlayer)) {
         throw new AuthenticationError("Invalid token")
       }
-      console.log("tässäkin")
 
       if (game.promote(args.pieceType, currentUser.id)) {
         pubsub.publish("MOVE_MADE", { moveMade: game })
         return game
       }
-      console.log("ja myös tässä")
 
       throw new UserInputError("Nothing to promote my friend")
     },
@@ -372,12 +372,12 @@ if (process.env.NODE_ENV === "production") {
   console.log(path.join(__dirname, "..", "public/"))
   app.use(express.static(root))
 
-  // ei mitään käryä, miksi tämä koodinpätkä korjasi production buildin syntaksivirheen
+  // no idea why this code fixed the syntax error in the production build
   app.use(function(req, res, next) {
     if (req.method === "GET" && req.accepts("html") && !req.is("json") && !req.path.includes(".")) {
       res.sendFile("index.html", { root })
     } else next()
-})
+  })
 }
 server.applyMiddleware({ app })
 

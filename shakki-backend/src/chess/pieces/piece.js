@@ -1,8 +1,11 @@
 class Piece {
-  constructor(side, location) {
+  constructor(side, location, id, board) {
     this.side = side
     this.row = location.row
     this.column = location.column
+    console.log(board)
+    this.board = board
+    this.id = id
   }
 
   getSide() {
@@ -10,10 +13,18 @@ class Piece {
   }
 
   moveSuccess(board, newRow, newColumn) {
+    this.lastRow = this.row
+    this.lastColumn = this.column
     board[this.row][this.column] = null
     this.row = newRow
     this.column = newColumn
     board[newRow][newColumn] = this
+  }
+
+  didntMove(newRow, newColumn) {
+    if (newRow === this.row && newColumn === this.column) {
+      return true
+    }
   }
 
   sameSide(board, newRow, newColumn) {
@@ -22,6 +33,14 @@ class Piece {
     if (pieceToEat && pieceToEat.getSide() === this.side) {
       return true
     }
+  }
+
+  undoMove(pieceEaten) {
+    this.board[this.lastRow][this.lastColumn] = this
+    this.board[this.row][this.column] = pieceEaten
+
+    this.row = this.lastRow
+    this.column = this.lastColumn
   }
 
   obstaclesInWay(board, newRow, newColumn) {

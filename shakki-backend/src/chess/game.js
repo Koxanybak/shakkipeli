@@ -20,6 +20,11 @@ class Game {
     this.currentPlayer = this.whitePlayer
     this.id = id
     this.gameOver = false
+    this.check = {
+      isCheck: false,
+      threatenedSide: null,
+      movesAvailable: []
+    }
   }
 
 
@@ -64,17 +69,37 @@ class Game {
       return
     }
 
+    const pieceToEat = this.board[newRow][newColumn]
+    const pieceToMove = this.board[oldRow][oldColumn]
+
     let toBeEatenIsKing = false
-    if (this.board[newRow][newColumn] && this.board[newRow][newColumn].getType() === "king") {
+    if (pieceToEat && pieceToEat.getType() === "king") {
       toBeEatenIsKing = true
     }
-    /*let pawnIs = false
-    if (this.board[newRow][newColumn] && this.board[newRow][newColumn].getType() === "king") {
-      toBeEatenIsKing = true
-    }*/
 
     // moves the piece
-    if (this.board[oldRow][oldColumn].move(this.board, newRow, newColumn)) {
+    if (pieceToMove.move(this.board, newRow, newColumn)) {
+      if (this.isCheck(this.currentPlayer === this.whitePlayer ? "white" : "black")) {
+        this.lastMove = {
+          success: false,
+          message: "Kuninkaasi tulisi uhatuksi.",
+        }
+        pieceToMove.undoMove(pieceToEat)
+        return
+      }
+
+      if (this.isCheck(this.currentPlayer === this.whitePlayer ? "black" : "white")) {
+        if (this.isCheckMate(this.currentPlayer === this.whitePlayer ? "black" : "white")) {
+          this.gameOver = true
+          this.winner = this.currentPlayer
+          return
+        }
+        this.check = {
+          isCheck: true,
+          threatenedSide: this.currentPlayer === this.whitePlayer ? "black" : "white",
+        }
+      }
+
       this.lastMove = {
         success: true,
       }
@@ -116,6 +141,54 @@ class Game {
       success: false,
       message: "Ootko paska ku yritit tehdä väärän siirron?",
     }
+  }
+
+  // a slow way of checking for check mate
+  isCheckMate(side) {
+    let result = true
+
+    let piecesOfSide = []
+    this.board.forEach(row => {
+      row.forEach(piece => {
+        piecesOfSide.push(piece)
+      })
+    })
+    piecesOfSide = piecesOfSide.filter(piece => piece && piece.side === side)
+
+    piecesOfSide.forEach(piece => {
+      this.board.forEach((rivi, row) => {
+        rivi.forEach((sarake, column) => {
+          const pieceEaten = this.board[row][column]
+          if (piece.move(this.board, row, column)) {
+            if (!this.isCheck(side)) {
+              result = false
+            }
+            piece.undoMove(pieceEaten)
+          }
+        })
+      })
+    })
+
+    return result
+  }
+
+  isCheck(side) {
+    const king = this.findKing(side)
+    return king.isInCheck(king.row, king.column)
+  }
+
+
+  findKing(side) {
+    let king
+    this.board.forEach(row => {
+      row.forEach(piece => {
+        if (piece && (piece.getType() === "king" && piece.side === side)) {
+          king = piece
+        }
+      })
+    })
+
+    return king
   }
 
 

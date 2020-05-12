@@ -29,6 +29,9 @@
     "build:ui": "rm -rf shakki-backend/public && cd C:/Users/Leevi/Documents/GitHub/shakkipeli/shakki-frontend && npm run build && mv build ../shakki-backend/public",
     "deploy": "npm run build:ui && git add . && git commit -m herokudeployment && git push heroku master"
   },
+  "nodemonConfig": {
+    "ignore": ["shakki-frontend/"]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Koxanybak/shakkipeli.git"

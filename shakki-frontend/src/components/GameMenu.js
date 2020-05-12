@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react"
 import { Button, Link } from "@material-ui/core"
 import { UserContext } from "../utils/context"
-import { baseUrl } from "../utils/constants"
+//import { baseUrl } from "../utils/constants"
 import { useMutation } from "@apollo/client"
 import { CREATE_GAME } from "../queries"
 
@@ -27,7 +27,7 @@ const GameMenu = () => {
   useEffect(() => {
     if (createResult.data) {
       const { id } = createResult.data.createGame
-      setLink(`${baseUrl}/play/${id}`)
+      setLink(`${window.location}/${id}`)
     }
   }, [createResult.data])
 
@@ -41,7 +41,7 @@ const GameMenu = () => {
         <div>
           Jaa tämä linkki kaverillesi. Sen kautta pääset pelaamaan.{"  "}
           <Link href={link}>
-            https://maailman-paras-shakkipeli.herokuapp.com{link}
+            {link}
           </Link>
         </div>
         :
