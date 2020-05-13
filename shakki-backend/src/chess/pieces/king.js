@@ -17,11 +17,10 @@ class King extends Piece {
   // check if the given location would place the king in check
   isInCheck(row, column) {
     let result = false
-    this.board.forEach(row => {
-      row.forEach(piece => {
+    this.board.forEach(r => {
+      r.forEach(piece => {
         if (piece && (piece.side !== this.side && piece.canMove(this.board, row, column))) {
-          //console.log("the king would be in check")
-          //console.log("and the piece that can eat him is:", piece)
+          console.log("The king would be in check and the piece that can eat him is:", piece)
           result = true
         }
       })
@@ -77,15 +76,12 @@ class King extends Piece {
         (Math.abs(rowOffset) === 1 && Math.abs(colOffset) === 1)
       )
     ) {
-      //console.log(this.isInCheck(board, newRow, newColumn))
       if (!this.isInCheck(newRow, newColumn)) {
-        //console.log("this shouldnt be logged")
         this.moveSuccess(board, newRow, newColumn)
         this.moved = true
         return true
       }
     }
-
     return false
   }
 

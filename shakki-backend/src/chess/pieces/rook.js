@@ -3,6 +3,7 @@ const Piece = require("./piece")
 class Rook extends Piece {
   constructor(side, location, id, board) {
     super(side, location, id, board)
+    console.log(board)
     this.moved = false
   }
 
@@ -71,7 +72,7 @@ class Rook extends Piece {
     }
     const rowOffset = this.row - newRow
     const colOffset = this.column - newColumn
-
+    
     if (this.sameSide(board, newRow, newColumn)) {
       return false
     }

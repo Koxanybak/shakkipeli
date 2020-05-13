@@ -1,23 +1,5 @@
 import { gql } from "@apollo/client"
 
-/*const TYPE_DEFS = gql`
-  input PieceInput {
-    type: String!
-    side: Side!
-  }
- 
-  input LocationInput {
-    row: Int!
-    column: Int!
-  }
-
-  input MoveInput {
-    piece: PieceInput
-    oldLocation: LocationInput
-    newLocation: LocationInput
-  }
-`*/
-
 export const GET_GAME = gql`
   query getGame($gameId: String!) {
     getGame(
@@ -34,6 +16,126 @@ export const GET_GAME = gql`
       winner
       gameOver
       promotionPlayerID
+      check {
+        threatenedSide
+        movesAvailable {
+          piece {
+            type
+            side
+            id
+          }
+          newLocation {
+            row
+            column
+          }
+        }
+      }
+    }
+  }
+`
+
+export const MOVE_MADE = gql`
+  subscription moveMade($gameId: String!) {
+    moveMade(
+      gameId: $gameId
+    ) {
+      board {
+        type
+        side
+      }
+      id
+      lastMove {
+        success
+      }
+      currentPlayer
+      whitePlayer
+      blackPlayer
+      winner
+      gameOver
+      promotionPlayerID
+      check {
+        threatenedSide
+        movesAvailable {
+          piece {
+            type
+            side
+            id
+          }
+          newLocation {
+            row
+            column
+          }
+        }
+      }
+    }
+  }
+`
+
+export const JOIN_GAME = gql`
+  mutation joinGame($gameId: String!) {
+    joinGame(
+      gameId: $gameId
+    ) {
+      board {
+        type
+        side
+      }
+      id
+      currentPlayer
+      whitePlayer
+      blackPlayer
+      winner
+      gameOver
+      promotionPlayerID
+      check {
+        threatenedSide
+        movesAvailable {
+          piece {
+            type
+            side
+            id
+          }
+          newLocation {
+            row
+            column
+          }
+        }
+      }
+    }
+  }
+`
+
+export const PROMOTE = gql`
+  mutation promote($gameId: String!, $pieceType: String!) {
+    promote(
+      gameId: $gameId,
+      pieceType: $pieceType
+    ) {
+      board {
+        type
+        side
+      }
+      id
+      currentPlayer
+      whitePlayer
+      blackPlayer
+      winner
+      gameOver
+      promotionPlayerID
+      check {
+        threatenedSide
+        movesAvailable {
+          piece {
+            type
+            side
+            id
+          }
+          newLocation {
+            row
+            column
+          }
+        }
+      }
     }
   }
 `
@@ -64,29 +166,6 @@ export const MAKE_MOVE = gql`
         success
         message
       }
-    }
-  }
-`
-
-export const MOVE_MADE = gql`
-  subscription moveMade($gameId: String!) {
-    moveMade(
-      gameId: $gameId
-    ) {
-      board {
-        type
-        side
-      }
-      id
-      lastMove {
-        success
-      }
-      currentPlayer
-      whitePlayer
-      blackPlayer
-      winner
-      gameOver
-      promotionPlayerID
     }
   }
 `
@@ -131,47 +210,6 @@ export const CREATE_GAME = gql`
         side
       }
       id
-    }
-  }
-`
-
-export const JOIN_GAME = gql`
-  mutation joinGame($gameId: String!) {
-    joinGame(
-      gameId: $gameId
-    ) {
-      board {
-        type
-        side
-      }
-      id
-      currentPlayer
-      whitePlayer
-      blackPlayer
-      winner
-      gameOver
-      promotionPlayerID
-    }
-  }
-`
-
-export const PROMOTE = gql`
-  mutation promote($gameId: String!, $pieceType: String!) {
-    promote(
-      gameId: $gameId,
-      pieceType: $pieceType
-    ) {
-      board {
-        type
-        side
-      }
-      id
-      currentPlayer
-      whitePlayer
-      blackPlayer
-      winner
-      gameOver
-      promotionPlayerID
     }
   }
 `

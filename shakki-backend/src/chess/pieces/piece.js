@@ -3,7 +3,6 @@ class Piece {
     this.side = side
     this.row = location.row
     this.column = location.column
-    console.log(board)
     this.board = board
     this.id = id
   }
@@ -28,7 +27,10 @@ class Piece {
   }
 
   sameSide(board, newRow, newColumn) {
-    const pieceToEat = board[newRow][newColumn]
+    /*console.log("this:", this)
+    console.log("newRow:", newRow)
+    console.log("this.board[newRow]:", this.board[newRow])*/
+    const pieceToEat = this.board[newRow][newColumn]
 
     if (pieceToEat && pieceToEat.getSide() === this.side) {
       return true

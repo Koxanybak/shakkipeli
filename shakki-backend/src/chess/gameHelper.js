@@ -26,7 +26,6 @@ const initializeBoard = () => {
     return new Pawn("white", { row: 6, column: j }, 8 * 6 + j, board)
   })
 
-
   board[0][0] = new Rook("black", { row: 0, column: 0 }, 0, board)
   board[0][1] = new Knight("black", { row: 0, column: 1 }, 1, board)
   board[0][2] = new Bishop("black", { row: 0, column: 2 }, 2, board)

@@ -48,11 +48,17 @@ const typeDefs = gql`
     promotionPlayerID: String
     gameOver: Boolean!
     lastMove: Move
+    check: Check
     id: ID!
+  }
+  type Check {
+    threatenedSide: Side,
+    movesAvailable: [Move!]!
   }
   type Piece {
     type: String!
     side: Side!
+    id: String!
   }
   enum Side {
     white
@@ -82,7 +88,7 @@ const typeDefs = gql`
     piece: Piece
     oldLocation: Location
     newLocation: Location
-    success: Boolean!
+    success: Boolean
     message: String
   }
 
@@ -190,16 +196,16 @@ const resolvers = {
         || (currentUser.id !== game.whitePlayer && currentUser.id !== game.blackPlayer)) {
         throw new AuthenticationError("Invalid token")
       }
-      try {
+      //try {
       game.makeMove(
         args.move.piece,
         args.move.oldLocation,
         args.move.newLocation,
         currentUser.id,
       )
-      } catch (e) {
+      /*} catch (e) {
         console.log(e.stack)
-      }
+      }*/
 
       if (game.lastMove.success) {
         //console.log("was published")
@@ -326,6 +332,9 @@ const resolvers = {
     currentPlayer: (root) => {
       return root.currentPlayer
     },
+    check: (root) => {
+      return root.check
+    }
   }
 }
 

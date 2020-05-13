@@ -20,11 +20,7 @@ class Game {
     this.currentPlayer = this.whitePlayer
     this.id = id
     this.gameOver = false
-    this.check = {
-      isCheck: false,
-      threatenedSide: null,
-      movesAvailable: []
-    }
+    this.check = null
   }
 
 
@@ -60,6 +56,11 @@ class Game {
       throw new UserInputError("No such piece in that location")
     }
 
+    // promotion
+    if (this.pieceToPromote) {
+      throw new UserInputError("Can't make a move until the pawn is promoted")
+    }
+
     // the piece wasn't moved
     if ((oldRow === newRow) && (oldColumn === newColumn)) {
       this.lastMove = {
@@ -79,6 +80,7 @@ class Game {
 
     // moves the piece
     if (pieceToMove.move(this.board, newRow, newColumn)) {
+      // the move leads to check against the player
       if (this.isCheck(this.currentPlayer === this.whitePlayer ? "white" : "black")) {
         this.lastMove = {
           success: false,
@@ -87,16 +89,22 @@ class Game {
         pieceToMove.undoMove(pieceToEat)
         return
       }
+      // resets check
+      this.check = null
 
+      // checks for check
       if (this.isCheck(this.currentPlayer === this.whitePlayer ? "black" : "white")) {
-        if (this.isCheckMate(this.currentPlayer === this.whitePlayer ? "black" : "white")) {
+        // checks for checkmate
+        const movesAvailable = this.movesAvailable(this.currentPlayer === this.whitePlayer ? "black" : "white")
+        if (movesAvailable.length === 0) {
           this.gameOver = true
           this.winner = this.currentPlayer
           return
         }
+        console.log("movesAvailable:", movesAvailable)
         this.check = {
-          isCheck: true,
           threatenedSide: this.currentPlayer === this.whitePlayer ? "black" : "white",
+          movesAvailable,
         }
       }
 
@@ -144,8 +152,7 @@ class Game {
   }
 
   // a slow way of checking for check mate
-  isCheckMate(side) {
-    let result = true
+  movesAvailable(side) {
 
     let piecesOfSide = []
     this.board.forEach(row => {
@@ -155,13 +162,29 @@ class Game {
     })
     piecesOfSide = piecesOfSide.filter(piece => piece && piece.side === side)
 
+    const movesAvailable = []
+
     piecesOfSide.forEach(piece => {
       this.board.forEach((rivi, row) => {
         rivi.forEach((sarake, column) => {
           const pieceEaten = this.board[row][column]
+
           if (piece.move(this.board, row, column)) {
             if (!this.isCheck(side)) {
-              result = false
+
+              /* const moveFound = movesAvailable.find(move => move.piece.id === piece.id)
+              if (!moveFound) { */
+              movesAvailable.push({
+                piece: {
+                  type: piece.getType(),
+                  side: piece.getSide(),
+                  id: piece.id,
+                },
+                newLocation: [{ row, column, }],
+              })
+              /* } else {
+                moveFound.locations.push({ row, column, })
+              } */
             }
             piece.undoMove(pieceEaten)
           }
@@ -169,11 +192,12 @@ class Game {
       })
     })
 
-    return result
+    return movesAvailable
   }
 
   isCheck(side) {
     const king = this.findKing(side)
+    console.log("isCheck and king.row:", king.row, "king.column", king.column)
     return king.isInCheck(king.row, king.column)
   }
 
@@ -195,11 +219,11 @@ class Game {
 
   addPlayer(player) {
     if (!this.blackPlayer && !this.whitePlayer) {
-      console.log("id", player, "on valkoiset ja ensimmäinen vuoro")
+      //console.log("id", player, "on valkoiset ja ensimmäinen vuoro")
       this.whitePlayer = player
       this.currentPlayer = this.whitePlayer
     } else {
-      console.log("id", player, "on mustat ja toinen vuoro")
+      //console.log("id", player, "on mustat ja toinen vuoro")
       this.blackPlayer = player
     }
   }
@@ -254,6 +278,26 @@ class Game {
     this.board[row][column]
       = this.makePiece(type, this.promotionPlayerID === this.whitePlayer ? "white" : "black", { row, column })
 
+    // checks for check
+    if (this.isCheck(this.currentPlayer === this.whitePlayer ? "black" : "white")) {
+      // checks for checkmate
+      const movesAvailable = this.movesAvailable(this.currentPlayer === this.whitePlayer ? "black" : "white")
+      if (movesAvailable.length === 0) {
+        this.gameOver = true
+        this.winner = this.currentPlayer
+        return
+      }
+      console.log("movesAvailable:", movesAvailable)
+      this.check = {
+        threatenedSide: this.currentPlayer === this.whitePlayer ? "black" : "white",
+        movesAvailable,
+      }
+    }
+
+    this.lastMove = {
+      success: true,
+    }
+
     // switches turn
     this.currentPlayer = this.currentPlayer === this.whitePlayer
       ? this.blackPlayer
@@ -272,11 +316,25 @@ class Game {
         return piece ? {
           type: piece.getType(),
           side: piece.getSide(),
+          id: piece.id,
         } : null
       })
       return returnedRow
     })
     return returnedBoard
+  }
+
+  findPieceById(id) {
+    let piece = null
+    this.board.forEach(row => {
+      row.forEach(p => {
+        if (p.id === id) {
+          piece = p
+        }
+      })
+    })
+
+    return piece
   }
 }
 

@@ -54,10 +54,13 @@ const King = ({ side, id }) => {
   kingStyle.backgroundColor = side === "black" ? BLACK_COLOR : WHITE_COLOR
   kingStyle.color = side === "white" ? BLACK_COLOR : WHITE_COLOR
 
-  return (
+  /* return (
     <Piece style={kingStyle} id={id} side={side}>
       K
     </Piece>
+  ) */
+  return (
+    <img src="blackking.svg" alt="black king"></img>
   )
 }
 

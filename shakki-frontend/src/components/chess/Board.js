@@ -19,7 +19,7 @@ const Board = () => {
   const initialResult = useQuery(GET_GAME, {
     variables: { gameId: id },
     onError: err => {
-      if (!err.graphQLErrors) {
+      if (!err.graphQLErrors || !err.graphQLErrors[0]) {
         console.log(err.message)
       } else {
         console.log(err.graphQLErrors[0].message)
@@ -34,7 +34,7 @@ const Board = () => {
   const [joinGame] = useMutation(JOIN_GAME, {
     variables: { gameId: id },
     onError: err => {
-      if (!err.graphQLErrors) {
+      if (!err.graphQLErrors || !err.graphQLErrors[0]) {
         console.log(err.message)
       } else {
         console.log(err.graphQLErrors[0].message)
