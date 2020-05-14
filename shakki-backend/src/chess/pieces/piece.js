@@ -11,6 +11,10 @@ class Piece {
     return this.side
   }
 
+  toString() {
+    return this ? this.getType() : null
+  }
+
   moveSuccess(board, newRow, newColumn) {
     this.lastRow = this.row
     this.lastColumn = this.column
@@ -27,9 +31,10 @@ class Piece {
   }
 
   sameSide(board, newRow, newColumn) {
-    /*console.log("this:", this)
-    console.log("newRow:", newRow)
-    console.log("this.board[newRow]:", this.board[newRow])*/
+    /* if (newRow !== 0 && newRow !== 7) {
+      console.log("this:", this.toString())
+      console.log("newRow:", newRow)
+    } */
     const pieceToEat = this.board[newRow][newColumn]
 
     if (pieceToEat && pieceToEat.getSide() === this.side) {

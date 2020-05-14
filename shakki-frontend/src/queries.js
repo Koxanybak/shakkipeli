@@ -8,6 +8,7 @@ export const GET_GAME = gql`
       board {
         type
         side
+        id
       }
       id
       currentPlayer
@@ -42,6 +43,7 @@ export const MOVE_MADE = gql`
       board {
         type
         side
+        id
       }
       id
       lastMove {
@@ -79,6 +81,7 @@ export const JOIN_GAME = gql`
       board {
         type
         side
+        id
       }
       id
       currentPlayer
@@ -114,6 +117,7 @@ export const PROMOTE = gql`
       board {
         type
         side
+        id
       }
       id
       currentPlayer

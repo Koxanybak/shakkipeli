@@ -196,19 +196,20 @@ const resolvers = {
         || (currentUser.id !== game.whitePlayer && currentUser.id !== game.blackPlayer)) {
         throw new AuthenticationError("Invalid token")
       }
-      //try {
+      /* try { */
       game.makeMove(
         args.move.piece,
         args.move.oldLocation,
         args.move.newLocation,
         currentUser.id,
       )
-      /*} catch (e) {
+      /* } catch (e) {
         console.log(e.stack)
-      }*/
+      } */
 
       if (game.lastMove.success) {
-        //console.log("was published")
+        /* console.log("was published board:", game.getBoard())
+        console.log("was published check:", game.check) */
         pubsub.publish("MOVE_MADE", { moveMade: game })
       }
 

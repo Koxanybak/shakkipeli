@@ -10,7 +10,6 @@ const Pawn = require("./pieces/pawn")
 
 
 // class that represents a single chess game
-
 class Game {
   constructor(id, whitePlayer, blackPlayer) {
     this.whitePlayer = whitePlayer
@@ -73,11 +72,6 @@ class Game {
     const pieceToEat = this.board[newRow][newColumn]
     const pieceToMove = this.board[oldRow][oldColumn]
 
-    let toBeEatenIsKing = false
-    if (pieceToEat && pieceToEat.getType() === "king") {
-      toBeEatenIsKing = true
-    }
-
     // moves the piece
     if (pieceToMove.move(this.board, newRow, newColumn)) {
       // the move leads to check against the player
@@ -95,6 +89,7 @@ class Game {
       // checks for check
       if (this.isCheck(this.currentPlayer === this.whitePlayer ? "black" : "white")) {
         // checks for checkmate
+        console.log("moves that prevent check")
         const movesAvailable = this.movesAvailable(this.currentPlayer === this.whitePlayer ? "black" : "white")
         if (movesAvailable.length === 0) {
           this.gameOver = true
@@ -115,17 +110,10 @@ class Game {
       // clear en passant
       this.clearEnPassant(newRow, newColumn)
 
-      // checks for gameOver
-      if (toBeEatenIsKing) {
-        this.gameOver = true
-        this.winner = this.currentPlayer
-        return
-      }
-
       // checks for pawn promotion
       const movedPiece = this.board[newRow][newColumn]
       if (
-        movedPiece.getType() === "pawn" &&
+        (movedPiece && movedPiece.getType() === "pawn") &&
         (
           (movedPiece.getSide() === "black" && newRow === 7) ||
           (movedPiece.getSide() === "white" && newRow === 0)
@@ -169,23 +157,19 @@ class Game {
         rivi.forEach((sarake, column) => {
           const pieceEaten = this.board[row][column]
 
-          if (piece.move(this.board, row, column)) {
+          if (piece.move(this.board, row, column, true)) {
             if (!this.isCheck(side)) {
 
-              /* const moveFound = movesAvailable.find(move => move.piece.id === piece.id)
-              if (!moveFound) { */
               movesAvailable.push({
                 piece: {
                   type: piece.getType(),
                   side: piece.getSide(),
                   id: piece.id,
                 },
-                newLocation: [{ row, column, }],
+                newLocation: { row, column, },
               })
-              /* } else {
-                moveFound.locations.push({ row, column, })
-              } */
             }
+
             piece.undoMove(pieceEaten)
           }
         })
@@ -197,7 +181,7 @@ class Game {
 
   isCheck(side) {
     const king = this.findKing(side)
-    console.log("isCheck and king.row:", king.row, "king.column", king.column)
+    /* console.log("isInCheck gave the func", king.row, "from", king.toString()) */
     return king.isInCheck(king.row, king.column)
   }
 

@@ -3,8 +3,9 @@ const Piece = require("./piece")
 class Rook extends Piece {
   constructor(side, location, id, board) {
     super(side, location, id, board)
-    console.log(board)
     this.moved = false
+    this.lastMoveWasCastling = false
+    this.movedFirstLastTime = false
   }
 
   getType() {
@@ -15,7 +16,37 @@ class Rook extends Piece {
     return this.moved
   }
 
-  move(board, newRow, newColumn) {
+  undoCastling(castledPiece) {
+    this.movedFirstLastTime = false
+    this.moved = false
+    this.lastMoveWasCastling = false
+    castledPiece.movedFirstLastTime = false
+    castledPiece.moved = false
+    castledPiece.lastMoveWasCastling = false
+
+    this.board[this.lastRow][this.lastColumn] = this
+    this.board[castledPiece.lastRow][castledPiece.lastColumn] = castledPiece
+
+    this.row = this.lastRow
+    this.column = this.lastColumn
+
+    castledPiece.row = castledPiece.lastRow
+    castledPiece.column = castledPiece.lastColumn
+  }
+
+  undoMove(pieceEaten) {
+    if (this.movedFirstLastTime) {
+      this.movedFirstLastTime = false
+      this.moved = false
+    }
+    this.board[this.lastRow][this.lastColumn] = this
+    this.board[this.row][this.column] = pieceEaten
+
+    this.row = this.lastRow
+    this.column = this.lastColumn
+  }
+
+  move(board, newRow, newColumn, ignoreCastling) {
     if (this.didntMove(newRow, newColumn)) {
       return false
     }
@@ -35,19 +66,41 @@ class Rook extends Piece {
         targetPiece.getSide() === this.getSide()
       ) && 
       (
-        !targetPiece.getMoved() &&
-        !this.obstaclesInWay(board, newRow, newColumn)
+        (Math.abs(colOffset) === 3 || Math.abs(colOffset) === 4) &&
+        (!ignoreCastling && !targetPiece.isInCheck(targetPiece.row, targetPiece.column))
       ) &&
       (
-        Math.abs(colOffset) === 3
+        !targetPiece.getMoved() &&
+        !this.obstaclesInWay(board, newRow, newColumn)
       )
     ) {
-      if (!targetPiece.isInCheck(board, newRow, newColumn + 2)) {
-        this.moved = true
-        targetPiece.moved = true
-        this.moveSuccess(board, newRow, newColumn + 1)
-        targetPiece.moveSuccess(board, newRow, newColumn + 2)
-        return true
+      if (Math.abs(colOffset) === 3) {
+        if (!targetPiece.isInCheck(newRow, newColumn + 2) && !targetPiece.isInCheck(newRow, newColumn + 1)) {
+          this.movedFirstLastTime = true
+          this.moved = true
+          targetPiece.moved = true
+          this.moveSuccess(board, newRow, newColumn + 1)
+          targetPiece.moveSuccess(board, newRow, newColumn + 2)
+          this.lastMoveWasCastling = true
+          targetPiece.lastMoveWasCastling = true
+          return true
+        }
+      } else {
+        if (
+          (
+            !targetPiece.isInCheck(newRow, newColumn - 2) &&
+            !targetPiece.isInCheck(newRow, newColumn - 1)
+          )
+        ) {
+          this.movedFirstLastTime = true
+          this.moved = true
+          targetPiece.moved = true
+          this.moveSuccess(board, newRow, newColumn - 1)
+          targetPiece.moveSuccess(board, newRow, newColumn - 2)
+          this.lastMoveWasCastling = true
+          targetPiece.lastMoveWasCastling = true
+          return true
+        }
       }
     }
 
@@ -57,7 +110,11 @@ class Rook extends Piece {
 
     if (colOffset === 0 || rowOffset === 0) {
       if (!this.obstaclesInWay(board, newRow, newColumn)) {
+        if (!this.moved) {
+          this.movedFirstLastTime = true
+        }
         this.moveSuccess(board, newRow, newColumn)
+        this.lastMoveWasCastling = false
         this.moved = true
         return true
       }
@@ -67,6 +124,7 @@ class Rook extends Piece {
   }
 
   canMove(board, newRow, newColumn) {
+    /* console.log("newRow at canMove:", newRow) */
     if (this.didntMove(newRow, newColumn)) {
       return false
     }

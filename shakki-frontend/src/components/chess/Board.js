@@ -84,6 +84,24 @@ const Board = () => {
     })
   })
 
+  /* const blackBoard = Array.from(Array(8), () => {
+    const row = new Array(8)
+
+    for (let j = 0; j < 8; j++) {
+      row[j] = null
+    }
+
+    return row
+  })
+  console.log("board:", board)
+  console.log("blackBoard:", blackBoard)
+  for (let i = 7; i >= 0; i--) {
+    for (let j = 7; j >= 0; j--) {
+      console.log(i, j)
+      blackBoard[i][j] = board[i - 7][j - 7]
+    }
+  } */
+
   const squares = Array.from(Array(8), (e, i) => {
     const row = new Array(8)
 
@@ -110,7 +128,7 @@ const Board = () => {
       </div>
       <table>
         <tbody>
-          {board.map((row, i) => {
+          {user.id === whitePlayer ? board.map((row, i) => {
             return (
               <tr key={i}>
                 {
@@ -121,6 +139,23 @@ const Board = () => {
                       makeMove={makeMove}
                       location={{ row: i, column: j }}
                       piece={piece}
+                      dragHelperMap={dragHelperMap}
+                    />
+                  })
+                }
+              </tr>
+            )
+          }) : board.map((row, i) => {
+            return (
+              <tr key={i}>
+                {
+                  row.map((piece, j) => {
+                    return <Square
+                      key={8 * (7 - i) + (7 - j)}
+                      color={squares[7 - i][7 - j].color}
+                      makeMove={makeMove}
+                      location={{ row: (7 - i), column: (7 - j) }}
+                      piece={board[7 - i][7 - j]}
                       dragHelperMap={dragHelperMap}
                     />
                   })
