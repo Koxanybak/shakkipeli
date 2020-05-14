@@ -1,19 +1,31 @@
 {
   "files": {
-    "main.js": "/static/js/main.6c2ff24d.chunk.js",
-    "main.js.map": "/static/js/main.6c2ff24d.chunk.js.map",
+    "main.js": "/static/js/main.37a05e74.chunk.js",
+    "main.js.map": "/static/js/main.37a05e74.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.bf36ea6d.js",
     "runtime-main.js.map": "/static/js/runtime-main.bf36ea6d.js.map",
-    "static/js/2.527e5b46.chunk.js": "/static/js/2.527e5b46.chunk.js",
-    "static/js/2.527e5b46.chunk.js.map": "/static/js/2.527e5b46.chunk.js.map",
+    "static/js/2.cf9a4838.chunk.js": "/static/js/2.cf9a4838.chunk.js",
+    "static/js/2.cf9a4838.chunk.js.map": "/static/js/2.cf9a4838.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.70797ebc6dccbcaec1d6cbf877da0fc5.js": "/precache-manifest.70797ebc6dccbcaec1d6cbf877da0fc5.js",
+    "precache-manifest.bfe8100c40d9020ca2f53cfbddd67831.js": "/precache-manifest.bfe8100c40d9020ca2f53cfbddd67831.js",
     "service-worker.js": "/service-worker.js",
-    "static/js/2.527e5b46.chunk.js.LICENSE.txt": "/static/js/2.527e5b46.chunk.js.LICENSE.txt"
+    "static/js/2.cf9a4838.chunk.js.LICENSE.txt": "/static/js/2.cf9a4838.chunk.js.LICENSE.txt",
+    "static/media/blackbishop.svg": "/static/media/blackbishop.1f3b8d1a.svg",
+    "static/media/blackking.svg": "/static/media/blackking.66e1bcad.svg",
+    "static/media/blackknight.svg": "/static/media/blackknight.d39f1d02.svg",
+    "static/media/blackpawn.svg": "/static/media/blackpawn.1c52d8c4.svg",
+    "static/media/blackqueen.svg": "/static/media/blackqueen.7b3e33e4.svg",
+    "static/media/blackrook.svg": "/static/media/blackrook.96872a66.svg",
+    "static/media/whitebishop.svg": "/static/media/whitebishop.09004fd2.svg",
+    "static/media/whiteking.svg": "/static/media/whiteking.250510ff.svg",
+    "static/media/whiteknight.svg": "/static/media/whiteknight.e6294efe.svg",
+    "static/media/whitepawn.svg": "/static/media/whitepawn.d69014fb.svg",
+    "static/media/whitequeen.svg": "/static/media/whitequeen.4320a2dd.svg",
+    "static/media/whiterook.svg": "/static/media/whiterook.095b1a06.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.bf36ea6d.js",
-    "static/js/2.527e5b46.chunk.js",
-    "static/js/main.6c2ff24d.chunk.js"
+    "static/js/2.cf9a4838.chunk.js",
+    "static/js/main.37a05e74.chunk.js"
   ]
 }
