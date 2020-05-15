@@ -1,22 +1,27 @@
-import React, { useState, useEffect, useContext } from "react"
-import { TextField, Button, } from "@material-ui/core"
+import React, { useState, useEffect } from "react"
+import { TextField, Button, Checkbox, FormControlLabel, } from "@material-ui/core"
 import { useHistory } from "react-router-dom"
 import { LOGIN } from "../queries"
 import { useMutation } from "@apollo/client"
-import { UserContext } from "../utils/context"
+import { useUser } from "../utils/stateHooks"
 
 
 const LoginForm = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [remember, setRemember] = useState(true)
 
-  const { setUser } = useContext(UserContext)
+  const { setUser } = useUser()
 
   const history = useHistory()
 
   const [login, loginResult] = useMutation(LOGIN, {
     onError: err => {
-      console.log(err.graphQLErrors[0].message)
+      if (!err.graphQLErrors || !err.graphQLErrors[0]) {
+        console.log(err.message)
+      } else {
+        console.log(err.graphQLErrors[0].message)
+      }
       setPassword("")
     }
   })
@@ -32,9 +37,7 @@ const LoginForm = () => {
       setUsername("")
       setPassword("")
 
-      console.log(loginResult.data.login.token)
-      window.sessionStorage.setItem("loggedChessUser", loginResult.data.login.token)
-      setUser(loginResult.data.login)
+      setUser(loginResult.data.login, remember)
 
       history.push("/")
     }
@@ -57,6 +60,19 @@ const LoginForm = () => {
             type="password"
             onChange={e => {setPassword(e.target.value)}}
             name="password"
+          />
+        </div>
+        <div>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={remember}
+                onChange={() => setRemember(!remember)}
+                name="rememberMe"
+                color="primary"
+              />
+            }
+            label="Muista minut"
           />
         </div>
         <div>

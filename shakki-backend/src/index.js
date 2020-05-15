@@ -166,7 +166,7 @@ const resolvers = {
   
           return currentUser
         } catch (e) {
-          return null
+          throw new UserInputError("Something went wrong:", e.message)
         }
       } else {
         const id = uuid()

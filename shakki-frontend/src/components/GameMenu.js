@@ -1,18 +1,19 @@
-import React, { useState, useContext, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Button, Link } from "@material-ui/core"
-import { UserContext } from "../utils/context"
-//import { baseUrl } from "../utils/constants"
 import { useMutation } from "@apollo/client"
 import { CREATE_GAME } from "../queries"
+import { useUser } from "../utils/stateHooks"
 
 const GameMenu = () => {
   const [link, setLink] = useState(null)
-  const { user } = useContext(UserContext)
-  //const { setGame } = useContext(GameContext)
+  const { user } = useUser()
   const [createGame, createResult] = useMutation(CREATE_GAME, {
     onError: err => {
-      //console.log(err.graphQlErrors[0].message)
-      console.log(err.message)
+      if (!err.graphQLErrors || !err.graphQLErrors[0]) {
+        console.log(err.message)
+      } else {
+        console.log(err.graphQLErrors[0].message)
+      }
     }
   })
 

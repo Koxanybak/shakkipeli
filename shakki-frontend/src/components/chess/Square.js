@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useState } from "react"
 import {
   SQUARE_HEIGHT,
   SQUARE_WIDTH,
@@ -7,27 +7,19 @@ import {
   HIGHLIGHTED_COLOR,
 } from "../../utils/constants"
 import { King, Queen, Rook, Knight, Bishop, Pawn, dragged } from "./pieces"
-import { GameContext } from "../../utils/context"
 
 // a single chess square
 
 const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
-  const { gameId } = useContext(GameContext)
+  const [squareColor, setSquareColor] = useState(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
 
   //squarestyles
-  const white = {
+  const squareStyle = {
     height: SQUARE_HEIGHT,
     width: SQUARE_WIDTH,
-    backgroundColor: WHITESQUARE_COLOR,
+    backgroundColor: squareColor,
     textAlign: "center",
   }
-  const black = {
-    height: SQUARE_HEIGHT,
-    width: SQUARE_WIDTH,
-    backgroundColor: BLACKSQUARE_COLOR,
-    textAlign: "center",
-  }
-
 
 
   // drop handlers
@@ -48,17 +40,13 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
     const newLocation = location
 
     if (event.target.className === "square") {
-      event.target.style.backgroundColor = color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR
+      setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
     } else if (event.target.className === "piece") {
-      const parent = event.target.parentNode
-
-      parent.style.backgroundColor = parent.id === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR
+      setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
     }
 
     try {
-      const res = await makeMove({
-        variables: { move: { piece, oldLocation, newLocation, gameId } }
-      })
+      const res = await makeMove({ piece, oldLocation, newLocation })
       if (!res.data.makeMove.lastMove.success) {
         console.log(res.data.makeMove.lastMove.message)
       }
@@ -69,24 +57,24 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
 
   const handleDragEnter = event => {
     if (event.target.className === "square") {
-      event.target.style.backgroundColor = HIGHLIGHTED_COLOR
+      setSquareColor(HIGHLIGHTED_COLOR)
     } else if (event.target.className === "piece") {
-      event.target.parentNode.style.backgroundColor = HIGHLIGHTED_COLOR
+      setSquareColor(HIGHLIGHTED_COLOR)
     }
   }
 
   const handleDragLeave = event => {
     if (event.target.className === "square" && event.relatedTarget.className !== "piece") {
       if (event.target.id === "white") {
-        event.target.style.backgroundColor = WHITESQUARE_COLOR
+        setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
       } else {
-        event.target.style.backgroundColor = BLACKSQUARE_COLOR
+        setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
       }
     } else if (event.target.className === "piece" && event.relatedTarget.className !== "square") {
       if (event.target.parentNode.id === "white") {
-        event.target.parentNode.style.backgroundColor = WHITESQUARE_COLOR
+        setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
       } else {
-        event.target.parentNode.style.backgroundColor = BLACKSQUARE_COLOR
+        setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
       }
     }
   }
@@ -125,7 +113,7 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
   return (
     <td
       id={color === "white" ? "white" : "black"}
-      style={color === "white" ? white : black}
+      style={squareStyle}
       className="square"
       onDragLeave={handleDragLeave}
       onDragOver={event => {event.preventDefault()}}
