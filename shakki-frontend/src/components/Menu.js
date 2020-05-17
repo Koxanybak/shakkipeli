@@ -4,7 +4,7 @@ import { Link, } from "react-router-dom"
 import { useUser } from "../utils/stateHooks"
 
 const Menu = () => {
-  const { user, setUser } = useUser()
+  const { user, removeUser } = useUser()
 
   return (
     <AppBar position="static">
@@ -31,7 +31,7 @@ const Menu = () => {
           ?
           null
           :
-          <Button color="inherit" onClick={() => setUser(null)} component={Link} to="/">
+          <Button color="inherit" onClick={() => removeUser()} component={Link} to="/">
             Kirjaudu ulos
           </Button>
         }

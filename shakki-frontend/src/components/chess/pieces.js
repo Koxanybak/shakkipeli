@@ -57,7 +57,7 @@ let dragged
 // functionality of a piece
 
 const Piece = ({ style, id, side, type }) => {
-  const [opacity, setOpacity] = useState(1)
+  //const [opacity, setOpacity] = useState(1)
 
   const handleDragStart = event => {
     // dragged määritellään

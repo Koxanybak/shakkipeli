@@ -10,6 +10,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "graphql": "^15.0.0",
+    "graphql-tools": "^5.0.0",
     "http": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.13",
@@ -30,7 +31,9 @@
     "deploy": "npm run build:ui && git add . && git commit -m herokudeployment && git push heroku master"
   },
   "nodemonConfig": {
-    "ignore": ["shakki-frontend/"]
+    "ignore": [
+      "shakki-frontend/"
+    ]
   },
   "repository": {
     "type": "git",

@@ -115,18 +115,17 @@ export const useUser = () => {
     },
   })
 
-  const setUser = useCallback((user, remember) => {
-    if (user === null) {
-      console.log("logged out")
-      window.localStorage.removeItem("loggedChessUser")
-      window.sessionStorage.removeItem("loggedChessUser")
-      setToken(null)
-      getUser()
-      return
-    }
-    let newUserData = { getLoggedUser: user }
+  const removeUser = useCallback(() => {
+    console.log("logged out")
+    window.localStorage.removeItem("loggedChessUser")
+    window.sessionStorage.removeItem("loggedChessUser")
+    setToken(null)
+    getUser()
+    return
+  }, [getUser])
 
-    /* const previousToken = window.sessionStorage.getItem("loggedChessUser") */
+  const setUser = useCallback((user, remember) => {
+    let newUserData = { getLoggedUser: user }
 
     if (remember) {
       console.log("localStorageen meni")
@@ -140,7 +139,7 @@ export const useUser = () => {
       variables: { token: user.token }
     })
 
-  }, [client, getUser])
+  }, [client])
 
   useEffect(() => {
     if (data) {
@@ -165,5 +164,6 @@ export const useUser = () => {
     userLoading: loading,
     userError: error,
     setUser,
+    removeUser,
   }
 }
