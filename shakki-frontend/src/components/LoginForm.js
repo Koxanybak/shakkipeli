@@ -41,7 +41,7 @@ const LoginForm = () => {
 
       history.push("/")
     }
-  }, [loginResult.data, setUser, history])
+  }, [loginResult.data, setUser, history, remember])
 
   return (
     <div>

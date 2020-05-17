@@ -6,8 +6,6 @@ import { useUser } from "../utils/stateHooks"
 const Menu = () => {
   const { user, setUser } = useUser()
 
-  console.log("At menu user is:", user)
-
   return (
     <AppBar position="static">
       <Toolbar>

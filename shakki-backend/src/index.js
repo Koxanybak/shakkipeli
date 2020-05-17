@@ -52,7 +52,7 @@ const typeDefs = gql`
     id: ID!
   }
   type Check {
-    threatenedSide: Side,
+    threatenedPlayer: String!,
     movesAvailable: [Move!]!
   }
   type Piece {
@@ -162,9 +162,17 @@ const resolvers = {
               ...userFromToken
             }
           }
-          const currentUser = await User.findById(userFromToken.id)
+          let currentUser = await User.findById(userFromToken.id)
   
-          return currentUser
+          currentUser = currentUser.toJSON()
+
+          return {
+            friends: currentUser.friends,
+            username: currentUser.username,
+            tag: currentUser.tag,
+            id: currentUser.id,
+            token: args.token,
+          }
         } catch (e) {
           throw new UserInputError("Something went wrong:", e.message)
         }
@@ -190,6 +198,7 @@ const resolvers = {
 
   Mutation: {
     makeMove: (root, args, { currentUser }) => {
+      console.log(args)
       const game = findGame(args.move.gameId, gamesInProgress)
 
       if (!currentUser

@@ -26,8 +26,7 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
 
   const handleDrop = async event => {
     event.preventDefault()
-
-    console.log("dragged:", dragged)
+    console.log("event.dataTransfer:", event.dataTransfer)
 
     const piece = {
       type: dragHelperMap.get(Number(dragged.id)).type,

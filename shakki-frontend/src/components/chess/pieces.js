@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 //import { SQUARE_HEIGHT, SQUARE_WIDTH } from "../globals"
 import blackKing from "../../sprites/blackking.svg"
 import blackQueen from "../../sprites/blackqueen.svg"
@@ -57,10 +57,13 @@ let dragged
 // functionality of a piece
 
 const Piece = ({ style, id, side, type }) => {
+  const [opacity, setOpacity] = useState(1)
+
   const handleDragStart = event => {
     // dragged määritellään
     dragged = event.target
     event.target.style.opacity = 0.5
+    console.log("dragged:", dragged)
   }
 
   const handleDragEnd = event => {

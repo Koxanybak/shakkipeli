@@ -98,7 +98,7 @@ class Game {
         }
         console.log("movesAvailable:", movesAvailable)
         this.check = {
-          threatenedSide: this.currentPlayer === this.whitePlayer ? "black" : "white",
+          threatenedPlayer: this.currentPlayer === this.whitePlayer ? this.blackPlayer : this.whitePlayer,
           movesAvailable,
         }
       }
@@ -181,7 +181,6 @@ class Game {
 
   isCheck(side) {
     const king = this.findKing(side)
-    /* console.log("isInCheck gave the func", king.row, "from", king.toString()) */
     return king.isInCheck(king.row, king.column)
   }
 
@@ -273,7 +272,7 @@ class Game {
       }
       console.log("movesAvailable:", movesAvailable)
       this.check = {
-        threatenedSide: this.currentPlayer === this.whitePlayer ? "black" : "white",
+        threatenedPlayer: this.currentPlayer === this.whitePlayer ? this.blackPlayer : this.whitePlayer,
         movesAvailable,
       }
     }

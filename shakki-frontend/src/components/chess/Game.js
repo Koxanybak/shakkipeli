@@ -22,6 +22,7 @@ const Game = () => {
     gameOver,
     winner,
     promotionPlayerID,
+    check,
   } = game
 
   return (
@@ -29,20 +30,32 @@ const Game = () => {
       <div>
         Olet {user.id === whitePlayer
           ? "valkoiset"
-          : "mustat"}. {user.id === currentPlayer
-          ? "On sinun vuorosi." : "Odotetaan vastustajan siirtoa."}
+          : "mustat"}.
       </div>
       <Board
         board={board}
         boardAlignment={user.id === whitePlayer ? "white" : "black"}
         makeMove={makeMove}
       />
+      {user.id === currentPlayer && !gameOver
+        ? 
+        <h3>
+          On sinun vuorosi. {check && check.threatenedPlayer === user.id
+            ? "Shakki!"
+            : null}
+        </h3>
+        :
+        <div>
+          Odotetaan vastustajan siirtoa. {check && check.threatenedPlayer !== user.id
+            ? "Shakki!"
+            : null}
+        </div>}
       <div>
         {
           user.id === promotionPlayerID
             ?
             <div>
-              Valitse nappula, joksi haluat muuttaa sotilaan
+              Valitse nappula, joksi haluat muuttaa sotilaan{" "}
               <Button onClick={() => promote("queen")}>
                 Kuningatar
               </Button>
@@ -54,7 +67,7 @@ const Game = () => {
             null
         }
       </div>
-      <div>
+      <h3>
         {
           gameOver
             ? winner === user.id
@@ -62,7 +75,7 @@ const Game = () => {
               : "Ootko paska ku hävisit :D"
             : null
         }
-      </div>
+      </h3>
     </div>
   )
 }

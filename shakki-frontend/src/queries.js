@@ -18,7 +18,7 @@ export const GET_GAME = gql`
       gameOver
       promotionPlayerID
       check {
-        threatenedSide
+        threatenedPlayer
         movesAvailable {
           piece {
             type
@@ -56,7 +56,7 @@ export const MOVE_MADE = gql`
       gameOver
       promotionPlayerID
       check {
-        threatenedSide
+        threatenedPlayer
         movesAvailable {
           piece {
             type
@@ -91,7 +91,7 @@ export const JOIN_GAME = gql`
       gameOver
       promotionPlayerID
       check {
-        threatenedSide
+        threatenedPlayer
         movesAvailable {
           piece {
             type
@@ -127,7 +127,7 @@ export const PROMOTE = gql`
       gameOver
       promotionPlayerID
       check {
-        threatenedSide
+        threatenedPlayer
         movesAvailable {
           piece {
             type

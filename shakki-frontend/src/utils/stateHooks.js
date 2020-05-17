@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react"
+import { useEffect, useCallback, useState } from "react"
 import { useQuery, useMutation, useSubscription, useApolloClient, useLazyQuery } from "@apollo/client"
 import { GET_GAME, MAKE_MOVE, MOVE_MADE, JOIN_GAME, PROMOTE, GET_LOGGED_USER } from "../queries"
 import { useParams } from "react-router-dom"
@@ -66,7 +66,7 @@ export const useGame = () => {
   }
 
   return {
-    game: initialResult.loading ? null : initialResult.data.getGame,
+    game: initialResult.loading || initialResult.error ? null : initialResult.data.getGame,
     gameLoading: initialResult.loading,
     gameError: initialResult.error,
     promote: sendPromotedType,
@@ -78,13 +78,14 @@ export const useGame = () => {
 
 export const useUser = () => {
   const client = useApolloClient()
+  const [token, setToken] = useState(null)
 
   // lazy user query
   const [getUser] = useLazyQuery(GET_LOGGED_USER, {
     variables: {
       token: window.localStorage.getItem("loggedChessUser")
-        ? window.sessionStorage.getItem("loggedChessUser")
-        : window.localStorage.getItem("loggedChessUser")
+        ? window.localStorage.getItem("loggedChessUser")
+        : window.sessionStorage.getItem("loggedChessUser")
     },
     onCompleted: data => {
       setUser(data.getLoggedUser)
@@ -99,11 +100,11 @@ export const useUser = () => {
   })
   
   // user query
-  const userResult = useQuery(GET_LOGGED_USER, {
+  const { loading, data, error } = useQuery(GET_LOGGED_USER, {
     variables: {
       token: window.localStorage.getItem("loggedChessUser")
-        ? window.sessionStorage.getItem("loggedChessUser")
-        : window.localStorage.getItem("loggedChessUser")
+        ? window.localStorage.getItem("loggedChessUser")
+        : window.sessionStorage.getItem("loggedChessUser")
     },
     onError: err => {
       if (!err.graphQLErrors || !err.graphQLErrors[0]) {
@@ -119,12 +120,13 @@ export const useUser = () => {
       console.log("logged out")
       window.localStorage.removeItem("loggedChessUser")
       window.sessionStorage.removeItem("loggedChessUser")
+      setToken(null)
       getUser()
       return
     }
     let newUserData = { getLoggedUser: user }
 
-    const previousToken = window.sessionStorage.getItem("loggedChessUser")
+    /* const previousToken = window.sessionStorage.getItem("loggedChessUser") */
 
     if (remember) {
       console.log("localStorageen meni")
@@ -141,17 +143,27 @@ export const useUser = () => {
   }, [client, getUser])
 
   useEffect(() => {
-    if (userResult.data) {
-      setUser(userResult.data.getLoggedUser)
+    if (data) {
+      setUser(data.getLoggedUser)
+      setToken(data.getLoggedUser.token)
     }
-  }, [userResult.data, setUser])
+  }, [data, setUser])
 
-  console.log(userResult)
+  let userDataInStore = null
+
+  if ((!loading && !error) && token) {
+    /* console.log(token) */
+    userDataInStore = client.readQuery({
+      query: GET_LOGGED_USER,
+      variables: { token }
+    })
+  }
+
 
   return {
-    user: !userResult.loading ? userResult.data.getLoggedUser : null,
-    userLoading: userResult.loading,
-    userError: userResult.error,
+    user: (!loading && !error) && token ? userDataInStore.getLoggedUser : null,
+    userLoading: loading,
+    userError: error,
     setUser,
   }
 }

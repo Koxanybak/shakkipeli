@@ -27,7 +27,7 @@ const Board = ({ boardAlignment, board, makeMove }) => {
   })
 
   return (
-    <table>
+    <table onDragStartCapture={e => console.log("why is this dragged:", e.target)}>
       <tbody>
         {boardAlignment === "white" ? board.map((row, i) => {
           return (
