@@ -108,7 +108,21 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
 
 
   //---------------------------------
-
+  if (pieceToRender) {
+    return (
+      <td
+        id={color === "white" ? "white" : "black"}
+        style={squareStyle}
+        className="square"
+        onDragLeave={handleDragLeave}
+        onDragOver={event => {event.preventDefault()}}
+        onDrop={handleDrop}
+        onDragEnter={handleDragEnter}
+      >
+        {pieceToRender}
+      </td>
+    )
+  }
   return (
     <td
       id={color === "white" ? "white" : "black"}
@@ -118,9 +132,7 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
       onDragOver={event => {event.preventDefault()}}
       onDrop={handleDrop}
       onDragEnter={handleDragEnter}
-    >
-      {pieceToRender}
-    </td>
+    />
   )
 }
 

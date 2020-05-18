@@ -1,14 +1,12 @@
 const jwt = require("jsonwebtoken")
-const User = require("../../data/models/user")
-const { SECRET } = require("../config")
+const { SECRET } = require("../../config")
 const { UserInputError } = require("apollo-server-express")
 const bcrypt = require("bcrypt")
 const { v4: uuid } = require("uuid")
 
 const userResolvers = {
   Query: {
-    getLoggedUser: async (root, args) => {
-      console.log("req tuli")
+    getLoggedUser: async (root, args, { models: { User } }) => {
       if (args.token) {
         try {
           const userFromToken = jwt.verify(args.token, SECRET)

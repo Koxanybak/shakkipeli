@@ -57,23 +57,23 @@ let dragged
 // functionality of a piece
 
 const Piece = ({ style, id, side, type }) => {
-  //const [opacity, setOpacity] = useState(1)
+  const [opacity, setOpacity] = useState(1)
 
   const handleDragStart = event => {
     // dragged määritellään
     dragged = event.target
-    event.target.style.opacity = 0.5
+    setOpacity(0.5)
     console.log("dragged:", dragged)
   }
 
   const handleDragEnd = event => {
-    event.target.style.opacity = 1
+    setOpacity(1)
   }
 
 
   return (
     <img
-      style={style}
+      style={{ ...style, opacity }}
       className="piece"
       draggable="true"
       onDragStart={handleDragStart}

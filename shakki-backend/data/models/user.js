@@ -7,6 +7,7 @@ const userSchema = mongoose.Schema({
     required: true,
     unique: true,
     minlength: 2,
+    maxlength: 40,
   },
   passwordHash: {
     type: String,
@@ -18,9 +19,15 @@ const userSchema = mongoose.Schema({
   }],
   tag: {
     type: String,
+    minlength: 2,
+    maxlength: 20,
     required: true,
     unique: true,
   },
+  matches: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Match",
+  }]
 })
 
 userSchema.plugin(uv)

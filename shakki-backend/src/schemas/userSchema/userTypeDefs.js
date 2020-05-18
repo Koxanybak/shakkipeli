@@ -6,10 +6,9 @@ const userTypeDefs = gql`
     tag: String!
     friends: [User!]
     id: ID!
-    currentGameId: String
     guest: Boolean
   }
-  type UserWithToken {
+  type UserWithToken implements User {
     username: String!
     tag: String!
     friends: [User!]

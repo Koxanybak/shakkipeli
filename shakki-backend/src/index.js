@@ -2,7 +2,6 @@ const {
   ApolloServer,
   PubSub,
 } = require("apollo-server-express")
-const { mergeSchemas } = require("graphql-tools")
 const { MONGODB_URI, SECRET } = require("./config")
 const mongoose = require("mongoose")
 const User = require("../data/models/user")
@@ -10,8 +9,9 @@ const express = require("express")
 const http = require("http")
 const path = require("path")
 const jwt = require("jsonwebtoken")
-const gameSchema = require("./gameSchema")
-const userSchema = require("./userSchema")
+
+
+const createSchema = require("./graphql")
 
 
 // connects to MongoDB database
@@ -28,15 +28,15 @@ mongoose.connect(MONGODB_URI, {
   })
 
 const pubsub = new PubSub()
-const schema = mergeSchemas({
-  schemas: [gameSchema, userSchema]
-})
+const gamesInProgress = []
 
 
 // initializes grapql server
 const server = new ApolloServer({
-  schema,
+  schema: createSchema(),
   context: async ({ req }) => {
+    let context = { pubsub, gamesInProgress, models: { User } }
+
     const auth = req ? req.headers.authorization : null
 
     if (auth && auth.toLowerCase().startsWith("bearer ")) {
@@ -44,17 +44,18 @@ const server = new ApolloServer({
       try {
         const userFromToken = jwt.verify(token, SECRET)
         if (userFromToken.guest) {
-          return { currentUser: userFromToken, pubsub }
+          return { ...context, currentUser: userFromToken }
         }
         let currentUser = await User.findById(userFromToken.id)
 
         currentUser = currentUser.toJSON()
 
-        return { currentUser, pubsub }
-      // eslint-disable-next-line no-empty
+        return { ...context, currentUser }
       } catch (e) {
-        
+        return context
       }
+    } else {
+      return context
     }
   },
 })

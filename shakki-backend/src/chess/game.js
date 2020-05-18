@@ -75,7 +75,7 @@ class Game {
     // moves the piece
     if (pieceToMove.move(this.board, newRow, newColumn)) {
       // the move leads to check against the player
-      if (this.isCheck(this.currentPlayer === this.whitePlayer ? "white" : "black")) {
+      if (this.isCheck(this.currentPlayer === this.whitePlayer ? "white" : "black", this.board)) {
         this.lastMove = {
           success: false,
           message: "Kuninkaasi tulisi uhatuksi.",
@@ -87,9 +87,8 @@ class Game {
       this.check = null
 
       // checks for check
-      if (this.isCheck(this.currentPlayer === this.whitePlayer ? "black" : "white")) {
+      if (this.isCheck(this.currentPlayer === this.whitePlayer ? "black" : "white", this.board)) {
         // checks for checkmate
-        console.log("moves that prevent check")
         const movesAvailable = this.movesAvailable(this.currentPlayer === this.whitePlayer ? "black" : "white")
         if (movesAvailable.length === 0) {
           this.gameOver = true
@@ -121,9 +120,10 @@ class Game {
       ) {
         this.promotionPlayerID = this.currentPlayer
         this.pieceToPromote = movedPiece
-        console.log(this.pieceToPromote)
         return
       }
+
+      /* console.log("board after the move:", this.board) */
 
       // switches turn
       this.currentPlayer = this.currentPlayer === this.whitePlayer
@@ -158,7 +158,7 @@ class Game {
           const pieceEaten = this.board[row][column]
 
           if (piece.move(this.board, row, column, true)) {
-            if (!this.isCheck(side)) {
+            if (!this.isCheck(side, this.board)) {
 
               movesAvailable.push({
                 piece: {
@@ -179,15 +179,15 @@ class Game {
     return movesAvailable
   }
 
-  isCheck(side) {
-    const king = this.findKing(side)
+  isCheck(side, board) {
+    const king = this.findKing(side, board)
     return king.isInCheck(king.row, king.column)
   }
 
 
-  findKing(side) {
+  findKing(side, board) {
     let king
-    this.board.forEach(row => {
+    board.forEach(row => {
       row.forEach(piece => {
         if (piece && (piece.getType() === "king" && piece.side === side)) {
           king = piece
@@ -231,20 +231,20 @@ class Game {
 
 
   // makes a chess class out of the given pieceObject
-  makePiece(type, side, location) {
+  makePiece(type, side, location, id) {
     switch(type) {
     case "pawn":
-      return new Pawn(side, location)
+      return new Pawn(side, location, id, this.board)
     case "rook":
-      return new Rook(side, location)
+      return new Rook(side, location, id, this.board)
     case "knight":
-      return new Knight(side, location)
+      return new Knight(side, location, id, this.board)
     case "bishop":
-      return new Bishop(side, location)
+      return new Bishop(side, location, id, this.board)
     case "queen":
-      return new Queen(side, location)
+      return new Queen(side, location, id, this.board)
     case "king":
-      return new King(side, location)
+      return new King(side, location, id, this.board)
     default:
       return null
     }
@@ -258,11 +258,15 @@ class Game {
 
     const row = this.pieceToPromote.row
     const column = this.pieceToPromote.column
-    this.board[row][column]
-      = this.makePiece(type, this.promotionPlayerID === this.whitePlayer ? "white" : "black", { row, column })
+    this.board[row][column] = this.makePiece(
+      type,
+      this.promotionPlayerID === this.whitePlayer ? "white" : "black",
+      { row, column },
+      this.board[row][column].id,
+    )
 
     // checks for check
-    if (this.isCheck(this.currentPlayer === this.whitePlayer ? "black" : "white")) {
+    if (this.isCheck(this.currentPlayer === this.whitePlayer ? "black" : "white", this.board)) {
       // checks for checkmate
       const movesAvailable = this.movesAvailable(this.currentPlayer === this.whitePlayer ? "black" : "white")
       if (movesAvailable.length === 0) {
@@ -294,12 +298,19 @@ class Game {
 
   // gets the board for the frontend to use
   getBoard() {
+    if (this.board.length !== 8) {
+      throw new UserInputError("Mitäs vittua tapahtu")
+    }
     const returnedBoard = this.board.map(row => {
+      if (row.length !== 8) {
+        throw new UserInputError("Mitäs vittua tapahtu")
+      }
       const returnedRow = row.map(piece => {
         return piece ? {
           type: piece.getType(),
           side: piece.getSide(),
           id: piece.id,
+          availableMoves: piece.getAvailableMoves(this),
         } : null
       })
       return returnedRow

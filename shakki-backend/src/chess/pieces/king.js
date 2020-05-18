@@ -23,7 +23,7 @@ class King extends Piece {
     this.board.forEach(r => {
       r.forEach(piece => {
         if (piece && (piece.side !== this.side && piece.canMove(this.board, row, column))) {
-          console.log("The king would be in check and the piece that can eat him is:", piece)
+          /* console.log("The king would be in check and the piece that can eat him is:", piece) */
           result = true
         }
       })
@@ -33,12 +33,21 @@ class King extends Piece {
   }
 
   undoCastling(castledPiece) {
-    this.movedFirstLastTime = false
-    this.moved = false
+
+    if (this.movedFirstLastTime) {
+      this.movedFirstLastTime = false
+      this.moved = false
+    }
     this.lastMoveWasCastling = false
-    castledPiece.movedFirstLastTime = false
-    castledPiece.moved = false
+
+    if (castledPiece.movedFirstLastTime) {
+      castledPiece.movedFirstLastTime = false
+      castledPiece.moved = false
+    }
     castledPiece.lastMoveWasCastling = false
+
+    this.board[this.row][this.column] = null
+    this.board[castledPiece.row][castledPiece.column] = null
 
     this.board[this.lastRow][this.lastColumn] = this
     this.board[castledPiece.lastRow][castledPiece.lastColumn] = castledPiece
@@ -144,12 +153,49 @@ class King extends Piece {
     return false
   }
 
-  canMove(board, newRow, newColumn) {
+  canMove(board, newRow, newColumn, ignoreCastling) {
     if (this.didntMove(newRow, newColumn)) {
       return false
     }
     const rowOffset = this.row - newRow
     const colOffset = this.column - newColumn
+
+    const targetPiece = board[newRow][newColumn]
+
+    // castling
+    if (
+      (
+        !this.moved &&
+        targetPiece
+      ) &&
+      (
+        targetPiece.getType() === "rook" &&
+        targetPiece.getSide() === this.getSide()
+      ) &&
+      (
+        (Math.abs(colOffset) === 3 || Math.abs(colOffset) === 4) &&
+        (!ignoreCastling && !this.isInCheck(this.row, this.column))
+      ) &&
+      (
+        !targetPiece.getMoved() &&
+        !this.obstaclesInWay(board, newRow, newColumn)
+      )
+    ) {
+      if (Math.abs(colOffset) === 3) {
+        if (!this.isInCheck(newRow, newColumn - 2) && !this.isInCheck(newRow, newColumn - 1)) {
+          return true
+        }
+      } else {
+        if (
+          (
+            !this.isInCheck(newRow, newColumn + 2) &&
+            !this.isInCheck(newRow, newColumn + 1)
+          )
+        ) {
+          return true
+        }
+      }
+    }
 
     if (this.sameSide(board, newRow, newColumn)) {
       return false
@@ -162,7 +208,6 @@ class King extends Piece {
         (Math.abs(rowOffset) === 1 && Math.abs(colOffset) === 1)
       )
     ) {
-      //console.log(this, "can move to the row", newRow, "and column", newColumn)
       return true
     }
 

@@ -15,6 +15,7 @@ class Piece {
     return this ? this.getType() : null
   }
 
+  // moves the piece and eats any piece at the target location
   moveSuccess(board, newRow, newColumn) {
     this.lastRow = this.row
     this.lastColumn = this.column
@@ -24,6 +25,46 @@ class Piece {
     board[newRow][newColumn] = this
   }
 
+  // gets all the moves the piece can make
+  getAvailableMoves(game) {
+    const availableMoves = []
+
+    this.board.forEach((r, i) => {
+      r.forEach((pieceToEat, j) => {
+        /* if (this.move(this.board, i, j)) {
+          // the move leads to check against the player
+          if (!game.isCheck(game.currentPlayer === game.whitePlayer ? "white" : "black")) {
+            availableMoves.push({ newLocation: { row: i, column: j } })
+          }
+          if (this.lastMoveWasCastling) {
+            this.undoCastling(pieceToEat)
+          } else {
+            this.undoMove(pieceToEat)
+          }
+        } */
+        if (this.canMove(this.board, i, j)) {
+          availableMoves.push({ newLocation: { row: i, column: j } })
+        }
+      })
+    })
+
+    return availableMoves
+  }
+
+  // TÄMÄ SAATANA
+  
+  moveResultsInCheck(game, piece, newRow, newColumn) {
+    const testBoard = this.getTestBoard()
+
+    testBoard[newRow][newColumn] = piece
+
+    if (game.isCheck(this.getSide(), testBoard)) {
+      return true
+    }
+
+    return false
+  }
+
   didntMove(newRow, newColumn) {
     if (newRow === this.row && newColumn === this.column) {
       return true
@@ -31,10 +72,6 @@ class Piece {
   }
 
   sameSide(board, newRow, newColumn) {
-    /* if (newRow !== 0 && newRow !== 7) {
-      console.log("this:", this.toString())
-      console.log("newRow:", newRow)
-    } */
     const pieceToEat = this.board[newRow][newColumn]
 
     if (pieceToEat && pieceToEat.getSide() === this.side) {
@@ -48,6 +85,17 @@ class Piece {
 
     this.row = this.lastRow
     this.column = this.lastColumn
+  }
+
+  getTestBoard() {
+    let testBoard = []
+    this.board.forEach((r, i) => {
+      testBoard[i] = new Array(8)
+      r.forEach((p, j) => {
+        testBoard[i][j] = p
+      })
+    })
+    return testBoard
   }
 
   obstaclesInWay(board, newRow, newColumn) {

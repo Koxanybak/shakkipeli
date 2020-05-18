@@ -3,8 +3,8 @@ const {
   AuthenticationError,
   withFilter,
 } = require("apollo-server-express")
-const { findGame } = require("../chess/gameHelper")
-const Game = require("../chess/game")
+const { findGame } = require("../../chess/gameHelper")
+const Game = require("../../chess/game")
 const { v4: uuid } = require("uuid")
 
 const gamesInProgress = []

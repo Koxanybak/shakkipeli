@@ -12,6 +12,8 @@ const Board = ({ boardAlignment, board, makeMove }) => {
     })
   })
 
+  console.log(board)
+
   const squares = Array.from(Array(8), (e, i) => {
     const row = new Array(8)
 
@@ -25,6 +27,8 @@ const Board = ({ boardAlignment, board, makeMove }) => {
 
     return row
   })
+
+  console.log("squares:", squares)
 
   return (
     <table onDragStartCapture={e => console.log("why is this dragged:", e.target)}>
