@@ -20,6 +20,7 @@ const typeDefs = gql`
   type Piece {
     type: String!
     side: Side!
+    location: Location!
     availableMoves: [Move!]!
     id: String!
   }

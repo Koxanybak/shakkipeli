@@ -17,12 +17,12 @@ class King extends Piece {
   }
 
   // check if the given location would place the king in check
-  isInCheck(row, column) {
-    /* console.log("isInCheck was called with row:", row) */
+  isInCheck(row, column, board, ignoreSameSide) {
     let result = false
+
     this.board.forEach(r => {
       r.forEach(piece => {
-        if (piece && (piece.side !== this.side && piece.canMove(this.board, row, column))) {
+        if (piece && (piece.side !== this.side && piece.canMove(board, row, column, true, ignoreSameSide))) {
           /* console.log("The king would be in check and the piece that can eat him is:", piece) */
           result = true
         }
@@ -72,7 +72,7 @@ class King extends Piece {
   }
 
   move(board, newRow, newColumn, ignoreCastling) {
-    if (this.didntMove(newRow, newColumn)) {
+    if (this.didntMove(newRow, newColumn, board)) {
       return false
     }
     const rowOffset = this.row - newRow
@@ -92,18 +92,22 @@ class King extends Piece {
       ) &&
       (
         (Math.abs(colOffset) === 3 || Math.abs(colOffset) === 4) &&
-        (!ignoreCastling && !this.isInCheck(this.row, this.column))
+        (!ignoreCastling && !this.isInCheck(this.row, this.column, board))
       ) &&
       (
         !targetPiece.getMoved() &&
         !this.obstaclesInWay(board, newRow, newColumn)
       )
     ) {
+      console.log("castling done")
+      console.log(targetPiece)
+      console.log(this)
       if (Math.abs(colOffset) === 3) {
-        if (!this.isInCheck(newRow, newColumn - 2) && !this.isInCheck(newRow, newColumn - 1)) {
+        if (!this.isInCheck(newRow, newColumn - 2, board) && !this.isInCheck(newRow, newColumn - 1, board)) {
           this.movedFirstLastTime = true
           this.moved = true
           targetPiece.moved = true
+          targetPiece.movedFirstLastTime = true
           this.moveSuccess(board, newRow, newColumn - 1)
           targetPiece.moveSuccess(board, newRow, newColumn - 2)
           this.lastMoveWasCastling = true
@@ -113,13 +117,14 @@ class King extends Piece {
       } else {
         if (
           (
-            !this.isInCheck(newRow, newColumn + 2) &&
-            !this.isInCheck(newRow, newColumn + 1)
+            !this.isInCheck(newRow, newColumn + 2, board) &&
+            !this.isInCheck(newRow, newColumn + 1, board)
           )
         ) {
           this.movedFirstLastTime = true
           this.moved = true
           targetPiece.moved = true
+          targetPiece.movedFirstLastTime = true
           this.moveSuccess(board, newRow, newColumn + 2)
           targetPiece.moveSuccess(board, newRow, newColumn + 3)
           this.lastMoveWasCastling = true
@@ -140,9 +145,11 @@ class King extends Piece {
         (Math.abs(rowOffset) === 1 && Math.abs(colOffset) === 1)
       )
     ) {
-      if (!this.isInCheck(newRow, newColumn)) {
+      if (!this.isInCheck(newRow, newColumn, board)) {
         if (!this.moved) {
           this.movedFirstLastTime = true
+        } else {
+          this.movedFirstLastTime = false
         }
         this.moveSuccess(board, newRow, newColumn)
         this.lastMoveWasCastling = false
@@ -153,8 +160,8 @@ class King extends Piece {
     return false
   }
 
-  canMove(board, newRow, newColumn, ignoreCastling) {
-    if (this.didntMove(newRow, newColumn)) {
+  canMove(board, newRow, newColumn, ignoreCheck, ignoreSameSide, game, ignoreCastling) {
+    if (this.didntMove(newRow, newColumn, board)) {
       return false
     }
     const rowOffset = this.row - newRow
@@ -174,7 +181,7 @@ class King extends Piece {
       ) &&
       (
         (Math.abs(colOffset) === 3 || Math.abs(colOffset) === 4) &&
-        (!ignoreCastling && !this.isInCheck(this.row, this.column))
+        (!ignoreCastling && !this.isInCheck(this.row, this.column, board))
       ) &&
       (
         !targetPiece.getMoved() &&
@@ -182,14 +189,14 @@ class King extends Piece {
       )
     ) {
       if (Math.abs(colOffset) === 3) {
-        if (!this.isInCheck(newRow, newColumn - 2) && !this.isInCheck(newRow, newColumn - 1)) {
+        if (!this.isInCheck(newRow, newColumn - 2, board) && !this.isInCheck(newRow, newColumn - 1, board)) {
           return true
         }
       } else {
         if (
           (
-            !this.isInCheck(newRow, newColumn + 2) &&
-            !this.isInCheck(newRow, newColumn + 1)
+            !this.isInCheck(newRow, newColumn + 2, board) &&
+            !this.isInCheck(newRow, newColumn + 1, board)
           )
         ) {
           return true
@@ -197,9 +204,12 @@ class King extends Piece {
       }
     }
 
-    if (this.sameSide(board, newRow, newColumn)) {
+    if (!ignoreSameSide && this.sameSide(board, newRow, newColumn)) {
       return false
     }
+    /* if (!ignoreCheck && this.moveResultsInCheck(game, newRow, newColumn)) {
+      return false
+    } */
 
     if (
       (
@@ -208,7 +218,10 @@ class King extends Piece {
         (Math.abs(rowOffset) === 1 && Math.abs(colOffset) === 1)
       )
     ) {
-      return true
+      if (!ignoreCheck && !this.isInCheck(newRow, newColumn, board, true)) {
+        console.log("king would be in check", newRow, newColumn)
+        return true
+      }
     }
 
     return false

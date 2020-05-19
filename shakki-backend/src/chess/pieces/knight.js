@@ -10,7 +10,7 @@ class Knight extends Piece {
   }
 
   move(board, newRow, newColumn) {
-    if (this.didntMove(newRow, newColumn)) {
+    if (this.didntMove(newRow, newColumn, board)) {
       return false
     }
     if (this.sameSide(board, newRow, newColumn)) {
@@ -35,11 +35,14 @@ class Knight extends Piece {
     return false
   }
 
-  canMove(board, newRow, newColumn) {
-    if (this.didntMove(newRow, newColumn)) {
+  canMove(board, newRow, newColumn, ignoreCheck, ignoreSameSide, game,) {
+    if (this.didntMove(newRow, newColumn, board)) {
       return false
     }
-    if (this.sameSide(board, newRow, newColumn)) {
+    if (!ignoreSameSide && this.sameSide(board, newRow, newColumn)) {
+      return false
+    }
+    if (!ignoreCheck && this.moveResultsInCheck(game, newRow, newColumn)) {
       return false
     }
 

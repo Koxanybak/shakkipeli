@@ -31,18 +31,7 @@ class Piece {
 
     this.board.forEach((r, i) => {
       r.forEach((pieceToEat, j) => {
-        /* if (this.move(this.board, i, j)) {
-          // the move leads to check against the player
-          if (!game.isCheck(game.currentPlayer === game.whitePlayer ? "white" : "black")) {
-            availableMoves.push({ newLocation: { row: i, column: j } })
-          }
-          if (this.lastMoveWasCastling) {
-            this.undoCastling(pieceToEat)
-          } else {
-            this.undoMove(pieceToEat)
-          }
-        } */
-        if (this.canMove(this.board, i, j)) {
+        if (this.canMove(this.board, i, j, false, false, game)) {
           availableMoves.push({ newLocation: { row: i, column: j } })
         }
       })
@@ -53,10 +42,12 @@ class Piece {
 
   // TÄMÄ SAATANA
   
-  moveResultsInCheck(game, piece, newRow, newColumn) {
+  moveResultsInCheck(game, newRow, newColumn) {
     const testBoard = this.getTestBoard()
+    //console.log(this.getType(), {testBoard})
 
-    testBoard[newRow][newColumn] = piece
+    testBoard[this.row][this.column] = null
+    testBoard[newRow][newColumn] = this
 
     if (game.isCheck(this.getSide(), testBoard)) {
       return true
@@ -72,7 +63,7 @@ class Piece {
   }
 
   sameSide(board, newRow, newColumn) {
-    const pieceToEat = this.board[newRow][newColumn]
+    const pieceToEat = board[newRow][newColumn]
 
     if (pieceToEat && pieceToEat.getSide() === this.side) {
       return true

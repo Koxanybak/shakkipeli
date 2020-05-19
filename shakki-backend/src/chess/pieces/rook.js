@@ -56,7 +56,7 @@ class Rook extends Piece {
   }
 
   move(board, newRow, newColumn, ignoreCastling) {
-    if (this.didntMove(newRow, newColumn)) {
+    if (this.didntMove(newRow, newColumn, board)) {
       return false
     }
     const rowOffset = this.row - newRow
@@ -76,18 +76,22 @@ class Rook extends Piece {
       ) && 
       (
         (Math.abs(colOffset) === 3 || Math.abs(colOffset) === 4) &&
-        (!ignoreCastling && !targetPiece.isInCheck(targetPiece.row, targetPiece.column))
+        (!ignoreCastling && !targetPiece.isInCheck(targetPiece.row, targetPiece.column, board))
       ) &&
       (
         !targetPiece.getMoved() &&
         !this.obstaclesInWay(board, newRow, newColumn)
       )
     ) {
+      console.log("castling done")
+      console.log(targetPiece)
+      console.log(this)
       if (Math.abs(colOffset) === 3) {
-        if (!targetPiece.isInCheck(newRow, newColumn + 2) && !targetPiece.isInCheck(newRow, newColumn + 1)) {
+        if (!targetPiece.isInCheck(newRow, newColumn + 2, board) && !targetPiece.isInCheck(newRow, newColumn + 1, board)) {
           this.movedFirstLastTime = true
           this.moved = true
           targetPiece.moved = true
+          targetPiece.movedFirstLastTime = true
           this.moveSuccess(board, newRow, newColumn + 1)
           targetPiece.moveSuccess(board, newRow, newColumn + 2)
           this.lastMoveWasCastling = true
@@ -97,13 +101,14 @@ class Rook extends Piece {
       } else {
         if (
           (
-            !targetPiece.isInCheck(newRow, newColumn - 2) &&
-            !targetPiece.isInCheck(newRow, newColumn - 1)
+            !targetPiece.isInCheck(newRow, newColumn - 2, board) &&
+            !targetPiece.isInCheck(newRow, newColumn - 1, board)
           )
         ) {
           this.movedFirstLastTime = true
           this.moved = true
           targetPiece.moved = true
+          targetPiece.movedFirstLastTime = true
           this.moveSuccess(board, newRow, newColumn - 1)
           targetPiece.moveSuccess(board, newRow, newColumn - 2)
           this.lastMoveWasCastling = true
@@ -121,6 +126,8 @@ class Rook extends Piece {
       if (!this.obstaclesInWay(board, newRow, newColumn)) {
         if (!this.moved) {
           this.movedFirstLastTime = true
+        } else {
+          this.movedFirstLastTime = false
         }
         this.moveSuccess(board, newRow, newColumn)
         this.lastMoveWasCastling = false
@@ -132,8 +139,8 @@ class Rook extends Piece {
     return false
   }
 
-  canMove(board, newRow, newColumn, ignoreCastling) {
-    if (this.didntMove(newRow, newColumn)) {
+  canMove(board, newRow, newColumn, ignoreCheck, ignoreSameSide, game, ignoreCastling) {
+    if (this.didntMove(newRow, newColumn, board)) {
       return false
     }
     const rowOffset = this.row - newRow
@@ -153,7 +160,7 @@ class Rook extends Piece {
       ) && 
       (
         (Math.abs(colOffset) === 3 || Math.abs(colOffset) === 4) &&
-        (!ignoreCastling && !targetPiece.isInCheck(targetPiece.row, targetPiece.column))
+        (!ignoreCastling && !targetPiece.isInCheck(targetPiece.row, targetPiece.column, board))
       ) &&
       (
         !targetPiece.getMoved() &&
@@ -161,14 +168,14 @@ class Rook extends Piece {
       )
     ) {
       if (Math.abs(colOffset) === 3) {
-        if (!targetPiece.isInCheck(newRow, newColumn + 2) && !targetPiece.isInCheck(newRow, newColumn + 1)) {
+        if (!targetPiece.isInCheck(newRow, newColumn + 2, board) && !targetPiece.isInCheck(newRow, newColumn + 1, board)) {
           return true
         }
       } else {
         if (
           (
-            !targetPiece.isInCheck(newRow, newColumn - 2) &&
-            !targetPiece.isInCheck(newRow, newColumn - 1)
+            !targetPiece.isInCheck(newRow, newColumn - 2, board) &&
+            !targetPiece.isInCheck(newRow, newColumn - 1, board)
           )
         ) {
           return true
@@ -176,7 +183,10 @@ class Rook extends Piece {
       }
     }
     
-    if (this.sameSide(board, newRow, newColumn)) {
+    if (!ignoreSameSide && this.sameSide(board, newRow, newColumn)) {
+      return false
+    }
+    if (!ignoreCheck && this.moveResultsInCheck(game, newRow, newColumn)) {
       return false
     }
 

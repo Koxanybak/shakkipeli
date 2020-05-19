@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   SQUARE_HEIGHT,
   SQUARE_WIDTH,
@@ -10,8 +10,17 @@ import { King, Queen, Rook, Knight, Bishop, Pawn, dragged } from "./pieces"
 
 // a single chess square
 
-const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
-  const [squareColor, setSquareColor] = useState(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
+const Square = ({ color, makeMove, location, piece, dragHelperMap, id, highlight }) => {
+  const [squareColor, setSquareColor] = useState(
+    color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR
+  )
+  useEffect(() => {
+    if (highlight) {
+      setSquareColor(HIGHLIGHTED_COLOR)
+    } else {
+      setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
+    }
+  }, [highlight, color])
 
   //squarestyles
   const squareStyle = {
@@ -19,14 +28,15 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
     width: SQUARE_WIDTH,
     backgroundColor: squareColor,
     textAlign: "center",
+    background: `radial-gradient(${squareColor}, ${color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR})`,
   }
+  //console.log(squareStyle)
 
 
   // drop handlers
 
   const handleDrop = async event => {
     event.preventDefault()
-    console.log("event.dataTransfer:", event.dataTransfer)
 
     const piece = {
       type: dragHelperMap.get(Number(dragged.id)).type,
@@ -111,7 +121,7 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
   if (pieceToRender) {
     return (
       <td
-        id={color === "white" ? "white" : "black"}
+        id={id}
         style={squareStyle}
         className="square"
         onDragLeave={handleDragLeave}
@@ -125,7 +135,7 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap }) => {
   }
   return (
     <td
-      id={color === "white" ? "white" : "black"}
+      id={id}
       style={squareStyle}
       className="square"
       onDragLeave={handleDragLeave}

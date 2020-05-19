@@ -8,6 +8,16 @@ const GAME_STATE_DETAILS = gql`
         type
         side
         id
+        location {
+          row
+          column
+        }
+        availableMoves {
+          newLocation {
+            row
+            column
+          }
+        }
       }
       id
       currentPlayer

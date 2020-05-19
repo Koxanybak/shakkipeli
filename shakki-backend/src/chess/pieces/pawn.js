@@ -13,7 +13,7 @@ class Pawn extends Piece {
   }
 
   move(board, newRow, newColumn) {
-    if (this.didntMove(newRow, newColumn)) {
+    if (this.didntMove(newRow, newColumn, board)) {
       return false
     }
     if (this.sameSide(board, newRow, newColumn)) {
@@ -48,6 +48,7 @@ class Pawn extends Piece {
 
         // en passant
         if (this.enPassantSuccessfulW(newRow, newColumn, board)) {
+          this.performEnPassant(newRow, newColumn, board)
           this.movedFirstLastTime = false
           return true
         }
@@ -79,6 +80,7 @@ class Pawn extends Piece {
 
       // en passant
       if (this.enPassantSuccessfulB(newRow, newColumn, board)) {
+        this.performEnPassant(newRow, newColumn, board)
         this.movedFirstLastTime = false
         return true
       }
@@ -117,6 +119,7 @@ class Pawn extends Piece {
 
       // en passant
       if (this.enPassantSuccessfulW(newRow, newColumn, board)) {
+        this.performEnPassant(newRow, newColumn, board)
         this.movedFirstLastTime = true
         return true
       }
@@ -153,6 +156,7 @@ class Pawn extends Piece {
 
     // en passant
     if (this.enPassantSuccessfulB(newRow, newColumn, board)) {
+      this.performEnPassant(newRow, newColumn, board)
       this.movedFirstLastTime = true
       return true
     }
@@ -184,10 +188,6 @@ class Pawn extends Piece {
         board[this.row][newColumn].vulnerableToEnPassant) &&
           this.side !== board[this.row][newColumn].side)
     ) {
-      board[this.row][newColumn] = null
-      this.moveSuccess(board, newRow, newColumn)
-      this.vulnerableToEnPassant = false
-      this.moved = true
       return true
     }
   }
@@ -212,12 +212,15 @@ class Pawn extends Piece {
         board[this.row][newColumn].vulnerableToEnPassant) &&
           this.side !== board[this.row][newColumn].side)
     ) {
-      board[this.row][newColumn] = null
-      this.moveSuccess(board, newRow, newColumn)
-      this.vulnerableToEnPassant = false
-      this.moved = true
       return true
     }
+  }
+
+  performEnPassant(newRow, newColumn, board) {
+    board[this.row][newColumn] = null
+    this.moveSuccess(board, newRow, newColumn)
+    this.vulnerableToEnPassant = false
+    this.moved = true
   }
 
 
@@ -232,16 +235,46 @@ class Pawn extends Piece {
     board[newRow][newColumn] = this
   }
 
-  canMove(board, newRow, newColumn) {
-    if (this.didntMove(newRow, newColumn)) {
+  canMove(board, newRow, newColumn, ignoreCheck, ignoreSameSide, game,) {
+    if (this.didntMove(newRow, newColumn, board)) {
       return false
     }
-    if (this.sameSide(board, newRow, newColumn)) {
+    if (!ignoreSameSide && this.sameSide(board, newRow, newColumn)) {
       return false
     }
-
-    if (this.moved) {
-      //piece has been moved
+    if (!ignoreCheck && this.moveResultsInCheck(game, newRow, newColumn)) {
+      return false
+    }
+    if (ignoreCheck) {
+      if (this.moved) {
+        //piece has been moved
+        if (this.side === "white") {
+          // side is white
+          
+          if (
+            (newRow === this.row - 1 &&
+              (newColumn === this.column - 1 || newColumn === this.column + 1)
+            )
+          ) {
+            return true
+          }
+          return false
+        }
+  
+        // side is black
+        if (
+          (newRow === this.row + 1 &&
+            (newColumn === this.column - 1 || newColumn === this.column + 1)
+          )
+        ) {
+          //console.log("this should be logged")
+          return true
+        }
+  
+        return false
+      }
+  
+      // piece has not been moved
       if (this.side === "white") {
         // side is white
         
@@ -252,44 +285,124 @@ class Pawn extends Piece {
         ) {
           return true
         }
+        return false
       }
-
+  
       // side is black
+      
       if (
         (newRow === this.row + 1 &&
           (newColumn === this.column - 1 || newColumn === this.column + 1)
         )
       ) {
-        //console.log("this should be logged")
+        return true
+      }
+  
+      return false
+    }
+
+    if (this.moved) {
+      //piece has been moved
+      if (this.side === "white") {
+        // side is white
+        if (
+          (newRow === this.row - 1 && newColumn === this.column) &&
+          !board[newRow][newColumn]
+        ) {
+          return true
+        }
+        
+        if (
+          (newRow === this.row - 1 &&
+            (newColumn === this.column - 1 || newColumn === this.column + 1)
+          ) &&
+          board[newRow][newColumn]
+        ) {
+          return true
+        }
+
+        // en passant
+        if (this.enPassantSuccessfulW(newRow, newColumn, board)) {
+          return true
+        }
+        return false
+      }
+
+      // side is black
+      if (
+        (newRow === this.row + 1 && newColumn === this.column) &&
+        !board[newRow][newColumn]
+      ) {
+        return true
+      }
+      
+      if (
+        (newRow === this.row + 1 &&
+          (newColumn === this.column - 1 || newColumn === this.column + 1)
+        ) &&
+        board[newRow][newColumn]
+      ) {
         return true
       }
 
+      // en passant
+      if (this.enPassantSuccessfulB(newRow, newColumn, board)) {
+        return true
+      }
       return false
     }
 
     // piece has not been moved
     if (this.side === "white") {
       // side is white
+      if (
+        ((newRow === this.row - 2 || newRow === this.row - 1) && newColumn === this.column) &&
+        !board[newRow][newColumn]
+      ) {
+        if (!this.obstaclesInWay(board, newRow, newColumn)) {
+          return true
+        }
+      }
       
       if (
         (newRow === this.row - 1 &&
           (newColumn === this.column - 1 || newColumn === this.column + 1)
-        )
+        ) &&
+        board[newRow][newColumn]
       ) {
         return true
       }
+
+      // en passant
+      if (this.enPassantSuccessfulW(newRow, newColumn, board)) {
+        return true
+      }
+      return false
     }
 
     // side is black
+    if (
+      ((newRow === this.row + 2 || newRow === this.row + 1) && newColumn === this.column) &&
+      !board[newRow][newColumn]
+    ) {
+      if (!this.obstaclesInWay(board, newRow, newColumn)) {
+        return true
+      }
+    }
     
     if (
       (newRow === this.row + 1 &&
         (newColumn === this.column - 1 || newColumn === this.column + 1)
-      )
+      ) &&
+      board[newRow][newColumn]
     ) {
       return true
     }
 
+    // en passant
+    if (this.enPassantSuccessfulB(newRow, newColumn, board)) {
+      return true
+    }
     return false
   }
 }

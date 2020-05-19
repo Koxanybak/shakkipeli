@@ -181,7 +181,7 @@ class Game {
 
   isCheck(side, board) {
     const king = this.findKing(side, board)
-    return king.isInCheck(king.row, king.column)
+    return king.isInCheck(king.row, king.column, board)
   }
 
 
@@ -309,6 +309,7 @@ class Game {
         return piece ? {
           type: piece.getType(),
           side: piece.getSide(),
+          location: { row: piece.row, column: piece.column},
           id: piece.id,
           availableMoves: piece.getAvailableMoves(this),
         } : null
