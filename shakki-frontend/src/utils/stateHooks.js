@@ -1,7 +1,8 @@
 import { useEffect, useCallback, useState } from "react"
 import { useQuery, useMutation, useSubscription, useApolloClient, useLazyQuery } from "@apollo/client"
-import { GET_GAME, MAKE_MOVE, MOVE_MADE, JOIN_GAME, PROMOTE, GET_LOGGED_USER } from "../queries"
+import { GET_GAME, MAKE_MOVE, GAME_STATE_UPDATED, JOIN_GAME, PROMOTE, GET_LOGGED_USER } from "../queries"
 import { useParams } from "react-router-dom"
+import { handleApolloError } from "./errorHandlers"
 
 
 export const useGame = () => {
@@ -10,7 +11,7 @@ export const useGame = () => {
 
   const setGame = newGameData => {
     let gameDataInStore = client.readQuery({ query: GET_GAME, variables: { gameId: id } })
-    gameDataInStore = { getGame: newGameData.moveMade }
+    gameDataInStore = { getGame: newGameData.gameStateUpdated }
   
     /* console.log("newGameData:", newGameData) */
     client.writeQuery({
@@ -27,11 +28,7 @@ export const useGame = () => {
   const initialResult = useQuery(GET_GAME, {
     variables: { gameId: id },
     onError: err => {
-      if (!err.graphQLErrors || !err.graphQLErrors[0]) {
-        console.log(err.message)
-      } else {
-        console.log(err.graphQLErrors[0].message)
-      }
+      handleApolloError(err)
     },
   })
   const [makeMove] = useMutation(MAKE_MOVE)
@@ -39,20 +36,17 @@ export const useGame = () => {
   const [joinGame] = useMutation(JOIN_GAME, {
     variables: { gameId: id },
     onError: err => {
-      if (!err.graphQLErrors || !err.graphQLErrors[0]) {
-        console.log(err.message)
-      } else {
-        console.log(err.graphQLErrors[0].message)
-      }
+      handleApolloError(err)
     },
     onCompleted: data => {
       setGame(data)
     }
   })
 
-  useSubscription(MOVE_MADE, {
+  useSubscription(GAME_STATE_UPDATED, {
     onSubscriptionData: ({ subscriptionData }) => {
       setGame(subscriptionData.data)
+      /* console.log(subscriptionData.data.gameStateUpdated.moveHistory) */
     },
     variables: { gameId: id }
   })
@@ -91,11 +85,7 @@ export const useUser = () => {
       setUser(data.getLoggedUser)
     },
     onError: err => {
-      if (!err.graphQLErrors || !err.graphQLErrors[0]) {
-        console.log(err.message)
-      } else {
-        console.log(err.graphQLErrors[0].message)
-      }
+      handleApolloError(err)
     },
   })
   
@@ -107,11 +97,7 @@ export const useUser = () => {
         : window.sessionStorage.getItem("loggedChessUser")
     },
     onError: err => {
-      if (!err.graphQLErrors || !err.graphQLErrors[0]) {
-        console.log(err.message)
-      } else {
-        console.log(err.graphQLErrors[0].message)
-      }
+      handleApolloError(err)
     },
   })
 

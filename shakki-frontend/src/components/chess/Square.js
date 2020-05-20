@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import {
   SQUARE_HEIGHT,
   SQUARE_WIDTH,
@@ -11,16 +11,15 @@ import { King, Queen, Rook, Knight, Bishop, Pawn, dragged } from "./pieces"
 // a single chess square
 
 const Square = ({ color, makeMove, location, piece, dragHelperMap, id, highlight }) => {
-  const [squareColor, setSquareColor] = useState(
-    color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR
-  )
+  const specificColor = useMemo(() => `rgb(${color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR})`, [color])
+  const [squareColor, setSquareColor] = useState(specificColor)
   useEffect(() => {
     if (highlight) {
-      setSquareColor(HIGHLIGHTED_COLOR)
+      setSquareColor(`rgb(${HIGHLIGHTED_COLOR})`)
     } else {
-      setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
+      setSquareColor(specificColor)
     }
-  }, [highlight, color])
+  }, [highlight, specificColor])
 
   //squarestyles
   const squareStyle = {
@@ -28,7 +27,7 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap, id, highlight
     width: SQUARE_WIDTH,
     backgroundColor: squareColor,
     textAlign: "center",
-    background: `radial-gradient(${squareColor}, ${color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR})`,
+    background: `radial-gradient(${squareColor}, ${specificColor})`,
   }
   //console.log(squareStyle)
 
@@ -49,9 +48,9 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap, id, highlight
     const newLocation = location
 
     if (event.target.className === "square") {
-      setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
+      setSquareColor(specificColor)
     } else if (event.target.className === "piece") {
-      setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
+      setSquareColor(specificColor)
     }
 
     try {
@@ -75,15 +74,15 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap, id, highlight
   const handleDragLeave = event => {
     if (event.target.className === "square" && event.relatedTarget.className !== "piece") {
       if (event.target.id === "white") {
-        setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
+        setSquareColor(specificColor)
       } else {
-        setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
+        setSquareColor(specificColor)
       }
     } else if (event.target.className === "piece" && event.relatedTarget.className !== "square") {
       if (event.target.parentNode.id === "white") {
-        setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
+        setSquareColor(specificColor)
       } else {
-        setSquareColor(color === "white" ? WHITESQUARE_COLOR : BLACKSQUARE_COLOR)
+        setSquareColor(specificColor)
       }
     }
   }

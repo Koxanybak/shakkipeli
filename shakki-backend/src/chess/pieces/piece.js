@@ -49,6 +49,29 @@ class Piece {
     testBoard[this.row][this.column] = null
     testBoard[newRow][newColumn] = this
 
+    // sets the piece to be eaten by en passant null if necessary
+    if (
+      this.getType() === "pawn" &&
+      (
+        (
+          (testBoard[this.row][this.column + 1] &&
+          testBoard[this.row][this.column + 1].vulnerableToEnPassant) &&
+          (newColumn === this.column + 1 && newRow === this.getSide() === "white" ? this.row - 1 : this.row + 1)
+        ) ||
+        (
+          (testBoard[this.row][this.column - 1] &&
+          testBoard[this.row][this.column - 1].vulnerableToEnPassant) &&
+          (newColumn === this.column - 1 && newRow === this.getSide() === "white" ? this.row - 1 : this.row + 1)
+        )
+      )
+    ) {
+      if (newColumn === this.column + 1) {
+        testBoard[this.row][this.column + 1] = null
+      } else {
+        testBoard[this.row][this.column - 1] = null
+      }
+    }
+
     if (game.isCheck(this.getSide(), testBoard)) {
       return true
     }

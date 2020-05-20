@@ -20,6 +20,7 @@ class Game {
     this.id = id
     this.gameOver = false
     this.check = null
+    this.moveHistory = []
   }
 
 
@@ -86,6 +87,55 @@ class Game {
       // resets check
       this.check = null
 
+      // adds the previous move to the move history
+      let moveMade
+      if (this.moveWasCastling(pieceToMove, pieceToEat)) {
+        moveMade = {
+          piece: {
+            type: pieceToMove.getType(),
+            side: pieceToMove.getSide(),
+            id: pieceToMove.id,
+            lastLocation: { row: pieceToMove.lastRow, column: pieceToMove.lastColumn },
+          },
+          castledPiece: {
+            type: pieceToEat.getType(),
+            side: pieceToEat.getSide(),
+            id: pieceToEat.id,
+            lastLocation: { row: pieceToEat.lastRow, column: pieceToEat.lastColumn },
+          }
+        }
+      } else if (this.moveWasEnPassant(pieceToMove, pieceToEat, oldColumn - newColumn)) {
+        moveMade = {
+          piece: {
+            type: pieceToMove.getType(),
+            side: pieceToMove.getSide(),
+            id: pieceToMove.id,
+            lastLocation: { row: pieceToMove.lastRow, column: pieceToMove.lastColumn },
+          },
+          oldLocation: {
+            row: oldRow, column: oldColumn,
+          },
+          newLocation: {
+            row: pieceToMove.row, column: pieceToMove.column,
+          },
+        }
+      } else {
+        moveMade = {
+          piece: {
+            type: pieceToMove.getType(),
+            side: pieceToMove.getSide(),
+            id: pieceToMove.id,
+            lastLocation: { row: pieceToMove.lastRow, column: pieceToMove.lastColumn },
+          },
+          oldLocation: {
+            row: oldRow, column: oldColumn,
+          },
+          newLocation: {
+            row: pieceToMove.row, column: pieceToMove.column,
+          },
+        }
+      }
+
       // checks for check
       if (this.isCheck(this.currentPlayer === this.whitePlayer ? "black" : "white", this.board)) {
         // checks for checkmate
@@ -93,6 +143,8 @@ class Game {
         if (movesAvailable.length === 0) {
           this.gameOver = true
           this.winner = this.currentPlayer
+          moveMade.wonTheGame = true
+          this.moveHistory.push(moveMade)
           return
         }
         console.log("movesAvailable:", movesAvailable)
@@ -100,7 +152,12 @@ class Game {
           threatenedPlayer: this.currentPlayer === this.whitePlayer ? this.blackPlayer : this.whitePlayer,
           movesAvailable,
         }
+        moveMade.leadToCheck = true
       }
+
+
+      this.moveHistory.push(moveMade)
+
 
       this.lastMove = {
         success: true,
@@ -139,6 +196,26 @@ class Game {
     }
   }
 
+  moveWasCastling(pieceMoved, pieceEaten) {
+    if (
+      pieceEaten && pieceMoved.getSide() === pieceEaten.getSide() &&
+      (
+        (pieceMoved.getType() === "king" && pieceEaten.getType() === "rook") ||
+        (pieceMoved.getType() === "rook" && pieceEaten.getType() === "king")
+      )
+    ) {
+      return true
+    }
+  }
+  moveWasEnPassant(pieceMoved, pieceEaten, colOffset) {
+    return (
+      !pieceEaten && pieceMoved.getType() === "pawn"
+    ) &&
+    (
+      Math.abs(colOffset) === 1
+    )
+  }
+
   // a slow way of checking for check mate
   movesAvailable(side) {
 
@@ -156,6 +233,13 @@ class Game {
       this.board.forEach((rivi, row) => {
         rivi.forEach((sarake, column) => {
           const pieceEaten = this.board[row][column]
+          let enPassantPieceEaten
+
+          if (!(row + 1 === 8 || row - 1 === -1)) {
+            enPassantPieceEaten = side === "white"
+              ? this.board[row + 1][column]
+              : this.board[row - 1][column]
+          }
 
           if (piece.move(this.board, row, column, true)) {
             if (!this.isCheck(side, this.board)) {
@@ -169,8 +253,11 @@ class Game {
                 newLocation: { row, column, },
               })
             }
-
-            piece.undoMove(pieceEaten)
+            if (piece.enPassantedLastTime) {
+              piece.undoMove(enPassantPieceEaten)
+            } else {
+              piece.undoMove(pieceEaten)
+            }
           }
         })
       })
@@ -202,11 +289,9 @@ class Game {
 
   addPlayer(player) {
     if (!this.blackPlayer && !this.whitePlayer) {
-      //console.log("id", player, "on valkoiset ja ensimmäinen vuoro")
       this.whitePlayer = player
       this.currentPlayer = this.whitePlayer
     } else {
-      //console.log("id", player, "on mustat ja toinen vuoro")
       this.blackPlayer = player
     }
   }
@@ -216,13 +301,22 @@ class Game {
   }
 
   clearEnPassant(newRow, newColumn) {
+    /* console.log("newRow:", newRow, "newColumn:", newColumn) */
     this.board.forEach(row => {
       row.forEach(piece => {
+        if (piece && piece.getType() === "pawn") {
+          /* console.log("newRow === piece.row",newRow === piece.row)
+          console.log("newColumn === piece.column",newColumn === piece.column)
+          console.log("!(newRow === piece.row && newColumn === piece.column)",!(newRow === piece.row && newColumn === piece.column))
+          console.log(piece.row, piece.column) */
+        }
         if (
           (piece && piece.getType() === "pawn") &&
-          (newRow !== piece.row && newColumn !== piece.column)
+          (!(newRow === piece.row && newColumn === piece.column))
         ) {
-          piece.vulnerableToEnPassant === false
+          /* console.log(piece.row, piece.column) */
+          piece.setVulnerableToEnPassant(false)
+          /* console.log(piece.vulnerableToEnPassant) */
         }
       })
     })

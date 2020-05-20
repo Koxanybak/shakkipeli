@@ -1,7 +1,9 @@
 import React, { useState } from "react"
 import { useGame, useUser } from "../../utils/stateHooks"
+import { handleApolloError } from "../../utils/errorHandlers"
 import Board from "./Board"
 import GameText from "./GameText"
+import { isNotValid, isValidPiece } from "./gameUtils"
 
 const Game = () => {
   const {game, gameLoading, gameError, makeMove, promote} = useGame()
@@ -29,6 +31,17 @@ const Game = () => {
       const clickedPiece = board[Math.floor(Number(clickedElem.id) / 8)][Number(clickedElem.id) % 8]
 
       if (pieceToMove) {
+        if (isNotValid({
+          squareNode: clickedElem.parentNode,
+          pieceToMove,
+          clickedPiece,
+          user,
+          game,
+        })) {
+          setPieceToMove(null)
+          return
+        }
+
         const piece = { type: pieceToMove.type, side: pieceToMove.side }
         const oldLocation = { row: pieceToMove.location.row, column: pieceToMove.location.column }
         const newLocation = { row: clickedPiece.location.row, column: clickedPiece.location.column }
@@ -39,18 +52,34 @@ const Game = () => {
             console.log(res.data.makeMove.lastMove.message)
           }
         } catch (exception) {
-          console.log(exception.message)
+          handleApolloError(exception)
         }
         setPieceToMove(null)
-      } else {
-        setPieceToMove(board[Math.floor(Number(clickedElem.id) / 8)][Number(clickedElem.id) % 8])
+      } else if (isValidPiece({ clickedPiece, game, user })){
+        setPieceToMove(clickedPiece)
       }
 
       // the user clicked on a square
     } else if (clickedElem.className === "square") {
       const clickedPieceElem = clickedElem.firstChild
+      let clickedPiece
+      if (clickedPieceElem) {
+        clickedPiece = board[Math.floor(Number(clickedPieceElem.id) / 8)][Number(clickedPieceElem.id) % 8]
+      }
 
       if (pieceToMove) {
+        //console.log(clickedElem)
+        if (isNotValid({
+          squareNode: clickedElem,
+          pieceToMove,
+          clickedPiece,
+          user,
+          game,
+        })) {
+          setPieceToMove(null)
+          return
+        }
+
         const piece = { type: pieceToMove.type, side: pieceToMove.side }
         const oldLocation = { row: pieceToMove.location.row, column: pieceToMove.location.column }
         const newLocation = { row: Math.floor(Number(clickedElem.id) / 8), column: Number(clickedElem.id) % 8 }
@@ -61,13 +90,14 @@ const Game = () => {
             console.log(res.data.makeMove.lastMove.message)
           }
         } catch (exception) {
-          console.log(exception.message)
+          handleApolloError(exception)
         }
         setPieceToMove(null)
-      } else if (clickedPieceElem){
-        setPieceToMove(board[Math.floor(Number(clickedPieceElem.id) / 8)][Number(clickedPieceElem.id) % 8])
+      } else if (clickedPiece && isValidPiece({ clickedPiece, game, user })) {
+        setPieceToMove(clickedPiece)
       }
 
+    } else {
       setPieceToMove(null)
     }
   }

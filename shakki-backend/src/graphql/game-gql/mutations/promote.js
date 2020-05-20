@@ -19,7 +19,7 @@ const resolvers = {
 
       /* try { */
       if (game.promote(args.pieceType, currentUser.id)) {
-        pubsub.publish("MOVE_MADE", { moveMade: game })
+        pubsub.publish("GAME_STATE_UPDATED", { gameStateUpdated: game })
         return game
       }
       /* } catch (e) {

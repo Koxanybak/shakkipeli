@@ -17,7 +17,7 @@ const Menu = () => {
         <Button color="inherit" component={Link} to="/info">
           Ohjeet
         </Button>
-        {!user || user.guest 
+        {/* {!user || user.guest 
           ?
           <Button color="inherit" component={Link} to="/login">
             Kirjaudu
@@ -26,15 +26,15 @@ const Menu = () => {
           <Typography variant="subtitle1" color="textPrimary">
               &quot;{user.tag}&quot; kirjautunut
           </Typography>
-        }
-        {!user || user.guest 
+        } */}
+        {/* {!user || user.guest 
           ?
           null
           :
           <Button color="inherit" onClick={() => removeUser()} component={Link} to="/">
             Kirjaudu ulos
           </Button>
-        }
+        } */}
       </Toolbar>
     </AppBar>
   )

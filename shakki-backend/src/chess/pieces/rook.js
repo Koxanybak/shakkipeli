@@ -7,13 +7,26 @@ class Rook extends Piece {
     this.lastMoveWasCastling = false
     this.movedFirstLastTime = false
   }
-
   getType() {
     return "rook"
   }
-
   getMoved() {
     return this.moved
+  }
+  setMoved(bool) {
+    this.moved = bool
+  }
+  getMovedFirstLastTime() {
+    return this.movedFirstLastTime
+  }
+  setMovedFirstLastTime(bool) {
+    this.movedFirstLastTime = bool
+  }
+  getLastMoveWasCastling() {
+    return this.lastMoveWasCastling
+  }
+  setLastMoveWasCastling(bool) {
+    this.lastMoveWasCastling = bool
   }
 
   undoCastling(castledPiece) {
@@ -88,14 +101,14 @@ class Rook extends Piece {
       console.log(this)
       if (Math.abs(colOffset) === 3) {
         if (!targetPiece.isInCheck(newRow, newColumn + 2, board) && !targetPiece.isInCheck(newRow, newColumn + 1, board)) {
-          this.movedFirstLastTime = true
-          this.moved = true
-          targetPiece.moved = true
-          targetPiece.movedFirstLastTime = true
+          this.setMovedFirstLastTime(true)
+          this.setMoved(true)
+          targetPiece.setMoved(true)
+          targetPiece.setMovedFirstLastTime(true)
           this.moveSuccess(board, newRow, newColumn + 1)
           targetPiece.moveSuccess(board, newRow, newColumn + 2)
-          this.lastMoveWasCastling = true
-          targetPiece.lastMoveWasCastling = true
+          this.setLastMoveWasCastling(true)
+          targetPiece.setLastMoveWasCastling(true)
           return true
         }
       } else {
@@ -105,14 +118,14 @@ class Rook extends Piece {
             !targetPiece.isInCheck(newRow, newColumn - 1, board)
           )
         ) {
-          this.movedFirstLastTime = true
-          this.moved = true
-          targetPiece.moved = true
-          targetPiece.movedFirstLastTime = true
+          this.setMovedFirstLastTime(true)
+          this.setMoved(true)
+          targetPiece.setMoved(true)
+          targetPiece.setMovedFirstLastTime(true)
           this.moveSuccess(board, newRow, newColumn - 1)
           targetPiece.moveSuccess(board, newRow, newColumn - 2)
-          this.lastMoveWasCastling = true
-          targetPiece.lastMoveWasCastling = true
+          this.setLastMoveWasCastling(true)
+          targetPiece.setLastMoveWasCastling(true)
           return true
         }
       }

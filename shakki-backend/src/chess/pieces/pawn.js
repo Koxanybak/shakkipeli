@@ -6,10 +6,14 @@ class Pawn extends Piece {
     this.moved = false
     this.vulnerableToEnPassant = false
     this.movedFirstLastTime = false
+    this.movedTwoLastTime = false
+    this.enPassantedLastTime = false
   }
-
   getType() {
     return "pawn"
+  }
+  setVulnerableToEnPassant(bool) {
+    this.vulnerableToEnPassant = bool
   }
 
   move(board, newRow, newColumn) {
@@ -30,7 +34,9 @@ class Pawn extends Piece {
         ) {
           this.moveSuccess(board, newRow, newColumn)
           this.movedFirstLastTime = false
+          this.movedTwoLastTime = false
           this.vulnerableToEnPassant = false
+          this.enPassantedLastTime = false
           return true
         }
         
@@ -42,7 +48,9 @@ class Pawn extends Piece {
         ) {
           this.moveSuccess(board, newRow, newColumn)
           this.movedFirstLastTime = false
+          this.movedTwoLastTime = false
           this.vulnerableToEnPassant = false
+          this.enPassantedLastTime = false
           return true
         }
 
@@ -62,7 +70,9 @@ class Pawn extends Piece {
       ) {
         this.moveSuccess(board, newRow, newColumn)
         this.movedFirstLastTime = false
+        this.movedTwoLastTime = false
         this.vulnerableToEnPassant = false
+        this.enPassantedLastTime = false
         return true
       }
       
@@ -74,7 +84,9 @@ class Pawn extends Piece {
       ) {
         this.moveSuccess(board, newRow, newColumn)
         this.movedFirstLastTime = false
+        this.movedTwoLastTime = false
         this.vulnerableToEnPassant = false
+        this.enPassantedLastTime = false
         return true
       }
 
@@ -97,10 +109,12 @@ class Pawn extends Piece {
         if (!this.obstaclesInWay(board, newRow, newColumn)) {
           if (newRow === this.row - 2) {
             this.vulnerableToEnPassant = true
+            this.movedTwoLastTime = true
           }
           this.moveSuccess(board, newRow, newColumn)
           this.movedFirstLastTime = true
           this.moved = true
+          this.enPassantedLastTime = false
           return true
         }
       }
@@ -113,7 +127,9 @@ class Pawn extends Piece {
       ) {
         this.moveSuccess(board, newRow, newColumn)
         this.movedFirstLastTime = true
+        this.movedTwoLastTime = false
         this.moved = true
+        this.enPassantedLastTime = false
         return true
       }
 
@@ -134,10 +150,12 @@ class Pawn extends Piece {
       if (!this.obstaclesInWay(board, newRow, newColumn)) {
         if (newRow === this.row + 2) {
           this.vulnerableToEnPassant = true
+          this.movedTwoLastTime = true
         }
         this.movedFirstLastTime = true
         this.moveSuccess(board, newRow, newColumn)
         this.moved = true
+        this.enPassantedLastTime = false
         return true
       }
     }
@@ -149,8 +167,10 @@ class Pawn extends Piece {
       board[newRow][newColumn]
     ) {
       this.movedFirstLastTime = true
+      this.movedTwoLastTime = false
       this.moveSuccess(board, newRow, newColumn)
       this.moved = true
+      this.enPassantedLastTime = false
       return true
     }
 
@@ -168,8 +188,24 @@ class Pawn extends Piece {
       this.movedFirstLastTime = false
       this.moved = false
     }
+    if (this.movedTwoLastTime) {
+      this.movedTwoLastTime = false
+      this.vulnerableToEnPassant = false
+    }
+
     this.board[this.lastRow][this.lastColumn] = this
-    this.board[this.row][this.column] = pieceEaten
+    if (this.enPassantedLastTime) {
+      this.enPassantedLastTime = false
+
+      if (this.getSide() === "white") {
+        this.board[this.row + 1][this.column] = pieceEaten
+      } else {
+        this.board[this.row - 1][this.column] = pieceEaten
+      }
+      this.board[this.row][this.column] = null
+    } else {
+      this.board[this.row][this.column] = pieceEaten
+    }
 
     this.row = this.lastRow
     this.column = this.lastColumn
@@ -221,6 +257,8 @@ class Pawn extends Piece {
     this.moveSuccess(board, newRow, newColumn)
     this.vulnerableToEnPassant = false
     this.moved = true
+    this.movedTwoLastTime = false
+    this.enPassantedLastTime = true
   }
 
 

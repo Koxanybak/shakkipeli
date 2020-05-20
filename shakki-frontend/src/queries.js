@@ -2,6 +2,7 @@ import { gql } from "@apollo/client"
 
 
 // fragments
+
 const GAME_STATE_DETAILS = gql`
   fragment gameStateDetails on Game {
     board {
@@ -40,6 +41,47 @@ const GAME_STATE_DETAILS = gql`
           }
         }
       }
+      moveHistory {
+        ... on OrdinaryMove {
+          piece {
+            type
+            side
+            id
+            lastLocation {
+              row
+              column
+            }
+          }
+          oldLocation {
+            row
+            column
+          }
+          newLocation {
+            row
+            column
+          }
+        }
+        ... on CastlingMove {
+          piece {
+            type
+            side
+            id
+            lastLocation {
+              row
+              column
+            }
+          }
+          castledPiece {
+            type
+            side
+            id
+            lastLocation {
+              row
+              column
+            }
+          }
+        }
+      }
   }
 `
 
@@ -70,9 +112,9 @@ export const GET_GAME = gql`
   ${GAME_STATE_DETAILS}
 `
 
-export const MOVE_MADE = gql`
-  subscription moveMade($gameId: String!) {
-    moveMade(
+export const GAME_STATE_UPDATED = gql`
+  subscription gameStateUpdated($gameId: String!) {
+    gameStateUpdated(
       gameId: $gameId
     ) {
       ...gameStateDetails

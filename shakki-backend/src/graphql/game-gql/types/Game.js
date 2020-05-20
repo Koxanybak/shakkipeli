@@ -11,6 +11,7 @@ const typeDefs = gql`
     gameOver: Boolean!
     lastMove: Move
     check: Check
+    moveHistory: [MoveHistoryEntry!]!
     id: ID!
   }
   type Check {
@@ -20,8 +21,9 @@ const typeDefs = gql`
   type Piece {
     type: String!
     side: Side!
-    location: Location!
-    availableMoves: [Move!]!
+    location: Location
+    lastLocation: Location
+    availableMoves: [Move!]
     id: String!
   }
   enum Side {
@@ -32,13 +34,36 @@ const typeDefs = gql`
     row: Int!
     column: Int!
   }
-  type Move {
+  interface MoveInterface {
+    newLocation: Location!
+  }
+  type Move implements MoveInterface {
     piece: Piece
     oldLocation: Location
-    newLocation: Location
+    newLocation: Location!
     success: Boolean
     message: String
   }
+  type OrdinaryMove implements MoveInterface {
+    piece: Piece!
+    oldLocation: Location!
+    newLocation: Location!
+    leadToCheck: Boolean
+    wonTheGame: Boolean
+  }
+  type CastlingMove {
+    piece: Piece!
+    castledPiece: Piece!
+    leadToCheck: Boolean
+    wonTheGame: Boolean
+  }
+  """ type EnPassantMove {
+    piece: Piece!
+    oldLocation: Location!
+    newLocation: Location!
+    pieceEaten: Piece!
+  } """
+  union MoveHistoryEntry = OrdinaryMove | CastlingMove
 
 
   # inputs
@@ -68,8 +93,23 @@ const resolvers = {
     },
     check: (root) => {
       return root.check
-    }
+    },
+    moveHistory: (root) => {
+      return root.moveHistory
+    },
   },
+  MoveHistoryEntry: {
+    __resolveType(obj) {
+      /* console.log("obj:", obj) */
+      if (obj.castledPiece) {
+        /* console.log("was Castling") */
+        return "CastlingMove"
+      } else {
+        /* console.log("was Ordinary") */
+        return "OrdinaryMove"
+      }
+    },
+  }
 }
 
 module.exports = {

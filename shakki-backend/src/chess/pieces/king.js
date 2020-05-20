@@ -7,20 +7,33 @@ class King extends Piece {
     this.lastMoveWasCastling = false
     this.movedFirstLastTime = false
   }
-
   getType() {
     return "king"
   }
-
   getMoved() {
     return this.moved
+  }
+  setMoved(bool) {
+    this.moved = bool
+  }
+  getMovedFirstLastTime() {
+    return this.movedFirstLastTime
+  }
+  setMovedFirstLastTime(bool) {
+    this.movedFirstLastTime = bool
+  }
+  getLastMoveWasCastling() {
+    return this.lastMoveWasCastling
+  }
+  setLastMoveWasCastling(bool) {
+    this.lastMoveWasCastling = bool
   }
 
   // check if the given location would place the king in check
   isInCheck(row, column, board, ignoreSameSide) {
     let result = false
 
-    this.board.forEach(r => {
+    board.forEach(r => {
       r.forEach(piece => {
         if (piece && (piece.side !== this.side && piece.canMove(board, row, column, true, ignoreSameSide))) {
           /* console.log("The king would be in check and the piece that can eat him is:", piece) */
@@ -104,14 +117,14 @@ class King extends Piece {
       console.log(this)
       if (Math.abs(colOffset) === 3) {
         if (!this.isInCheck(newRow, newColumn - 2, board) && !this.isInCheck(newRow, newColumn - 1, board)) {
-          this.movedFirstLastTime = true
-          this.moved = true
-          targetPiece.moved = true
-          targetPiece.movedFirstLastTime = true
+          this.setMovedFirstLastTime(true)
+          this.setMoved(true)
+          targetPiece.setMoved(true)
+          targetPiece.setMovedFirstLastTime(true)
           this.moveSuccess(board, newRow, newColumn - 1)
           targetPiece.moveSuccess(board, newRow, newColumn - 2)
-          this.lastMoveWasCastling = true
-          targetPiece.lastMoveWasCastling = true
+          this.setLastMoveWasCastling(true)
+          targetPiece.setLastMoveWasCastling(true)
           return true
         }
       } else {
@@ -121,14 +134,14 @@ class King extends Piece {
             !this.isInCheck(newRow, newColumn + 1, board)
           )
         ) {
-          this.movedFirstLastTime = true
-          this.moved = true
-          targetPiece.moved = true
-          targetPiece.movedFirstLastTime = true
+          this.setMovedFirstLastTime(true)
+          this.setMoved(true)
+          targetPiece.setMoved(true)
+          targetPiece.setMovedFirstLastTime(true)
           this.moveSuccess(board, newRow, newColumn + 2)
           targetPiece.moveSuccess(board, newRow, newColumn + 3)
-          this.lastMoveWasCastling = true
-          targetPiece.lastMoveWasCastling = true
+          this.setLastMoveWasCastling(true)
+          targetPiece.setLastMoveWasCastling(true)
           return true
         }
       }
@@ -219,7 +232,7 @@ class King extends Piece {
       )
     ) {
       if (!ignoreCheck && !this.isInCheck(newRow, newColumn, board, true)) {
-        console.log("king would be in check", newRow, newColumn)
+        /* console.log("king would be in check", newRow, newColumn) */
         return true
       }
     }

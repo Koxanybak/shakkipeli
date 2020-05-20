@@ -28,7 +28,7 @@ const resolvers = {
       } */
 
       if (game.lastMove.success) {
-        pubsub.publish("MOVE_MADE", { moveMade: game })
+        pubsub.publish("GAME_STATE_UPDATED", { gameStateUpdated: game })
       }
 
       if (game.gameOver) {

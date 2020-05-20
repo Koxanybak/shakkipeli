@@ -2,17 +2,17 @@ const { gql, withFilter } = require("apollo-server-express")
 
 const typeDefs = gql`
   extend type Subscription {
-    moveMade(gameId: String!): Game!
+    gameStateUpdated(gameId: String!): Game!
   }
 `
 
 const resolvers = {
   Subscription: {
-    moveMade: {
+    gameStateUpdated: {
       subscribe: withFilter(
-        (_, __, { pubsub }) => pubsub.asyncIterator("MOVE_MADE"),
+        (_, __, { pubsub }) => pubsub.asyncIterator("GAME_STATE_UPDATED"),
         (payload, variables) => {
-          return payload.moveMade.id === variables.gameId
+          return payload.gameStateUpdated.id === variables.gameId
         }
       )
     }
