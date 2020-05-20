@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.js": "/static/js/main.e4c30a30.chunk.js",
-    "main.js.map": "/static/js/main.e4c30a30.chunk.js.map",
+    "main.js": "/static/js/main.ef47fbc5.chunk.js",
+    "main.js.map": "/static/js/main.ef47fbc5.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.bf36ea6d.js",
     "runtime-main.js.map": "/static/js/runtime-main.bf36ea6d.js.map",
     "static/js/2.40c9805f.chunk.js": "/static/js/2.40c9805f.chunk.js",
     "static/js/2.40c9805f.chunk.js.map": "/static/js/2.40c9805f.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.9a75861e0a5298f910ed4bd34db0e7e3.js": "/precache-manifest.9a75861e0a5298f910ed4bd34db0e7e3.js",
+    "precache-manifest.a559c314fb2f891b886207498347e3aa.js": "/precache-manifest.a559c314fb2f891b886207498347e3aa.js",
     "service-worker.js": "/service-worker.js",
     "static/js/2.40c9805f.chunk.js.LICENSE.txt": "/static/js/2.40c9805f.chunk.js.LICENSE.txt",
     "static/media/blackbishop.svg": "/static/media/blackbishop.1f3b8d1a.svg",
@@ -26,6 +26,6 @@
   "entrypoints": [
     "static/js/runtime-main.bf36ea6d.js",
     "static/js/2.40c9805f.chunk.js",
-    "static/js/main.e4c30a30.chunk.js"
+    "static/js/main.ef47fbc5.chunk.js"
   ]
 }

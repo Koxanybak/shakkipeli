@@ -106,6 +106,9 @@ const Game = () => {
 
   return (
     <div className="game">
+      <div>
+        Suosittelen nappuloiden liikuttamista klikkaamalla vetämisen sijaan.
+      </div>
       <Board
         board={board}
         boardAlignment={user.id === whitePlayer ? "white" : "black"}
