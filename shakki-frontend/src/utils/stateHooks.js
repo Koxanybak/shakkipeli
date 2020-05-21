@@ -13,16 +13,17 @@ export const useGame = () => {
     let gameDataInStore = client.readQuery({ query: GET_GAME, variables: { gameId: id } })
     gameDataInStore = { getGame: newGameData.gameStateUpdated }
   
-    /* console.log("newGameData:", newGameData) */
+    console.log("newGameData:", newGameData)
+    console.log("gameState tobe:", gameDataInStore)
     client.writeQuery({
       query: GET_GAME,
       data: gameDataInStore,
       variables: { id }
     })
-    /* console.log("Game state updated with:", client.readQuery({
+    console.log("Game state updated with:", client.readQuery({
       query: GET_GAME,
       variables: { id }
-    })) */
+    }))
   }
 
   const initialResult = useQuery(GET_GAME, {
@@ -46,6 +47,7 @@ export const useGame = () => {
   useSubscription(GAME_STATE_UPDATED, {
     onSubscriptionData: ({ subscriptionData }) => {
       setGame(subscriptionData.data)
+      /* console.log("subscriptionBoard",subscriptionData.data.gameStateUpdated.board) */
       /* console.log(subscriptionData.data.gameStateUpdated.moveHistory) */
     },
     variables: { gameId: id }

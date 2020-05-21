@@ -131,7 +131,7 @@ class King extends Piece {
         if (
           (
             !this.isInCheck(newRow, newColumn + 2, board) &&
-            !this.isInCheck(newRow, newColumn + 1, board)
+            !this.isInCheck(newRow, newColumn + 3, board)
           )
         ) {
           this.setMovedFirstLastTime(true)
@@ -209,7 +209,7 @@ class King extends Piece {
         if (
           (
             !this.isInCheck(newRow, newColumn + 2, board) &&
-            !this.isInCheck(newRow, newColumn + 1, board)
+            !this.isInCheck(newRow, newColumn + 3, board)
           )
         ) {
           return true
@@ -220,9 +220,9 @@ class King extends Piece {
     if (!ignoreSameSide && this.sameSide(board, newRow, newColumn)) {
       return false
     }
-    /* if (!ignoreCheck && this.moveResultsInCheck(game, newRow, newColumn)) {
+    if (!ignoreCheck && this.moveResultsInCheck(game, newRow, newColumn)) {
       return false
-    } */
+    }
 
     if (
       (

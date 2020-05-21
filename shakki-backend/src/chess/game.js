@@ -73,6 +73,11 @@ class Game {
     const pieceToEat = this.board[newRow][newColumn]
     const pieceToMove = this.board[oldRow][oldColumn]
 
+    // pieces maybe eaten by en passant
+    const enPassantedPieces = []
+    enPassantedPieces.push(this.board[oldRow][oldColumn - 1])
+    enPassantedPieces.push(this.board[oldRow][oldColumn + 1])
+
     // moves the piece
     if (pieceToMove.move(this.board, newRow, newColumn)) {
       // the move leads to check against the player
@@ -88,6 +93,7 @@ class Game {
       this.check = null
 
       // adds the previous move to the move history
+      const enPassantedPiece = this.moveWasEnPassant(pieceToMove, pieceToEat, newColumn - oldColumn, enPassantedPieces)
       let moveMade
       if (this.moveWasCastling(pieceToMove, pieceToEat)) {
         moveMade = {
@@ -104,7 +110,7 @@ class Game {
             lastLocation: { row: pieceToEat.lastRow, column: pieceToEat.lastColumn },
           }
         }
-      } else if (this.moveWasEnPassant(pieceToMove, pieceToEat, oldColumn - newColumn)) {
+      } else if (enPassantedPiece) {
         moveMade = {
           piece: {
             type: pieceToMove.getType(),
@@ -112,12 +118,15 @@ class Game {
             id: pieceToMove.id,
             lastLocation: { row: pieceToMove.lastRow, column: pieceToMove.lastColumn },
           },
-          oldLocation: {
-            row: oldRow, column: oldColumn,
-          },
           newLocation: {
             row: pieceToMove.row, column: pieceToMove.column,
           },
+          pieceEaten: {
+            type: enPassantedPiece.getType(),
+            side: enPassantedPiece.getSide(),
+            id: enPassantedPiece.id,
+            location: { row: enPassantedPiece.row, column: enPassantedPiece.column },
+          }
         }
       } else {
         moveMade = {
@@ -127,12 +136,15 @@ class Game {
             id: pieceToMove.id,
             lastLocation: { row: pieceToMove.lastRow, column: pieceToMove.lastColumn },
           },
-          oldLocation: {
-            row: oldRow, column: oldColumn,
-          },
           newLocation: {
             row: pieceToMove.row, column: pieceToMove.column,
           },
+          pieceEaten: pieceToEat ? {
+            type: pieceToEat.getType(),
+            side: pieceToEat.getSide(),
+            id: pieceToEat.id,
+            location: { row: pieceToEat.row, column: pieceToEat.column },
+          } : null
         }
       }
 
@@ -207,13 +219,17 @@ class Game {
       return true
     }
   }
-  moveWasEnPassant(pieceMoved, pieceEaten, colOffset) {
-    return (
+  moveWasEnPassant(pieceMoved, pieceEaten, colOffset, enPassantedPieces) {
+    if ((
       !pieceEaten && pieceMoved.getType() === "pawn"
     ) &&
     (
       Math.abs(colOffset) === 1
-    )
+    )) {
+      return colOffset === -1 ? enPassantedPieces[0] : enPassantedPieces[1]
+    } else {
+      return false
+    }
   }
 
   // a slow way of checking for check mate
@@ -324,7 +340,7 @@ class Game {
 
 
 
-  // makes a chess class out of the given pieceObject
+  // makes a chess class out of the given params
   makePiece(type, side, location, id) {
     switch(type) {
     case "pawn":
@@ -358,6 +374,19 @@ class Game {
       { row, column },
       this.board[row][column].id,
     )
+    /* console.log("after promotion",this.board[row][column]) */
+
+    // adds the promotion to the move history list
+    let moveMade
+    moveMade = {
+      promotedPiece: {
+        type: "pawn",
+        side: this.pieceToPromote.getSide(),
+        id: this.pieceToPromote.id,
+        location: { row: this.pieceToPromote.row, column: this.pieceToPromote.column }
+      },
+      promotedTo: type,
+    }
 
     // checks for check
     if (this.isCheck(this.currentPlayer === this.whitePlayer ? "black" : "white", this.board)) {
@@ -366,14 +395,19 @@ class Game {
       if (movesAvailable.length === 0) {
         this.gameOver = true
         this.winner = this.currentPlayer
-        return
+        moveMade.wonTheGame = true
+        this.moveHistory.push(moveMade)
+        return true
       }
       console.log("movesAvailable:", movesAvailable)
       this.check = {
         threatenedPlayer: this.currentPlayer === this.whitePlayer ? this.blackPlayer : this.whitePlayer,
         movesAvailable,
       }
+      moveMade.leadToCheck = true
     }
+
+    this.moveHistory.push(moveMade)
 
     this.lastMove = {
       success: true,

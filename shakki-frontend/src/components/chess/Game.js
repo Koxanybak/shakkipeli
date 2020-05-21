@@ -56,6 +56,7 @@ const Game = () => {
         }
         setPieceToMove(null)
       } else if (isValidPiece({ clickedPiece, game, user })){
+        console.log("clickedPiece:", clickedPiece)
         setPieceToMove(clickedPiece)
       }
 
@@ -102,7 +103,8 @@ const Game = () => {
     }
   }
 
-  //console.log("game is rendered with piece being", pieceToMove)
+  /* console.log("game rendered with board being:", board) */
+
 
   return (
     <div className="game">

@@ -2,21 +2,51 @@ import { gql } from "@apollo/client"
 
 
 // fragments
+const LOCATION = gql`
+  fragment location on Location {
+    row
+    column
+  }
+`
+
+const IDLE_PIECE = gql`
+  fragment idlePiece on Piece {
+    type
+    side
+    id
+    location {
+      ...location
+    }
+  }
+  ${LOCATION}
+`
+
+const MOVED_PIECE = gql`
+  fragment movedPiece on Piece {
+    type
+    side
+    id
+    lastLocation {
+      ...location
+    }
+  }
+  ${LOCATION}
+`
+
+const MOVE_HISTORY_ENTRY = gql`
+ fragment moveHistoryEntry on MoveHistoryEntry {
+   leadToCheck
+   wonTheGame
+ }
+`
 
 const GAME_STATE_DETAILS = gql`
   fragment gameStateDetails on Game {
     board {
-        type
-        side
-        id
-        location {
-          row
-          column
-        }
+        ...idlePiece
         availableMoves {
           newLocation {
-            row
-            column
+            ...location
           }
         }
       }
@@ -31,59 +61,48 @@ const GAME_STATE_DETAILS = gql`
         threatenedPlayer
         movesAvailable {
           piece {
-            type
-            side
-            id
+            ...idlePiece
           }
           newLocation {
-            row
-            column
-          }
-        }
-      }
-      moveHistory {
-        ... on OrdinaryMove {
-          piece {
-            type
-            side
-            id
-            lastLocation {
-              row
-              column
-            }
-          }
-          oldLocation {
-            row
-            column
-          }
-          newLocation {
-            row
-            column
-          }
-        }
-        ... on CastlingMove {
-          piece {
-            type
-            side
-            id
-            lastLocation {
-              row
-              column
-            }
-          }
-          castledPiece {
-            type
-            side
-            id
-            lastLocation {
-              row
-              column
-            }
+            ...location
           }
         }
       }
   }
+  ${LOCATION}
+  ${IDLE_PIECE}
 `
+/* ${MOVED_PIECE}
+  ${MOVE_HISTORY_ENTRY} */
+
+/* moveHistory {
+  ... on OrdinaryMove {
+    piece {
+      ...movedPiece
+    }
+    pieceEaten {
+      ...idlePiece
+    }
+    newLocation {
+      ...location
+    }
+  }
+  ... on CastlingMove {
+    piece {
+      ...movedPiece
+    }
+    castledPiece {
+      ...movedPiece
+    }
+  }
+  ... on PromotionMove {
+    promotedPiece {
+      ...idlePiece
+    }
+    promotedTo
+  }
+  ...moveHistoryEntry
+} */
 
 /* const USER_DETAILS = gql`
   fragment userDetails on User {

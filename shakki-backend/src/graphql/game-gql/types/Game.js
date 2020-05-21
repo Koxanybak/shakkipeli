@@ -44,26 +44,30 @@ const typeDefs = gql`
     success: Boolean
     message: String
   }
-  type OrdinaryMove implements MoveInterface {
+  interface MoveHistoryEntry {
+    leadToCheck: Boolean
+    wonTheGame: Boolean
+  }
+
+  type OrdinaryMove implements MoveHistoryEntry {
     piece: Piece!
-    oldLocation: Location!
+    pieceEaten: Piece
     newLocation: Location!
     leadToCheck: Boolean
     wonTheGame: Boolean
   }
-  type CastlingMove {
+  type CastlingMove implements MoveHistoryEntry {
     piece: Piece!
     castledPiece: Piece!
     leadToCheck: Boolean
     wonTheGame: Boolean
   }
-  """ type EnPassantMove {
-    piece: Piece!
-    oldLocation: Location!
-    newLocation: Location!
-    pieceEaten: Piece!
-  } """
-  union MoveHistoryEntry = OrdinaryMove | CastlingMove
+  type PromotionMove implements MoveHistoryEntry {
+    promotedPiece: Piece!
+    promotedTo: String!
+    leadToCheck: Boolean
+    wonTheGame: Boolean
+  }
 
 
   # inputs
@@ -86,6 +90,7 @@ const typeDefs = gql`
 const resolvers = {
   Game: {
     board: (root) => {
+      /* console.log(root.getBoard()) */
       return root.getBoard()
     },
     lastMove: (root) => {
@@ -104,6 +109,8 @@ const resolvers = {
       if (obj.castledPiece) {
         /* console.log("was Castling") */
         return "CastlingMove"
+      } else if (obj.promotedTo) {
+        return "PromotionMove"
       } else {
         /* console.log("was Ordinary") */
         return "OrdinaryMove"

@@ -44,7 +44,6 @@ class Piece {
   
   moveResultsInCheck(game, newRow, newColumn) {
     const testBoard = this.getTestBoard()
-    //console.log(this.getType(), {testBoard})
 
     testBoard[this.row][this.column] = null
     testBoard[newRow][newColumn] = this
@@ -71,8 +70,11 @@ class Piece {
         testBoard[this.row][this.column - 1] = null
       }
     }
-
-    if (game.isCheck(this.getSide(), testBoard)) {
+    if (this.getType() === "king") {
+      if (this.isInCheck(newRow, newColumn, testBoard, false)) {
+        return true
+      }
+    } else if (game.isCheck(this.getSide(), testBoard)) {
       return true
     }
 
