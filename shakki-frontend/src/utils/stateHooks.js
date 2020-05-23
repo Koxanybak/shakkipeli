@@ -4,7 +4,7 @@ import { GET_GAME, MAKE_MOVE, GAME_STATE_UPDATED, JOIN_GAME, PROMOTE, GET_LOGGED
 import { useParams } from "react-router-dom"
 import { handleApolloError } from "./errorHandlers"
 
-
+// hook that gets the game state
 export const useGame = () => {
   const client = useApolloClient()
   const { id } = useParams()
@@ -13,17 +13,17 @@ export const useGame = () => {
     let gameDataInStore = client.readQuery({ query: GET_GAME, variables: { gameId: id } })
     gameDataInStore = { getGame: newGameData.gameStateUpdated }
   
-    console.log("newGameData:", newGameData)
-    console.log("gameState tobe:", gameDataInStore)
+    /* console.log("newGameData:", newGameData)
+    console.log("gameState tobe:", gameDataInStore) */
     client.writeQuery({
       query: GET_GAME,
       data: gameDataInStore,
       variables: { id }
     })
-    console.log("Game state updated with:", client.readQuery({
+    /* console.log("Game state updated with:", client.readQuery({
       query: GET_GAME,
       variables: { id }
-    }))
+    })) */
   }
 
   const initialResult = useQuery(GET_GAME, {
@@ -72,6 +72,9 @@ export const useGame = () => {
   }
 }
 
+
+
+// hook that gets the user
 export const useUser = () => {
   const client = useApolloClient()
   const [token, setToken] = useState(null)

@@ -26,7 +26,7 @@ const Board = ({ boardAlignment, board, makeMove, handleClick, chosenPiece }) =>
     return row
   })
 
-  //console.log(chosenPiece)
+  //conschece)osenol.log(ePi
 
   return (
     <table className="board" onClick={handleClick}>

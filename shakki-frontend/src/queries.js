@@ -13,7 +13,6 @@ const IDLE_PIECE = gql`
   fragment idlePiece on Piece {
     type
     side
-    id
     location {
       ...location
     }
@@ -25,7 +24,6 @@ const MOVED_PIECE = gql`
   fragment movedPiece on Piece {
     type
     side
-    id
     lastLocation {
       ...location
     }
@@ -43,34 +41,65 @@ const MOVE_HISTORY_ENTRY = gql`
 const GAME_STATE_DETAILS = gql`
   fragment gameStateDetails on Game {
     board {
-        ...idlePiece
-        availableMoves {
-          newLocation {
-            ...location
-          }
-        }
-      }
+      ...idlePiece
       id
-      currentPlayer
-      whitePlayer
-      blackPlayer
-      winner
-      gameOver
-      promotionPlayerID
-      check {
-        threatenedPlayer
-        movesAvailable {
-          piece {
-            ...idlePiece
-          }
-          newLocation {
-            ...location
-          }
+      availableMoves {
+        newLocation {
+          ...location
         }
       }
+    }
+    id
+    currentPlayer
+    whitePlayer
+    blackPlayer
+    winner
+    gameOver
+    promotionPlayerID
+    check {
+      threatenedPlayer
+      movesAvailable {
+        piece {
+          ...idlePiece
+        }
+        newLocation {
+          ...location
+        }
+      }
+    }
+    moveHistory {
+      ... on CastlingMove {
+        piece {
+          ...movedPiece
+        }
+        castledPiece {
+          ...movedPiece
+        }
+      }
+      ... on PromotionMove {
+        promotedPiece {
+          ...idlePiece
+        }
+        promotedTo
+      }
+      ... on OrdinaryMove {
+        piece {
+          ...movedPiece
+        }
+        pieceEaten {
+          ...idlePiece
+        }
+        newLocation {
+          ...location
+        }
+      }
+      ...moveHistoryEntry
+    }
   }
   ${LOCATION}
   ${IDLE_PIECE}
+  ${MOVED_PIECE}
+  ${MOVE_HISTORY_ENTRY}
 `
 /* ${MOVED_PIECE}
   ${MOVE_HISTORY_ENTRY} */

@@ -56,7 +56,7 @@ const Game = () => {
         }
         setPieceToMove(null)
       } else if (isValidPiece({ clickedPiece, game, user })){
-        console.log("clickedPiece:", clickedPiece)
+        /* console.log("clickedPiece:", clickedPiece) */
         setPieceToMove(clickedPiece)
       }
 
