@@ -6,7 +6,7 @@ import {
   WHITESQUARE_COLOR,
   HIGHLIGHTED_COLOR,
 } from "../../utils/constants"
-import { King, Queen, Rook, Knight, Bishop, Pawn, dragged } from "./pieces"
+import { King, Queen, Rook, Knight, Bishop, Pawn } from "./pieces"
 
 // a single chess square
 
@@ -34,7 +34,7 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap, id, highlight
 
   // drop handlers
 
-  const handleDrop = async event => {
+  /* const handleDrop = async event => {
     event.preventDefault()
 
     const piece = {
@@ -85,7 +85,7 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap, id, highlight
         setSquareColor(specificColor)
       }
     }
-  }
+  } */
 
   let pieceToRender
 
@@ -123,10 +123,10 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap, id, highlight
         id={id}
         style={squareStyle}
         className="square"
-        onDragLeave={handleDragLeave}
-        onDragOver={event => {event.preventDefault()}}
-        onDrop={handleDrop}
-        onDragEnter={handleDragEnter}
+        /* onDragLeave={handleDragLeave} */
+        /* onDragOver={event => {event.preventDefault()}} */
+        /* onDrop={handleDrop}
+        onDragEnter={handleDragEnter} */
       >
         {pieceToRender}
       </td>
@@ -137,10 +137,10 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap, id, highlight
       id={id}
       style={squareStyle}
       className="square"
-      onDragLeave={handleDragLeave}
-      onDragOver={event => {event.preventDefault()}}
-      onDrop={handleDrop}
-      onDragEnter={handleDragEnter}
+      /* onDragLeave={handleDragLeave}
+      onDragOver={event => {event.preventDefault()}} */
+      /* onDrop={handleDrop}
+      onDragEnter={handleDragEnter} */
     />
   )
 }

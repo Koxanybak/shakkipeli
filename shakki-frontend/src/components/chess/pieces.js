@@ -22,7 +22,7 @@ const pieceStyle = {
   //display: "table-cell",
   verticalAlign: "middle",
 }
-const getImgSrc = (type, side) => {
+export const getImgSrc = (type, side) => {
   if (type === "king" && side === "black") {
     return blackKing
   } else if (type === "queen" && side === "black") {
@@ -57,9 +57,9 @@ let dragged
 // functionality of a piece
 
 const Piece = ({ style, id, side, type }) => {
-  const [opacity, setOpacity] = useState(1)
+  const [opacity,/*  setOpacity */] = useState(1)
 
-  const handleDragStart = event => {
+  /* const handleDragStart = event => {
     // dragged määritellään
     dragged = event.target
     setOpacity(0.5)
@@ -68,16 +68,16 @@ const Piece = ({ style, id, side, type }) => {
 
   const handleDragEnd = event => {
     setOpacity(1)
-  }
+  } */
 
 
   return (
     <img
       style={{ ...style, opacity }}
       className="piece"
-      draggable="true"
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
+      draggable="false"
+      /* onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd} */
       type={id}
       side={side}
       id={id}
@@ -95,23 +95,16 @@ const Piece = ({ style, id, side, type }) => {
 
 const King = ({ side, id }) => {
   const kingStyle = { ...pieceStyle }
-  /* kingStyle.backgroundColor = side === "black" ? BLACK_COLOR : WHITE_COLOR
-  kingStyle.color = side === "white" ? BLACK_COLOR : WHITE_COLOR */
 
   return (
     <Piece style={kingStyle} id={id} side={side} type="king">
       K
     </Piece>
   )
-  /* return (
-    <img src={blackKing} alt="black king"></img>
-  ) */
 }
 
 const Queen = ({ side, id }) => {
   const queenStyle = { ...pieceStyle }
-  /* queenStyle.backgroundColor = side === "black" ? BLACK_COLOR : WHITE_COLOR
-  queenStyle.color = side === "white" ? BLACK_COLOR : WHITE_COLOR */
 
   return (
     <Piece style={queenStyle} id={id} side={side} type="queen">
@@ -122,8 +115,6 @@ const Queen = ({ side, id }) => {
 
 const Rook = ({ side, id }) => {
   const rookStyle = { ...pieceStyle }
-  /* rookStyle.backgroundColor = side === "black" ? BLACK_COLOR : WHITE_COLOR
-  rookStyle.color = side === "white" ? BLACK_COLOR : WHITE_COLOR */
 
   return (
     <Piece style={rookStyle} id={id} side={side} type="rook">
@@ -134,8 +125,6 @@ const Rook = ({ side, id }) => {
 
 const Knight = ({ side, id }) => {
   const knightStyle = { ...pieceStyle }
-  /* knightStyle.backgroundColor = side === "black" ? BLACK_COLOR : WHITE_COLOR
-  knightStyle.color = side === "white" ? BLACK_COLOR : WHITE_COLOR */
 
   return (
     <Piece style={knightStyle} id={id} side={side} type="knight">
@@ -146,8 +135,6 @@ const Knight = ({ side, id }) => {
 
 const Bishop = ({ side, id }) => {
   const bishopStyle = { ...pieceStyle }
-  /* bishopStyle.backgroundColor = side === "black" ? BLACK_COLOR : WHITE_COLOR
-  bishopStyle.color = side === "white" ? BLACK_COLOR : WHITE_COLOR */
 
   return (
     <Piece style={bishopStyle} id={id} side={side} type="bishop">
@@ -158,8 +145,6 @@ const Bishop = ({ side, id }) => {
 
 const Pawn = ({ side, id }) => {
   const pawnStyle = { ...pieceStyle }
-  /* pawnStyle.backgroundColor = side === "black" ? BLACK_COLOR : WHITE_COLOR
-  pawnStyle.color = side === "white" ? BLACK_COLOR : WHITE_COLOR */
 
   return (
     <Piece style={pawnStyle} id={id} side={side} type="pawn">

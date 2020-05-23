@@ -3,7 +3,9 @@ import { useGame, useUser } from "../../utils/stateHooks"
 import { handleApolloError } from "../../utils/errorHandlers"
 import Board from "./Board"
 import GameText from "./GameText"
+import MoveHistory from "./MoveHistory"
 import { isNotValid, isValidPiece } from "./gameUtils"
+import { Grid } from "@material-ui/core"
 
 const Game = () => {
   const {game, gameLoading, gameError, makeMove, promote} = useGame()
@@ -19,8 +21,10 @@ const Game = () => {
   const {
     board,
     whitePlayer,
+    moveHistory,
   } = game
 
+  // handles a click on a piece or a square
   const handleClick = async event => {
     event.preventDefault()
 
@@ -108,17 +112,28 @@ const Game = () => {
 
   return (
     <div className="game">
-      <div>
-        Suosittelen nappuloiden liikuttamista klikkaamalla vetämisen sijaan.
-      </div>
-      <Board
-        board={board}
-        boardAlignment={user.id === whitePlayer ? "white" : "black"}
-        makeMove={makeMove}
-        handleClick={handleClick}
-        chosenPiece={pieceToMove}
-      />
-      <GameText game={game} promote={promote} />
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+      >
+        <Grid
+          container
+          direction="row"
+          justify="center"
+        >
+          <Board
+            board={board}
+            boardAlignment={user.id === whitePlayer ? "white" : "black"}
+            makeMove={makeMove}
+            handleClick={handleClick}
+            chosenPiece={pieceToMove}
+          />
+          <MoveHistory moveHistory={moveHistory} />
+        </Grid>
+        <GameText game={game} promote={promote} />
+      </Grid>
     </div>
   )
 }
