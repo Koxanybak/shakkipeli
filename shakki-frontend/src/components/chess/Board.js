@@ -1,5 +1,6 @@
 import React from "react"
 import Square from "./Square"
+import { SQUARE_SIZE } from "../../utils/constants"
 
 // Chessboard
 
@@ -26,10 +27,20 @@ const Board = ({ boardAlignment, board, makeMove, handleClick, chosenPiece }) =>
     return row
   })
 
+  const boardStyle = {
+    height: SQUARE_SIZE * 8,
+    width: SQUARE_SIZE * 8,
+  }
+
   //conschece)osenol.log(ePi
 
   return (
-    <table className="board" onClick={handleClick}>
+    <table
+      className="board"
+      onClick={handleClick}
+      cellSpacing="0"
+      style={boardStyle}
+    >
       <tbody>
         {boardAlignment === "white" ? board.map((row, i) => {
           return (

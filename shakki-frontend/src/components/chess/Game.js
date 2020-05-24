@@ -3,7 +3,7 @@ import { useGame, useUser } from "../../utils/stateHooks"
 import { handleApolloError } from "../../utils/errorHandlers"
 import Board from "./Board"
 import GameText from "./GameText"
-import MoveHistory from "./MoveHistory"
+import LastMove from "./LastMove"
 import { isNotValid, isValidPiece } from "./gameUtils"
 import { Grid } from "@material-ui/core"
 
@@ -111,30 +111,35 @@ const Game = () => {
 
 
   return (
-    <div className="game">
+    <Grid
+      container
+      direction="row"
+      alignItems="baseline"
+      justify="center"
+      className="game"
+      spacing={2}
+      //wrap="wrap"
+    >
       <Grid
         container
+        item
+        xs={6}
         direction="column"
-        justify="center"
         alignItems="center"
       >
-        <Grid
-          container
-          direction="row"
-          justify="center"
-        >
-          <Board
-            board={board}
-            boardAlignment={user.id === whitePlayer ? "white" : "black"}
-            makeMove={makeMove}
-            handleClick={handleClick}
-            chosenPiece={pieceToMove}
-          />
-          <MoveHistory moveHistory={moveHistory} />
-        </Grid>
+        <Board
+          board={board}
+          boardAlignment={user.id === whitePlayer ? "white" : "black"}
+          makeMove={makeMove}
+          handleClick={handleClick}
+          chosenPiece={pieceToMove}
+        />
         <GameText game={game} promote={promote} />
       </Grid>
-    </div>
+      <Grid item xs={3}>
+        <LastMove moveHistory={moveHistory} />
+      </Grid>
+    </Grid>
   )
 }
 

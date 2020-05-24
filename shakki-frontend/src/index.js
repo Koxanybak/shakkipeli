@@ -2,7 +2,6 @@ import React from "react"
 import ReactDOM from "react-dom"
 import { BrowserRouter as Router } from "react-router-dom"
 import App from "./App"
-import Container from "@material-ui/core/Container"
 
 import { ApolloProvider, ApolloClient, InMemoryCache, HttpLink, split } from "@apollo/client"
 import { setContext } from "@apollo/link-context"
@@ -57,13 +56,13 @@ const client = new ApolloClient({
   connectToDevTools: true,
 })
 
+
+
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <Container>
-      <Router>
-        <App />
-      </Router>
-    </Container>
+    <Router>
+      <App />
+    </Router>
   </ApolloProvider>,
   document.getElementById("root")
 )

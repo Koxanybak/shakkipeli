@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react"
 import {
-  SQUARE_HEIGHT,
-  SQUARE_WIDTH,
+  SQUARE_SIZE,
   BLACKSQUARE_COLOR,
   WHITESQUARE_COLOR,
   HIGHLIGHTED_COLOR,
@@ -23,8 +22,8 @@ const Square = ({ color, makeMove, location, piece, dragHelperMap, id, highlight
 
   //squarestyles
   const squareStyle = {
-    height: SQUARE_HEIGHT,
-    width: SQUARE_WIDTH,
+    height: SQUARE_SIZE,
+    width: SQUARE_SIZE,
     backgroundColor: squareColor,
     textAlign: "center",
     background: `radial-gradient(${squareColor}, ${specificColor})`,

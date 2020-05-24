@@ -60,7 +60,8 @@ const GAME_STATE_DETAILS = gql`
       threatenedPlayer
       movesAvailable {
         piece {
-          ...idlePiece
+          type
+          side
         }
         newLocation {
           ...location

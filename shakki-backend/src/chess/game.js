@@ -115,7 +115,6 @@ class Game {
           piece: {
             type: pieceToMove.getType(),
             side: pieceToMove.getSide(),
-            id: pieceToMove.id,
             lastLocation: { row: pieceToMove.lastRow, column: pieceToMove.lastColumn },
           },
           newLocation: {
@@ -124,7 +123,6 @@ class Game {
           pieceEaten: {
             type: enPassantedPiece.getType(),
             side: enPassantedPiece.getSide(),
-            id: enPassantedPiece.id,
             location: { row: enPassantedPiece.row, column: enPassantedPiece.column },
           }
         }
@@ -133,7 +131,6 @@ class Game {
           piece: {
             type: pieceToMove.getType(),
             side: pieceToMove.getSide(),
-            id: pieceToMove.id,
             lastLocation: { row: pieceToMove.lastRow, column: pieceToMove.lastColumn },
           },
           newLocation: {
@@ -142,7 +139,6 @@ class Game {
           pieceEaten: pieceToEat ? {
             type: pieceToEat.getType(),
             side: pieceToEat.getSide(),
-            id: pieceToEat.id,
             location: { row: pieceToEat.row, column: pieceToEat.column },
           } : null
         }
@@ -264,7 +260,6 @@ class Game {
                 piece: {
                   type: piece.getType(),
                   side: piece.getSide(),
-                  id: piece.id,
                 },
                 newLocation: { row, column, },
               })
@@ -382,7 +377,6 @@ class Game {
       promotedPiece: {
         type: "pawn",
         side: this.pieceToPromote.getSide(),
-        id: this.pieceToPromote.id,
         location: { row: this.pieceToPromote.row, column: this.pieceToPromote.column }
       },
       promotedTo: type,

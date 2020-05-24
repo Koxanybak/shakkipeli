@@ -8,17 +8,26 @@ import RegisterForm from "./components/RegisterForm"
 import GameMenu from "./components/GameMenu"
 import Game from "./components/chess/Game"
 import { useUser } from "./utils/stateHooks"
+import { Container, makeStyles } from "@material-ui/core"
+
+const useStyles = makeStyles({
+  root: {
+    height: "100%"
+  }
+})
 
 const App = () => {
   const { user } = useUser()
+  const classes = useStyles()
 
   return (
-    <div>
+    <Container classes={classes}>
       <Grid
         container
         direction="column"
         alignItems="center"
-        //justify="flex-end"
+        justify="space-between"
+        classes={classes}
       >
         <Menu />
         {user
@@ -41,7 +50,7 @@ const App = () => {
         }
         <Footer />
       </Grid>
-    </div>
+    </Container>
   )
 }
 
