@@ -31,9 +31,6 @@ class Game {
     if (!this.blackPlayer || !this.whitePlayer) {
       throw new ApolloError("Turn cannot be skipped before both players have joined.")
     }
-    if (this.check) {
-      throw new ApolloError("Turn cannot be skipped during check.")
-    }
     this.currentPlayer = this.currentPlayer === this.whitePlayer
       ? this.blackPlayer
       : this.whitePlayer
