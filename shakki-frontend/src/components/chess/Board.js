@@ -30,6 +30,10 @@ const Board = ({ boardAlignment, board, makeMove, handleClick, chosenPiece }) =>
   const boardStyle = {
     height: SQUARE_SIZE * 8,
     width: SQUARE_SIZE * 8,
+    borderStyle: "solid",
+    borderColor: "black",
+    borderWidth: "2px",
+    background: "cyan",
   }
 
   //conschece)osenol.log(ePi
@@ -45,6 +49,7 @@ const Board = ({ boardAlignment, board, makeMove, handleClick, chosenPiece }) =>
         {boardAlignment === "white" ? board.map((row, i) => {
           return (
             <tr key={i}>
+              <td>{8 - i}</td>
               {
                 row.map((piece, j) => {
                   let highlight = false
@@ -75,6 +80,7 @@ const Board = ({ boardAlignment, board, makeMove, handleClick, chosenPiece }) =>
         }) : board.map((row, i) => {
           return (
             <tr key={i}>
+              <td>{i + 1}</td>
               {
                 row.map((piece, j) => {
                   let highlight = false
@@ -103,6 +109,32 @@ const Board = ({ boardAlignment, board, makeMove, handleClick, chosenPiece }) =>
             </tr>
           )
         })}
+        {boardAlignment === "white" 
+          ?
+          <tr>
+            <td></td>
+            <td>A</td>
+            <td>B</td>
+            <td>C</td>
+            <td>D</td>
+            <td>E</td>
+            <td>F</td>
+            <td>G</td>
+            <td>H</td>
+          </tr>
+          :
+          <tr>
+            <td></td>
+            <td>H</td>
+            <td>G</td>
+            <td>F</td>
+            <td>E</td>
+            <td>D</td>
+            <td>C</td>
+            <td>B</td>
+            <td>A</td>
+          </tr>
+        }
       </tbody>
     </table>
   )

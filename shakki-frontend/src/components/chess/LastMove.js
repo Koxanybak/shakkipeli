@@ -1,32 +1,32 @@
 import React, { useState } from "react"
 import { getImgSrc } from "./pieces"
-import { Button, makeStyles, Typography } from "@material-ui/core"
+import { Button, makeStyles, Typography, Paper } from "@material-ui/core"
 import { WHITESQUARE_COLOR, BLACKSQUARE_COLOR } from "../../utils/constants"
 
 const getLocation = (location) => {
   if (location.column === 0) {
-    return `A${location.row}`
+    return `A${8 - (location.row)}`
   }
   if (location.column === 1) {
-    return `B${location.row}`
+    return `B${8 - (location.row)}`
   }
   if (location.column === 2) {
-    return `C${location.row}`
+    return `C${8 - (location.row)}`
   }
   if (location.column === 3) {
-    return `D${location.row}`
+    return `D${8 - (location.row)}`
   }
   if (location.column === 4) {
-    return `E${location.row}`
+    return `E${8 - (location.row)}`
   }
   if (location.column === 5) {
-    return `F${location.row}`
+    return `F${8 - (location.row)}`
   }
   if (location.column === 6) {
-    return `G${location.row}`
+    return `G${8 - (location.row)}`
   }
   if (location.column === 7) {
-    return `H${location.row}`
+    return `H${8 - (location.row)}`
   } else {
     return "ErrorLocation"
   }
@@ -64,7 +64,7 @@ const Move = ({ move, emphasize }) => {
 
   if (move.__typename === "OrdinaryMove") {
     return (
-      <div style={emphasize ? emphasizeStyle : moveStyle}>
+      <Paper style={emphasize ? emphasizeStyle : moveStyle}>
         <img
           style={pieceStyle}
           className="piece"
@@ -73,19 +73,19 @@ const Move = ({ move, emphasize }) => {
           alt={move.piece.type}
         />
         {getLocation(move.newLocation)}
-      </div>
+      </Paper>
     )
   }
   if (move.__typename === "CastlingMove") {
     return (
-      <div style={emphasize ? emphasizeStyle : moveStyle}>
+      <Paper style={emphasize ? emphasizeStyle : moveStyle}>
         Tornitus
-      </div>
+      </Paper>
     )
   }
   if (move.__typename === "PromotionMove") {
     return (
-      <div style={emphasize ? emphasizeStyle : moveStyle}>
+      <Paper style={emphasize ? emphasizeStyle : moveStyle}>
         {getLocation(move.promotedPiece.location)}
         <img
           style={pieceStyle}
@@ -102,13 +102,13 @@ const Move = ({ move, emphasize }) => {
           src={getImgSrc(move.promotedTo, move.promotedPiece.side)}
           alt={move.promotedPiece.type}
         />
-      </div>
+      </Paper>
     )
   }
   return (
-    <div>
+    <Paper>
       Error
-    </div>
+    </Paper>
   )
 }
 
@@ -154,16 +154,16 @@ const LastMove = ({ moveHistory }) => {
   const lastMove = moveHistory[moveHistory.length - 1]
 
   return (
-    <div style={style}>
+    <Paper style={style}>
       <Typography variant="h5">
         Viimeisin siirto
       </Typography>
       <Move move={lastMove} emphasize={true} />
-      <Button onClick={() => setShowAll(!showAll)} color="primary">
+      <Button variant="contained" onClick={() => setShowAll(!showAll)} color="primary">
         Näytä kaikki siirrot
       </Button>
       {showAll ? <MoveHistory moveHistory={moveHistory} /> : null}
-    </div>
+    </Paper>
   )
 }
 

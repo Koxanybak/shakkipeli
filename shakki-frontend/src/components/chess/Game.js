@@ -5,12 +5,20 @@ import Board from "./Board"
 import GameText from "./GameText"
 import LastMove from "./LastMove"
 import { isNotValid, isValidPiece } from "./gameUtils"
-import { Grid } from "@material-ui/core"
+import { Grid, makeStyles } from "@material-ui/core"
+import GameButtons from "./GameButtons"
+
+const useStyles = makeStyles({
+  game: {
+    //overflowY: "scroll",
+  }
+})
 
 const Game = () => {
-  const {game, gameLoading, gameError, makeMove, promote} = useGame()
+  const {game, gameLoading, gameError, makeMove, promote, skipTurn } = useGame()
   const { user, userLoading } = useUser()
   const [pieceToMove, setPieceToMove] = useState(null)
+  const classes = useStyles()
 
   if (gameLoading || userLoading) {
     return "loading..."
@@ -22,6 +30,10 @@ const Game = () => {
     board,
     whitePlayer,
     moveHistory,
+    currentPlayer,
+    promotionPlayerID,
+    check,
+    blackPlayer,
   } = game
 
   // handles a click on a piece or a square
@@ -114,18 +126,29 @@ const Game = () => {
     <Grid
       container
       direction="row"
-      alignItems="baseline"
+      //alignItems="baseline"
       justify="center"
-      className="game"
+      className={classes.game}
       spacing={2}
-      //wrap="wrap"
+      wrap="wrap"
     >
+      <Grid item xs={3} lg={2}>
+        <GameButtons
+          skipTurn={skipTurn}
+          disabled={
+            (user.id !== currentPlayer || promotionPlayerID !== null) || 
+            (check !== null || (whitePlayer === null || blackPlayer === null))
+          }
+        />
+      </Grid>
       <Grid
         container
         item
-        xs={6}
+        xs={10}
+        lg={6}
         direction="column"
         alignItems="center"
+        //wrap="wrap"
       >
         <Board
           board={board}
@@ -136,7 +159,7 @@ const Game = () => {
         />
         <GameText game={game} promote={promote} />
       </Grid>
-      <Grid item xs={3}>
+      <Grid item xs={3} lg={3}>
         <LastMove moveHistory={moveHistory} />
       </Grid>
     </Grid>

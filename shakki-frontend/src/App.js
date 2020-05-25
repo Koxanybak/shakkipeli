@@ -12,7 +12,7 @@ import { Container, makeStyles } from "@material-ui/core"
 
 const useStyles = makeStyles({
   root: {
-    height: "100%"
+    height: "100%",
   }
 })
 
@@ -28,6 +28,7 @@ const App = () => {
         alignItems="center"
         justify="space-between"
         classes={classes}
+        wrap="nowrap"
       >
         <Menu />
         {user

@@ -161,6 +161,17 @@ export const GET_GAME = gql`
   ${GAME_STATE_DETAILS}
 `
 
+export const SKIP_TURN = gql`
+  mutation skipTurn($gameId: String!) {
+    skipTurn(
+      gameId: $gameId
+    ) {
+      ...gameStateDetails
+    }
+  }
+  ${GAME_STATE_DETAILS}
+`
+
 export const GAME_STATE_UPDATED = gql`
   subscription gameStateUpdated($gameId: String!) {
     gameStateUpdated(

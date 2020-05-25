@@ -34,7 +34,7 @@ const GameMenu = () => {
 
   return (
     <div>
-      <Button onClick={newGame}>
+      <Button variant="contained" onClick={newGame}>
         Peli linkin kautta
       </Button>
       {link

@@ -1,6 +1,13 @@
 import { useEffect, useCallback, useState } from "react"
 import { useQuery, useMutation, useSubscription, useApolloClient, useLazyQuery } from "@apollo/client"
-import { GET_GAME, MAKE_MOVE, GAME_STATE_UPDATED, JOIN_GAME, PROMOTE, GET_LOGGED_USER } from "../queries"
+import {
+  GET_GAME,
+  MAKE_MOVE,
+  GAME_STATE_UPDATED,
+  JOIN_GAME, PROMOTE,
+  GET_LOGGED_USER,
+  SKIP_TURN,
+} from "../queries"
 import { useParams } from "react-router-dom"
 import { handleApolloError } from "./errorHandlers"
 
@@ -34,6 +41,12 @@ export const useGame = () => {
   })
   const [makeMove] = useMutation(MAKE_MOVE)
   const [promote] = useMutation(PROMOTE)
+  const [skipTurn] = useMutation(SKIP_TURN, {
+    variables: { gameId: id },
+    onError: err => {
+      handleApolloError(err)
+    }
+  })
   const [joinGame] = useMutation(JOIN_GAME, {
     variables: { gameId: id },
     onError: err => {
@@ -68,7 +81,8 @@ export const useGame = () => {
     promote: sendPromotedType,
     makeMove: ({ piece, oldLocation, newLocation }) => makeMove({
       variables: { move: { piece, oldLocation, newLocation, gameId: id } }
-    })
+    }),
+    skipTurn,
   }
 }
 

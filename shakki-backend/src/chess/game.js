@@ -24,6 +24,19 @@ class Game {
   }
 
 
+  switchTurn() {
+    if (this.promotionPlayerID) {
+      throw new UserInputError("Turn cannot be skipped during a pawn promotion.")
+    }
+    if (!this.blackPlayer || !this.whitePlayer) {
+      throw new UserInputError("Turn cannot be skipped before both players have joined.")
+    }
+    this.currentPlayer = this.currentPlayer === this.whitePlayer
+      ? this.blackPlayer
+      : this.whitePlayer
+  }
+
+
 
   // tries to make a move
   makeMove(
@@ -191,9 +204,7 @@ class Game {
       /* console.log("board after the move:", this.board) */
 
       // switches turn
-      this.currentPlayer = this.currentPlayer === this.whitePlayer
-        ? this.blackPlayer
-        : this.whitePlayer
+      this.switchTurn()
       return
     }
 
@@ -407,13 +418,11 @@ class Game {
       success: true,
     }
 
-    // switches turn
-    this.currentPlayer = this.currentPlayer === this.whitePlayer
-      ? this.blackPlayer
-      : this.whitePlayer
-
     this.promotionPlayerID = null
     this.pieceToPromote = null
+
+    // switches turn
+    this.switchTurn()
 
     return true
   }

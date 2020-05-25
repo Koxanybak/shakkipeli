@@ -1,9 +1,21 @@
 import React from "react"
 import { useUser } from "../../utils/stateHooks"
-import { Button } from "@material-ui/core"
+import { Button, Paper, makeStyles } from "@material-ui/core"
+import { WHITESQUARE_COLOR, BLACKSQUARE_COLOR } from "../../utils/constants"
+
+const useStyles = makeStyles({
+  turnText: {
+    background: `linear-gradient(135deg, rgb(${WHITESQUARE_COLOR}), rgb(${BLACKSQUARE_COLOR}))`,
+    padding: 10,
+    height: "8vh",
+    width: "40vh",
+    textAlign: "center"
+  }
+})
 
 const GameText = ({game: { check, currentPlayer, gameOver, promotionPlayerID, winner }, promote }) => {
   const { user, userLoading } = useUser()
+  const classes = useStyles()
 
   if (userLoading) {
     return "loading..."
@@ -13,17 +25,19 @@ const GameText = ({game: { check, currentPlayer, gameOver, promotionPlayerID, wi
     <div className="gameText">
       {user.id === currentPlayer && !gameOver
         ? 
-        <h3>
-          On sinun vuorosi. {check && check.threatenedPlayer === user.id
-            ? "Shakki!"
-            : null}
-        </h3>
+        <Paper className={classes.turnText}>
+          <h2>
+            On sinun vuorosi. {check && check.threatenedPlayer === user.id
+              ? "Shakki!"
+              : null}
+          </h2>
+        </Paper>
         :
-        <div>
+        <Paper className={classes.turnText}>
           Odotetaan vastustajan siirtoa. {check && check.threatenedPlayer !== user.id
             ? "Shakki!"
             : null}
-        </div>}
+        </Paper>}
       <div>
         {
           user.id === promotionPlayerID

@@ -12,6 +12,7 @@ const joinGameMutation = require("./game-gql/mutations/joinGame")
 const makeMoveMutation = require("./game-gql/mutations/makeMove")
 const promoteMutation = require("./game-gql/mutations/promote")
 const gameStateUpdatedSubscription = require("./game-gql/subscriptions/gameStateUpdated")
+const skipTurnMutation = require("./game-gql/mutations/skipTurn")
 
 const rootTypeDefs = gql`
   type Query {
@@ -42,6 +43,7 @@ const typeDefs = [
   makeMoveMutation.typeDefs,
   promoteMutation.typeDefs,
   gameStateUpdatedSubscription.typeDefs,
+  skipTurnMutation.typeDefs,
 ]
 
 const resolvers = merge(
@@ -55,6 +57,7 @@ const resolvers = merge(
   makeMoveMutation.resolvers,
   promoteMutation.resolvers,
   gameStateUpdatedSubscription.resolvers,
+  skipTurnMutation.resolvers,
   Game.resolvers,
 )
 
