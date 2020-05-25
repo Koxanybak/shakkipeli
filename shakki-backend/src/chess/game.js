@@ -1,5 +1,5 @@
 const gameHelper = require("./gameHelper")
-const { UserInputError } = require("apollo-server-express")
+const { UserInputError, ApolloError } = require("apollo-server-express")
 
 const King = require("./pieces/king")
 const Queen = require("./pieces/queen")
@@ -26,10 +26,13 @@ class Game {
 
   switchTurn() {
     if (this.promotionPlayerID) {
-      throw new UserInputError("Turn cannot be skipped during a pawn promotion.")
+      throw new ApolloError("Turn cannot be skipped during a pawn promotion.")
     }
     if (!this.blackPlayer || !this.whitePlayer) {
-      throw new UserInputError("Turn cannot be skipped before both players have joined.")
+      throw new ApolloError("Turn cannot be skipped before both players have joined.")
+    }
+    if (this.check) {
+      throw new ApolloError("Turn cannot be skipped during check.")
     }
     this.currentPlayer = this.currentPlayer === this.whitePlayer
       ? this.blackPlayer

@@ -1,16 +1,14 @@
 import React from "react"
-import { AppBar, Toolbar, IconButton, Button, Typography } from "@material-ui/core"
+import { AppBar, Toolbar, Button, /* Typography */ } from "@material-ui/core"
 import { Link, } from "react-router-dom"
 import { useUser } from "../utils/stateHooks"
 
 const Menu = () => {
-  const { user, removeUser } = useUser()
+  /* const { user, removeUser } = useUser() */
 
   return (
     <AppBar position="static">
       <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu">
-        </IconButton>
         <Button color="inherit" component={Link} to="/play">
           Pelaa
         </Button>

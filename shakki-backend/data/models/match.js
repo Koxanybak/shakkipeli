@@ -14,23 +14,23 @@ const matchSchema = mongoose.Schema({
         },
         id: String,
       },
-      required: true
+      /* required: true */
     }]
   ],
   whitePlayer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    default: "",
+    default: "Guest",
   },
   blackPlayer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    default: "",
+    default: "Guest",
   },
   winner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    default: "",
+    default: "Guest",
   },
   moveHistory: [{
     type: {
@@ -41,7 +41,6 @@ const matchSchema = mongoose.Schema({
             type: String,
             enum: ["white", "black"]
           },
-          id: String,
           lastLocation: {
             type: {
               row: Number,
@@ -63,7 +62,6 @@ const matchSchema = mongoose.Schema({
             type: String,
             enum: ["white", "black"]
           },
-          id: String,
           lastLocation: {
             type: {
               row: Number,
@@ -91,7 +89,6 @@ const matchSchema = mongoose.Schema({
             type: String,
             enum: ["white", "black"]
           },
-          id: String,
           location: {
             type: {
               row: Number,

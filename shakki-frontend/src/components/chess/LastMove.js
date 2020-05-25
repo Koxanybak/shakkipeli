@@ -145,9 +145,11 @@ const LastMove = ({ moveHistory }) => {
 
   if (moveHistory.length === 0) {
     return (
-      <div>
-        Siirtoja ei ole tehty
-      </div>
+      <Paper style={style}>
+        <Typography variant="subtitle2">
+          Siirtoja ei ole vielä tehty
+        </Typography>
+      </Paper>
     )
   }
 

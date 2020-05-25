@@ -9,7 +9,7 @@ const typeDefs = gql`
 
 const resolvers = {
   Mutation: {
-    joinGame: async (root, args, { currentUser, gamesInProgress }) => {
+    joinGame: async (root, args, { currentUser, gamesInProgress, pubsub }) => {
       if (!currentUser) {
         throw new AuthenticationError("Invalid token")
       }
@@ -21,6 +21,8 @@ const resolvers = {
         throw new UserInputError("The game is already full :(")
       }
       game.addPlayer(currentUser.id)
+
+      pubsub.publish("GAME_STATE_UPDATED", { gameStateUpdated: game })
 
       return game
     },

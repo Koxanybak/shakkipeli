@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react"
-import { Button, Link } from "@material-ui/core"
+import { Button, Link, Paper } from "@material-ui/core"
 import { useMutation } from "@apollo/client"
 import { CREATE_GAME } from "../queries"
 import { useUser } from "../utils/stateHooks"
+import { WHITESQUARE_COLOR, BLACKSQUARE_COLOR } from "../utils/constants"
 
 const GameMenu = () => {
   const [link, setLink] = useState(null)
@@ -39,12 +40,15 @@ const GameMenu = () => {
       </Button>
       {link
         ?
-        <div>
+        <Paper style={{
+          background: `linear-gradient(135deg, rgb(${WHITESQUARE_COLOR}), rgb(${BLACKSQUARE_COLOR}))`,
+          padding: 10,}}
+        >
           Jaa tämä linkki kaverillesi. Sen kautta pääset pelaamaan.{"  "}
           <Link href={link}>
             {link}
           </Link>
-        </div>
+        </Paper>
         :
         null
       }

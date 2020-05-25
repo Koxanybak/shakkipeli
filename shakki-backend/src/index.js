@@ -5,6 +5,7 @@ const {
 const { MONGODB_URI, SECRET } = require("./config")
 const mongoose = require("mongoose")
 const User = require("../data/models/user")
+/* const Match = require("../data/models/match") */
 const express = require("express")
 const http = require("http")
 const path = require("path")
@@ -35,7 +36,7 @@ const gamesInProgress = []
 const server = new ApolloServer({
   schema: createSchema(),
   context: async ({ req }) => {
-    let context = { pubsub, gamesInProgress, models: { User } }
+    let context = { pubsub, gamesInProgress, models: { User, } }
 
     const auth = req ? req.headers.authorization : null
 

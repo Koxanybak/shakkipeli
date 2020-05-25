@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid } from "@material-ui/core"
+import { Grid, CircularProgress } from "@material-ui/core"
 import { Switch, Route } from "react-router-dom"
 import Footer from "./components/Footer"
 import LoginForm from "./components/LoginForm"
@@ -47,7 +47,7 @@ const App = () => {
               <RegisterForm />
             </Route>
           </Switch>
-          : "Ladataan..."
+          : <CircularProgress />
         }
         <Footer />
       </Grid>

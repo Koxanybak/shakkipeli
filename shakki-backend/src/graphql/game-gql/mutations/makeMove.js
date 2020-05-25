@@ -33,6 +33,13 @@ const resolvers = {
 
       if (game.gameOver) {
         gamesInProgress.filter(g => g.id === args.move.gameId)
+
+        // adds the match to the database
+        /* if (!currentUser.guest) {
+          const newMatchEntry = ({
+
+          })
+        } */
       }
 
       return game

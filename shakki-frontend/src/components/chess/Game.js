@@ -5,7 +5,7 @@ import Board from "./Board"
 import GameText from "./GameText"
 import LastMove from "./LastMove"
 import { isNotValid, isValidPiece } from "./gameUtils"
-import { Grid, makeStyles } from "@material-ui/core"
+import { Grid, makeStyles, CircularProgress } from "@material-ui/core"
 import GameButtons from "./GameButtons"
 
 const useStyles = makeStyles({
@@ -21,7 +21,7 @@ const Game = () => {
   const classes = useStyles()
 
   if (gameLoading || userLoading) {
-    return "loading..."
+    return <CircularProgress />
   }
   if (!game) {
     return gameError.toString()

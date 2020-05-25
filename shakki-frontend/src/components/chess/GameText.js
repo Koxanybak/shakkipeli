@@ -1,6 +1,6 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { useUser } from "../../utils/stateHooks"
-import { Button, Paper, makeStyles } from "@material-ui/core"
+import { Button, Paper, makeStyles, Typography } from "@material-ui/core"
 import { WHITESQUARE_COLOR, BLACKSQUARE_COLOR } from "../../utils/constants"
 
 const useStyles = makeStyles({
@@ -9,13 +9,47 @@ const useStyles = makeStyles({
     padding: 10,
     height: "8vh",
     width: "40vh",
-    textAlign: "center"
+    textAlign: "center",
   }
 })
 
-const GameText = ({game: { check, currentPlayer, gameOver, promotionPlayerID, winner }, promote }) => {
+const GameText = ({game: { check, currentPlayer, gameOver, promotionPlayerID, winner, blackPlayer }, promote }) => {
   const { user, userLoading } = useUser()
+  const [text, setText] = useState("Odotetaan, että vastustaja liityy peliin.")
+  const [emphasize, setEmphasize] = useState(false)
   const classes = useStyles()
+
+  useEffect(() => {
+    if (user) {
+      if (!blackPlayer) {
+        setEmphasize(false)
+        setText("Odotetaan, että vastustaja liityy peliin.")
+      } else if (!gameOver) {
+        if (user.id === currentPlayer) {
+          if (check && check.threatenedPlayer === user.id) {
+            setText("On sinun vuorosi. Shakki!")
+          } else {
+            setText("On sinun vuorosi.")
+          }
+          setEmphasize(true)
+        } else {
+          if (check && check.threatenedPlayer !== user.id) {
+            setText("Odotetaan vastustajan siirtoa. Shakki!")
+          } else {
+            setText("Odotetaan vastustajan siirtoa.")
+          }
+          setEmphasize(false)
+        }
+      } else {
+        if (winner === user.id) {
+          setText("Voitit pelin! Onneksi olkoon!")
+        } else {
+          setText("Ootko paska ku hävisit :D")
+        }
+        setEmphasize(true)
+      }
+    }
+  }, [setText, blackPlayer, gameOver, currentPlayer, user, winner, check])
 
   if (userLoading) {
     return "loading..."
@@ -23,21 +57,11 @@ const GameText = ({game: { check, currentPlayer, gameOver, promotionPlayerID, wi
 
   return (
     <div className="gameText">
-      {user.id === currentPlayer && !gameOver
-        ? 
-        <Paper className={classes.turnText}>
-          <h2>
-            On sinun vuorosi. {check && check.threatenedPlayer === user.id
-              ? "Shakki!"
-              : null}
-          </h2>
-        </Paper>
-        :
-        <Paper className={classes.turnText}>
-          Odotetaan vastustajan siirtoa. {check && check.threatenedPlayer !== user.id
-            ? "Shakki!"
-            : null}
-        </Paper>}
+      <Paper className={classes.turnText}>
+        <Typography variant={emphasize ? "h4" : "subtitle1"}>
+          {text}
+        </Typography>
+      </Paper>
       <div>
         {
           user.id === promotionPlayerID
@@ -55,15 +79,6 @@ const GameText = ({game: { check, currentPlayer, gameOver, promotionPlayerID, wi
             null
         }
       </div>
-      <h3>
-        {
-          gameOver
-            ? winner === user.id
-              ? "Voitit pelin! Onneksi olkoon!"
-              : "Ootko paska ku hävisit :D"
-            : null
-        }
-      </h3>
     </div>
   )
 }
