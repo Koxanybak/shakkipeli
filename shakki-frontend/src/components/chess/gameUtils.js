@@ -2,9 +2,13 @@ import { HIGHLIGHTED_COLOR, WHITESQUARE_COLOR, BLACKSQUARE_COLOR } from "../../u
 
 // checks is the square is valid to move to
 export const isNotValid = ({ squareNode, pieceToMove, clickedPiece, game, user }) => {
+  /* console.log(squareNode.style.background !== `radial-gradient(rgb(${HIGHLIGHTED_COLOR}), rgb(${BLACKSQUARE_COLOR}))`)
+  console.log(squareNode.style.background !== `radial-gradient(rgb(${HIGHLIGHTED_COLOR}), rgb(${WHITESQUARE_COLOR}))`)
+  console.log(squareNode.style.background)
+  console.log(!squareNode.style.background.includes("radial-gradient")) */
   return (
-    squareNode.style.background !== `radial-gradient(rgb(${HIGHLIGHTED_COLOR}), rgb(${BLACKSQUARE_COLOR}))` &&
-    squareNode.style.background !== `radial-gradient(rgb(${HIGHLIGHTED_COLOR}), rgb(${WHITESQUARE_COLOR}))`
+    (!squareNode.style.background.includes(`radial-gradient(rgb(${HIGHLIGHTED_COLOR}), rgb(${BLACKSQUARE_COLOR}))`) &&
+    !squareNode.style.background.includes(`radial-gradient(rgb(${HIGHLIGHTED_COLOR}), rgb(${WHITESQUARE_COLOR}))`))
   ) || 
   (
     clickedPiece &&

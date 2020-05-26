@@ -74,6 +74,7 @@ const Game = () => {
       } else if (isValidPiece({ clickedPiece, game, user })){
         /* console.log("clickedPiece:", clickedPiece) */
         setPieceToMove(clickedPiece)
+        /* console.log("piece to move set") */
       }
 
       // the user clicked on a square
@@ -84,6 +85,8 @@ const Game = () => {
         clickedPiece = board[Math.floor(Number(clickedPieceElem.id) / 8)][Number(clickedPieceElem.id) % 8]
       }
 
+      /* console.log("clicked on a square") */
+
       if (pieceToMove) {
         //console.log(clickedElem)
         if (isNotValid({
@@ -93,6 +96,7 @@ const Game = () => {
           user,
           game,
         })) {
+          /* console.log("was not valid") */
           setPieceToMove(null)
           return
         }
@@ -100,6 +104,7 @@ const Game = () => {
         const piece = { type: pieceToMove.type, side: pieceToMove.side }
         const oldLocation = { row: pieceToMove.location.row, column: pieceToMove.location.column }
         const newLocation = { row: Math.floor(Number(clickedElem.id) / 8), column: Number(clickedElem.id) % 8 }
+        /* console.log("trying to make move") */
 
         try {
           const res = await makeMove({ piece, oldLocation, newLocation })

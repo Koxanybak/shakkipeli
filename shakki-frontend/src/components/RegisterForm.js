@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react"
-import { TextField, Button, } from "@material-ui/core"
+import { TextField, Button, Paper, } from "@material-ui/core"
 import { useMutation } from "@apollo/client"
 import { ADD_USER } from "../queries"
 import { useHistory } from "react-router-dom"
+import { WHITESQUARE_COLOR, BLACKSQUARE_COLOR } from "../utils/constants"
 
 const RegisterForm = () => {
   const [username, setUsername] = useState("")
@@ -36,8 +37,13 @@ const RegisterForm = () => {
     }
   }, [addedResult.data, history])
 
+  const style = {
+    background: `linear-gradient(135deg, rgb(${WHITESQUARE_COLOR}), rgb(${BLACKSQUARE_COLOR}))`,
+    padding: "20px",
+  }
+
   return (
-    <div>
+    <Paper style={style}>
       <h2>Luo uusi käyttäjä</h2>
       <form onSubmit={onSubmit}>
         <div>
@@ -100,7 +106,7 @@ const RegisterForm = () => {
           </Button>
         </div>
       </form>
-    </div>
+    </Paper>
   )
 }
 

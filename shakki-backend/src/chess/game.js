@@ -23,7 +23,7 @@ class Game {
     this.moveHistory = []
   }
 
-
+  // switches turn
   switchTurn() {
     if (this.promotionPlayerID) {
       throw new ApolloError("Turn cannot be skipped during a pawn promotion.")
@@ -36,7 +36,14 @@ class Game {
       : this.whitePlayer
   }
 
-
+  // adds a skip to the move history
+  addSkip() {
+    this.moveHistory.push({
+      leadToCheck: false,
+      wonTheGame: false,
+      isSkip: true,
+    })
+  }
 
   // tries to make a move
   makeMove(

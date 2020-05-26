@@ -94,6 +94,9 @@ const GAME_STATE_DETAILS = gql`
           ...location
         }
       }
+      ... on SkipMove {
+        isSkip
+      }
       ...moveHistoryEntry
     }
   }

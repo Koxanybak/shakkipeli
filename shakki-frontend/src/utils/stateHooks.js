@@ -39,7 +39,11 @@ export const useGame = () => {
       handleApolloError(err)
     },
   })
-  const [makeMove] = useMutation(MAKE_MOVE)
+  const [makeMove] = useMutation(MAKE_MOVE, {
+    onError: err => {
+      handleApolloError(err)
+    }
+  })
   const [promote] = useMutation(PROMOTE)
   const [skipTurn] = useMutation(SKIP_TURN, {
     variables: { gameId: id },

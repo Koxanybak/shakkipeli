@@ -68,6 +68,11 @@ const typeDefs = gql`
     leadToCheck: Boolean
     wonTheGame: Boolean
   }
+  type SkipMove implements MoveHistoryEntry {
+    isSkip: Boolean
+    leadToCheck: Boolean
+    wonTheGame: Boolean
+  }
 
 
   # inputs
@@ -111,6 +116,8 @@ const resolvers = {
         return "CastlingMove"
       } else if (obj.promotedTo) {
         return "PromotionMove"
+      } else if (obj.isSkip) {
+        return "SkipMove"
       } else {
         /* console.log("was Ordinary") */
         return "OrdinaryMove"

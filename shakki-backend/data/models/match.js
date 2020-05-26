@@ -6,98 +6,89 @@ const uv = require("mongoose-unique-validator")
 const matchSchema = mongoose.Schema({
   board: [
     [{
-      type: {
-        type: { type: String },
-        side: {
-          type: String,
-          enum: ["white", "black"]
-        },
-        id: String,
+      type: { type: String },
+      side: {
+        type: String,
+        enum: ["white", "black"]
       },
-      /* required: true */
+      id: String,
     }]
   ],
   whitePlayer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    default: "Guest",
+    default: null,
   },
   blackPlayer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    default: "Guest",
+    default: null,
   },
   winner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    default: "Guest",
+    default: null,
   },
   moveHistory: [{
-    type: {
-      piece: {
-        type: {
-          type: { type: String },
-          side: {
-            type: String,
-            enum: ["white", "black"]
-          },
-          lastLocation: {
-            type: {
-              row: Number,
-              column: Number,
-            }
-          }
-        }
+    piece: {
+      type: { type: String },
+      side: {
+        type: String,
+        enum: ["white", "black"]
       },
-      newLocation: {
+      lastLocation: {
         type: {
           row: Number,
           column: Number,
         }
-      },
-      castledPiece: {
-        type: {
-          type: { type: String },
-          side: {
-            type: String,
-            enum: ["white", "black"]
-          },
-          lastLocation: {
-            type: {
-              row: Number,
-              column: Number,
-            }
-          }
-        }
-      },
-      promotedTo: {
+      }
+    },
+    newLocation: {
+      row: Number,
+      column: Number,
+    },
+    castledPiece: {
+      type: { type: String },
+      side: {
         type: String,
-        enum: ["queen", "knight"]
+        enum: ["white", "black"]
       },
-      leadToCheck: {
-        type: Boolean,
-        default: false,
-      },
-      wonTheGame: {
-        type: Boolean,
-        default: false,
-      },
-      promotedPiece: {
+      lastLocation: {
         type: {
-          type: { type: String },
-          side: {
-            type: String,
-            enum: ["white", "black"]
-          },
-          location: {
-            type: {
-              row: Number,
-              column: Number,
-            }
-          }
+          row: Number,
+          column: Number,
         }
+      }
+    },
+    promotedTo: {
+      type: String,
+      enum: ["queen", "knight"]
+    },
+    leadToCheck: {
+      type: Boolean,
+      default: false,
+    },
+    wonTheGame: {
+      type: Boolean,
+      default: false,
+    },
+    isSkip: {
+      type: Boolean,
+      default: false,
+    },
+    promotedPiece: {
+      type: { type: String },
+      side: {
+        type: String,
+        enum: ["white", "black"]
       },
-    }
+      location: {
+        type: {
+          row: Number,
+          column: Number,
+        }
+      }
+    },
   }]
 })
 

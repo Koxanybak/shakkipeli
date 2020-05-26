@@ -41,6 +41,8 @@ const resolvers = {
           username: validatedArgs.user.username,
           passwordHash,
           tag: validatedArgs.user.tag,
+          friends: [],
+          matches: [],
         })
 
         try {

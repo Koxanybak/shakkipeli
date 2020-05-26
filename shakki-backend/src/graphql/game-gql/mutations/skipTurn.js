@@ -21,6 +21,7 @@ const resolvers = {
       }
 
       game.switchTurn()
+      game.addSkip()
       pubsub.publish("GAME_STATE_UPDATED", { gameStateUpdated: game })
       return game
     },

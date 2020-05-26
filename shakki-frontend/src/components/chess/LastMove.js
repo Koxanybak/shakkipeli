@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { getImgSrc } from "./pieces"
-import { Button, makeStyles, Typography, Paper } from "@material-ui/core"
+import { Button, Typography, Paper } from "@material-ui/core"
 import { WHITESQUARE_COLOR, BLACKSQUARE_COLOR } from "../../utils/constants"
 
 const getLocation = (location) => {
@@ -102,6 +102,13 @@ const Move = ({ move, emphasize }) => {
           src={getImgSrc(move.promotedTo, move.promotedPiece.side)}
           alt={move.promotedPiece.type}
         />
+      </Paper>
+    )
+  }
+  if (move.__typename === "SkipMove") {
+    return (
+      <Paper style={emphasize ? emphasizeStyle : moveStyle}>
+        Vuoro ohitettu.
       </Paper>
     )
   }

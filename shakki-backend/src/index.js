@@ -5,7 +5,7 @@ const {
 const { MONGODB_URI, SECRET } = require("./config")
 const mongoose = require("mongoose")
 const User = require("../data/models/user")
-/* const Match = require("../data/models/match") */
+const Match = require("../data/models/match")
 const express = require("express")
 const http = require("http")
 const path = require("path")
@@ -19,7 +19,8 @@ const createSchema = require("./graphql")
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true
+  useCreateIndex: true,
+  useFindAndModify: false,
 })
   .then(() => {
     console.log("Connected to MongoDB")
@@ -36,7 +37,7 @@ const gamesInProgress = []
 const server = new ApolloServer({
   schema: createSchema(),
   context: async ({ req }) => {
-    let context = { pubsub, gamesInProgress, models: { User, } }
+    let context = { pubsub, gamesInProgress, models: { User, Match, } }
 
     const auth = req ? req.headers.authorization : null
 
