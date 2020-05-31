@@ -16,6 +16,7 @@ const userSchema = mongoose.Schema({
   friends: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
   }],
   tag: {
     type: String,
@@ -27,7 +28,18 @@ const userSchema = mongoose.Schema({
   matches: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Match",
-  }]
+    required: true,
+  }],
+  sentRequests: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "FriendRequest",
+    required: true,
+  }],
+  receivedRequests: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "FriendRequest",
+    required: true,
+  }],
 })
 
 userSchema.plugin(uv)

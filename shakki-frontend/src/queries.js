@@ -137,18 +137,6 @@ const GAME_STATE_DETAILS = gql`
   ...moveHistoryEntry
 } */
 
-/* const USER_DETAILS = gql`
-  fragment userDetails on User {
-    username
-    tag
-    friends {
-      tag
-    }
-    guest
-    id
-  }
-` */
-
 
 // mutations and queries
 
@@ -235,21 +223,49 @@ export const CREATE_GAME = gql`
 `
 
 // user related
+
+// fragments
+const REQUEST_DETAILS = gql`
+  fragment requestDetails on FriendRequest {
+    from {
+      tag
+    }
+    to {
+      tag
+    }
+    id
+  }
+`
+const USER_DETAILS = gql`
+  fragment userDetails on UserWithToken {
+    username
+    tag
+    friends {
+      tag
+    }
+    sentRequests {
+      ...requestDetails
+    }
+    receivedRequests {
+      ...requestDetails
+    }
+    guest
+    id
+    token
+  }
+  ${REQUEST_DETAILS}
+`
+
+// rest
 export const GET_LOGGED_USER = gql`
   query getLoggedUser($token: String) {
     getLoggedUser(
       token: $token
     ) {
-      username
-      tag
-      friends {
-        tag
-      }
-      id
-      token
-      guest
+      ...userDetails
     }
   }
+  ${USER_DETAILS}
 `
 
 export const LOGIN = gql`
@@ -258,14 +274,7 @@ export const LOGIN = gql`
       username: $username,
       password: $password
     ) {
-      username
-      tag
-      friends {
-        tag
-      }
-      token
-      guest
-      id
+      ...userDetails
     }
   }
 `
@@ -278,9 +287,53 @@ export const ADD_USER = gql`
       username
       tag
       id
-      friends {
-        tag
-      }
     }
+  }
+`
+
+// friend related
+export const REQUEST_RECEIVED = gql`
+  subscription requestReceived($userId: String) {
+    requestReceived(
+      userId: $userId
+    ) {
+      ...requestDetails
+    }
+  }
+  ${REQUEST_DETAILS}
+`
+
+export const REQUEST_ACCEPTED = gql`
+  subscription requestAccepted($userId: String) {
+    requestAccepted(
+      userId: $userId
+    )
+  }
+`
+
+export const SEND_FRIEND_REQUEST = gql`
+  mutation sendFriendRequest($tag: String) {
+    sendFriendRequest(
+      tag: $tag
+    ) {
+      ...requestDetails
+    }
+  }
+  ${REQUEST_DETAILS}
+`
+
+export const ACCEPT_FRIEND_REQUEST = gql`
+  mutation acceptFriendRequest($requestId: String) {
+    acceptFriendRequest(
+      requestId: $requestId
+    )
+  }
+`
+
+export const REMOVE_FRIEND = gql`
+  mutation removeFriend($tag: String) {
+    removeFriend(
+      tag: $tag
+    )
   }
 `

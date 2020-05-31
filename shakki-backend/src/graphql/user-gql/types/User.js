@@ -6,6 +6,8 @@ const typeDefs = gql`
     tag: String!
     friends: [User!]
     matches: [String]
+    sentRequests: [FriendRequest!]
+    receivedRequests: [FriendRequest!]
     id: ID!
     guest: Boolean
   }
@@ -16,6 +18,8 @@ const typeDefs = gql`
     matches: [String]
     token: String!
     id: ID!
+    sentRequests: [FriendRequest!]
+    receivedRequests: [FriendRequest!]
     guest: Boolean
   }
 

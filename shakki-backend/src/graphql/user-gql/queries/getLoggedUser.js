@@ -11,7 +11,7 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    getLoggedUser: async (root, args, { models: { User } }) => {
+    getLoggedUser: async (root, args, { models: { User, } }) => {
       if (args.token) {
         try {
           const userFromToken = jwt.verify(args.token, SECRET)
@@ -22,6 +22,25 @@ const resolvers = {
             }
           }
           let currentUser = await User.findById(userFromToken.id)
+            .populate("friends")
+            .populate({
+              path: "sentRequests",
+              populate: {
+                path: "from to",
+                model: User,
+              }
+            })
+            .populate({
+              path: "receivedRequests",
+              populate: {
+                path: "from to",
+                model: User,
+              }
+            })
+          
+          //User.populate(currentUser, { path: "receivedRequests.from" })
+
+          console.log(currentUser)
   
           currentUser = currentUser.toJSON()
 
@@ -31,6 +50,9 @@ const resolvers = {
             tag: currentUser.tag,
             id: currentUser.id,
             token: args.token,
+            sentRequests: currentUser.sentRequests,
+            receivedRequests: currentUser.receivedRequests,
+            matches: currentUser.matches,
           }
         } catch (e) {
           throw new UserInputError("Something went wrong:", e.message)

@@ -23,29 +23,37 @@ const resolvers = {
       try {
         const validatedArgs = argsSchema.validateSync(args)
 
-        const userInDB = await User.findOne({ username: validatedArgs.username })
-        if (!userInDB) {
+        const userInDb = await User.findOne({ username: validatedArgs.username })
+          .populate("friends")
+          .populate("sentRequests")
+          .populate("receivedRequests")
+        if (!userInDb) {
           throw new UserInputError("Wrong username or password")
         }
-        const match = await bcrypt.compare(validatedArgs.password, userInDB.passwordHash)
+        const match = await bcrypt.compare(validatedArgs.password, userInDb.passwordHash)
         if (!match) {
           throw new UserInputError("Wrong username or password")
         }
 
         const userForToken = {
-          username: userInDB.username,
-          id: userInDB._id,
+          username: userInDb.username,
+          id: userInDb._id,
         }
         const token = jwt.sign(userForToken, SECRET)
 
         return {
+          friends: userInDb.friends,
+          username: userInDb.username,
+          tag: userInDb.tag,
+          id: userInDb.id,
           token,
-          username: userInDB.username,
-          tag: userInDB.tag,
-          id: userInDB._id.toString()
+          sentRequests: userInDb.sentRequests,
+          receivedRequests: userInDb.receivedRequests,
+          matches: userInDb.matches,
         }
       } catch (e) {
-        throw new UserInputError(e.errors.join(", "))
+        console.log(e)
+        throw new UserInputError(e)
       }
     },
   }

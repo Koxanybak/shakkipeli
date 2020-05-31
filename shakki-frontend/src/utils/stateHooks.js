@@ -7,6 +7,11 @@ import {
   JOIN_GAME, PROMOTE,
   GET_LOGGED_USER,
   SKIP_TURN,
+  REQUEST_RECEIVED,
+  REQUEST_ACCEPTED,
+  SEND_FRIEND_REQUEST,
+  ACCEPT_FRIEND_REQUEST,
+  REMOVE_FRIEND,
 } from "../queries"
 import { useParams } from "react-router-dom"
 import { handleApolloError } from "./errorHandlers"
@@ -137,7 +142,6 @@ export const useUser = () => {
     let newUserData = { getLoggedUser: user }
 
     if (remember) {
-      console.log("localStorageen meni")
       window.localStorage.setItem("loggedChessUser", user.token)
     }
     window.sessionStorage.setItem("loggedChessUser", user.token)
@@ -147,6 +151,7 @@ export const useUser = () => {
       data: newUserData,
       variables: { token: user.token }
     })
+    setToken(user.token)
 
   }, [client])
 
@@ -158,6 +163,14 @@ export const useUser = () => {
   }, [data, setUser])
 
   let userDataInStore = null
+
+  let {
+    acceptReq,
+    acceptReqData,
+    sendReq,
+    sendReqData,
+    removeFriend,
+  } = useFriends((!loading && !error) && token ? data.getLoggedUser : null)
 
   if ((!loading && !error) && token) {
     /* console.log(token) */
@@ -174,5 +187,66 @@ export const useUser = () => {
     userError: error,
     setUser,
     removeUser,
+    acceptReq,
+    acceptReqData,
+    sendReq,
+    sendReqData,
+    removeFriend,
+  }
+}
+
+// hook that manages friends
+export const useFriends = (user) => {
+  console.log("used friends with", user)
+  useSubscription(REQUEST_RECEIVED, {
+    variables: { userId: user ? user.id : null },
+    onError: err => {
+      console.log("virhe")
+      handleApolloError(err)
+    },
+    onSubscriptionComplete: () => {
+      console.log("Listening to incoming friend requests")
+    },
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log("Data from req reception:", subscriptionData)
+    },
+  })
+
+  useSubscription(REQUEST_ACCEPTED, {
+    variables: { userId: user ? user.id : null },
+    onError: err => {
+      console.log("virhe")
+      handleApolloError(err)
+    },
+    onSubscriptionComplete: () => {
+      console.log("Listening to accepts to the reqs...")
+    },
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log("Data from req acception:", subscriptionData)
+    },
+  })
+
+  const [sendReq, { data: sendReqData }] = useMutation(SEND_FRIEND_REQUEST, {
+    onError: err => {
+      handleApolloError(err)
+    },
+  })
+  const [acceptReq, { data: acceptReqData }] = useMutation(ACCEPT_FRIEND_REQUEST, {
+    onError: err => {
+      handleApolloError(err)
+    },
+  })
+  const [removeFriend] = useMutation(REMOVE_FRIEND, {
+    onError: err => {
+      handleApolloError(err)
+    },
+  })
+
+  return {
+    acceptReq,
+    acceptReqData,
+    sendReq,
+    sendReqData,
+    removeFriend
   }
 }

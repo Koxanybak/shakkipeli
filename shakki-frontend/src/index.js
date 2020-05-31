@@ -34,7 +34,12 @@ const httpLink = new HttpLink({
 const wsLink = new WebSocketLink({
   uri: `${wsUri}/graphql`,
   options: {
-    reconnect: true
+    reconnect: true,
+    connectionParams: {
+      authToken: sessionStorage.getItem("loggedChessUser")
+        ? `bearer ${sessionStorage.getItem("loggedChessUser")}`
+        : null
+    }
   }
 })
 

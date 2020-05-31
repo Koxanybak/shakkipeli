@@ -1,10 +1,12 @@
 import React, { useState, useImperativeHandle } from "react"
-import { SwipeableDrawer, List, ListItem, ListItemIcon, ListItemText, Button } from "@material-ui/core"
+import { SwipeableDrawer, List, ListItem, ListItemIcon, ListItemText, Link, Divider, } from "@material-ui/core"
 import { ExitToApp, PersonAdd } from "@material-ui/icons"
 import AddFriendDialog from "./AddFriendDialog"
+import { useUser } from "../utils/stateHooks"
 
 const ProfileDrawer = React.forwardRef((_, ref) => {
   const [show, setShow] = useState(false)
+  const { user, removeUser } = useUser()
   const friendRef = React.createRef()
 
   const openDrawer = () => {
@@ -27,7 +29,47 @@ const ProfileDrawer = React.forwardRef((_, ref) => {
       >
         <div>
           <List>
-            <ListItem button>
+            {user && user.receivedRequests.length !== 0
+              ? <React.Fragment>
+                <ListItem>
+                  <ListItemText primary="Kaveripyynnöt" />
+                </ListItem>
+                {user.receivedRequests.map(req => {
+                  return (
+                    <ListItem key={req.id}>
+                      <ListItemText secondary={`Käyttäjältä ${req.from.tag}`} />
+                    </ListItem>
+                  )
+                })}
+                <Divider />
+              </React.Fragment>
+              : null
+            }
+            <ListItem>
+              <ListItemText primary="Kaverit" />
+            </ListItem>
+            {user && user.friends.length !== 0
+              ? user.friends.map(f => {
+                return (
+                  <ListItem key={f.tag}>
+                    <ListItemText secondary={f.tag} />
+                  </ListItem>
+                )
+              })
+              : <ListItem>
+                <ListItemText secondary="Sinulla ei ole vielä kavereita." />
+              </ListItem>
+            }
+            <Divider />
+            <ListItem
+              button
+              onClick={() => {
+                removeUser()
+                window.location.reload(true)
+              }}
+              component={Link}
+              to="/"
+            >
               <ListItemIcon><ExitToApp /></ListItemIcon>
               <ListItemText primary="Kirjaudu ulos" />
             </ListItem>

@@ -40,6 +40,7 @@ const LoginForm = () => {
       setUser(loginResult.data.login, remember)
 
       history.push("/")
+      window.location.reload(true)
     }
   }, [loginResult.data, setUser, history, remember])
 

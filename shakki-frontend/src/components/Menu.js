@@ -1,8 +1,9 @@
 import React from "react"
-import { AppBar, Toolbar, Button, Typography, makeStyles, Grid } from "@material-ui/core"
+import { AppBar, Toolbar, Button, makeStyles, Grid, IconButton, Badge } from "@material-ui/core"
 import { Link, } from "react-router-dom"
 import { useUser } from "../utils/stateHooks"
 import ProfileDrawer from "./ProfileDrawer"
+import { AccountCircle } from "@material-ui/icons"
 
 const useStyles = makeStyles(() => ({
   info: {
@@ -11,22 +12,29 @@ const useStyles = makeStyles(() => ({
 }))
 
 const Menu = () => {
-  const { user, removeUser } = useUser()
+  const { user } = useUser()
   const profileDrawerRef = React.createRef()
-  const classes = useStyles()
+
+  const getFriendRequests = () => {
+    if (user && user.receivedRequests) {
+      return user.receivedRequests.length
+    }
+    return 0
+  }
 
   return (
     <AppBar position="static">
       <Toolbar>
         <Grid
           container
+          alignItems="center"
           justify="space-between"
         >
           <Grid item>
             <Button color="inherit" component={Link} to="/play">
               Pelaa
             </Button>
-            <Button className={classes.info} color="inherit" component={Link} to="/info">
+            <Button color="inherit" component={Link} to="/info">
               Ohjeet
             </Button>
           </Grid>
@@ -37,21 +45,14 @@ const Menu = () => {
                 Kirjaudu
               </Button>
               :
-              <Typography variant="subtitle1" color="textPrimary">
-                  &quot;{user.tag}&quot; kirjautunut
-              </Typography>
+              <React.Fragment>
+                <IconButton onClick={() => profileDrawerRef.current.openDrawer()}>
+                  <Badge badgeContent={getFriendRequests()} color="primary">
+                    <AccountCircle />
+                  </Badge>
+                </IconButton>
+              </React.Fragment>
             }
-            {!user || user.guest 
-              ?
-              null
-              :
-              <Button color="inherit" onClick={() => removeUser()} component={Link} to="/">
-                Kirjaudu ulos
-              </Button>
-            }
-            <Button onClick={() => profileDrawerRef.current.openDrawer()}>
-              Avaa profiili
-            </Button>
           </Grid>
         </Grid>
         <ProfileDrawer ref={profileDrawerRef} />
