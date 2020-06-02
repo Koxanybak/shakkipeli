@@ -255,6 +255,17 @@ const USER_DETAILS = gql`
   }
   ${REQUEST_DETAILS}
 `
+const INVITE_DETAILS = gql`
+  fragment inviteDetails on GameInvite {
+    from
+    to
+    resolveStatus
+    game {
+      ...gameStateDetails
+    }
+  }
+  ${GAME_STATE_DETAILS}
+`
 
 // rest
 export const GET_LOGGED_USER = gql`
@@ -277,6 +288,7 @@ export const LOGIN = gql`
       ...userDetails
     }
   }
+  ${USER_DETAILS}
 `
 
 export const ADD_USER = gql`
@@ -307,8 +319,11 @@ export const REQUEST_ACCEPTED = gql`
   subscription requestAccepted($userId: String) {
     requestAccepted(
       userId: $userId
-    )
+    ) {
+      ...requestDetails
+    }
   }
+  ${REQUEST_DETAILS}
 `
 
 export const SEND_FRIEND_REQUEST = gql`
@@ -326,8 +341,22 @@ export const ACCEPT_FRIEND_REQUEST = gql`
   mutation acceptFriendRequest($requestId: String) {
     acceptFriendRequest(
       requestId: $requestId
-    )
+    ) {
+      ...requestDetails
+    }
   }
+  ${REQUEST_DETAILS}
+`
+
+export const DECLINE_FRIEND_REQUEST = gql`
+  mutation declineFriendRequest($requestId: String) {
+    declineFriendRequest(
+      requestId: $requestId
+    ) {
+      ...requestDetails
+    }
+  }
+  ${REQUEST_DETAILS}
 `
 
 export const REMOVE_FRIEND = gql`
@@ -336,4 +365,49 @@ export const REMOVE_FRIEND = gql`
       tag: $tag
     )
   }
+`
+
+export const INVITE_RECEIVED = gql`
+  subscription inviteReceived($tag: String) {
+    inviteReceived(
+      tag: $tag
+    ) {
+      ...inviteDetails
+    }
+  }
+  ${INVITE_DETAILS}
+`
+
+export const INVITE_RESOLVED = gql`
+  subscription inviteResolved($tag: String) {
+    inviteResolved(
+      tag: $tag
+    ) {
+      ...inviteDetails
+    }
+  }
+  ${INVITE_DETAILS}
+`
+
+export const SEND_GAME_INVITE = gql`
+  mutation sendGameInvite($tag: String) {
+    sendGameInvite(
+      tag: $tag
+    ) {
+      ...inviteDetails
+    }
+  }
+  ${INVITE_DETAILS}
+`
+
+export const RESOLVE_GAME_INVITE = gql`
+  mutation resolveGameInvite($from: String, $accepted: Boolean) {
+    resolveGameInvite(
+      from: $from,
+      accepted: $accepted
+    ) {
+      ...inviteDetails
+    }
+  }
+  ${INVITE_DETAILS}
 `

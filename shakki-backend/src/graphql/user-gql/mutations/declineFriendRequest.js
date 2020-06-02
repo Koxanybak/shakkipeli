@@ -2,13 +2,13 @@ const { gql, AuthenticationError, ApolloError, } = require("apollo-server-expres
 
 const typeDefs = gql`
   extend type Mutation {
-    acceptFriendRequest(requestId: String): FriendRequest!
+    declineFriendRequest(requestId: String): FriendRequest!
   }
 `
 
 const resolvers = {
   Mutation: {
-    acceptFriendRequest: async (_, { requestId }, { pubsub, currentUser, models: { User, FriendRequest, } }) => {
+    declineFriendRequest: async (_, { requestId }, { currentUser, models: { User, FriendRequest, } }) => {
       if (!currentUser || currentUser.guest) {
         throw new AuthenticationError("Invalid token")
       }
@@ -39,40 +39,22 @@ const resolvers = {
       }
 
       try {
-        // updates current user accordingly
-        if (!userInDb.friends) {
-          userInDb.friends = []
-        }
-        userInDb.friends = userInDb.friends.concat(friendInDb._id)
-        userInDb.receivedRequests = userInDb.receivedRequests.filter(reqId => {
-          return reqId.toString() !== requestInDb._id.toString()
+        userInDb.receivedRequests = userInDb.receivedRequests.filter(req => {
+          /* console.log("req.toString()",req.toString())
+          console.log("requestId",requestId)
+          console.log("req.toString() !== requestId",req.toString() !== requestId) */
+          return req.toString() !== requestId
         })
+        friendInDb.sentRequests = friendInDb.sentRequests.filter(req => req.toString() !== requestId)
+
         await User.findByIdAndUpdate(userInDb._id, userInDb)
-
-        // updates the new friend accordingly
-        if (!friendInDb.friends) {
-          friendInDb.friends = []
-        }
-        friendInDb.friends = friendInDb.friends.concat(userInDb._id)
-        friendInDb.sentRequests = friendInDb.sentRequests.filter(reqId => reqId.toString() !== requestInDb._id.toString())
         await User.findByIdAndUpdate(friendInDb._id, friendInDb)
-
-        // deletes the friend request and publishes
-        requestInDb = await FriendRequest.findById(requestInDb._id).populate("from to")
-        console.log(requestInDb)
-        pubsub.publish("REQUEST_ACCEPTED", { requestAccepted: requestInDb.toJSON() })
         await FriendRequest.findByIdAndDelete(requestId)
 
-        /* userInDb = await User.findById(userInDb._id)
-          .populate("friends")
-          .populate("sentRequests")
-          .populate("receivedRequests") */
-
-        /* console.log(userInDb) */
         return requestInDb
       } catch (e) {
         console.log(e)
-        throw new ApolloError("Something went wrong accepting the request:", e.message)
+        throw new ApolloError("Something went wrong declining the request:", e.message)
       }
     }
   }

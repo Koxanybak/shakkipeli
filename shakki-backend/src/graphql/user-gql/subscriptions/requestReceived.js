@@ -22,8 +22,9 @@ const resolvers = {
           /* console.log("payload:", payload)
           console.log("userId:", userId)
           console.log("payload.requestReceived.to:", payload.requestReceived.to)
-          console.log("payload.requestReceived.to === userId:", payload.requestReceived.to === userId) */
-          return payload.requestReceived.to.toString() === userId
+          console.log("payload.requestReceived.to.id.toString() === userId:",
+          payload.requestReceived.to.id.toString() === userId) */
+          return payload.requestReceived.to.id.toString() === userId
         }
       )
     }

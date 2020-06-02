@@ -2,7 +2,7 @@ const { gql, withFilter, AuthenticationError } = require("apollo-server-express"
 
 const typeDefs = gql`
   extend type Subscription {
-    requestAccepted(userId: String): String!
+    requestAccepted(userId: String): FriendRequest!
   }
 `
 
@@ -17,9 +17,8 @@ const resolvers = {
           return pubsub.asyncIterator("REQUEST_ACCEPTED")
         },
         (payload, variables) => {
-          /* console.log("payload:", payload)
-          console.log("variables.requestId:", variables.requestId) */
-          return payload.from.toString() === variables.userId
+          /* console.log("payload.requestAccepted.from", payload.requestAccepted.from) */
+          return payload.requestAccepted.from.id.toString() === variables.userId
         }
       )
     }

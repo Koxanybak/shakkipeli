@@ -20,6 +20,13 @@ const requestReceivedSubscription = require("./user-gql/subscriptions/requestRec
 const sendFriendRequestMutation = require("./user-gql/mutations/sendFriendRequest")
 const acceptFriendRequestMutation = require("./user-gql/mutations/acceptFriendRequest")
 const removeFriendMutation = require("./user-gql/mutations/removeFriend")
+const declineFriendRequestMutation = require("./user-gql/mutations/declineFriendRequest")
+
+const GameInvite = require("./user-gql/types/GameInvite")
+const inviteReceivedSubscription = require("./user-gql/subscriptions/inviteReceived")
+const inviteResolvedSubscription = require("./user-gql/subscriptions/inviteResolved")
+const sendGameInviteMutation = require("./user-gql/mutations/sendGameInvite")
+const resolveGameInviteMutation = require("./user-gql/mutations/resolveGameInvite")
 
 const rootTypeDefs = gql`
   type Query {
@@ -40,6 +47,7 @@ const typeDefs = [
   Game.typeDefs,
   User.typeDefs,
   FriendRequest.typeDefs,
+  GameInvite.typeDefs,
 
   getLoggerUserQuery.typeDefs,
   addUserMutation.typeDefs,
@@ -50,6 +58,7 @@ const typeDefs = [
   sendFriendRequestMutation.typeDefs,
   acceptFriendRequestMutation.typeDefs,
   removeFriendMutation.typeDefs,
+  declineFriendRequestMutation.typeDefs,
 
   getGameQuery.typeDefs,
   createGameMutation.typeDefs,
@@ -58,6 +67,11 @@ const typeDefs = [
   promoteMutation.typeDefs,
   gameStateUpdatedSubscription.typeDefs,
   skipTurnMutation.typeDefs,
+
+  inviteReceivedSubscription.typeDefs,
+  inviteResolvedSubscription.typeDefs,
+  sendGameInviteMutation.typeDefs,
+  resolveGameInviteMutation.typeDefs,
 ]
 
 const resolvers = merge(
@@ -70,6 +84,7 @@ const resolvers = merge(
   sendFriendRequestMutation.resolvers,
   acceptFriendRequestMutation.resolvers,
   removeFriendMutation.resolvers,
+  declineFriendRequestMutation.resolvers,
   
   getGameQuery.resolvers,
   createGameMutation.resolvers,
@@ -78,7 +93,14 @@ const resolvers = merge(
   promoteMutation.resolvers,
   gameStateUpdatedSubscription.resolvers,
   skipTurnMutation.resolvers,
+
+  inviteReceivedSubscription.resolvers,
+  inviteResolvedSubscription.resolvers,
+  sendGameInviteMutation.resolvers,
+  resolveGameInviteMutation.resolvers,
+
   Game.resolvers,
+  GameInvite.resolvers,
 )
 
 const createSchema = () => {

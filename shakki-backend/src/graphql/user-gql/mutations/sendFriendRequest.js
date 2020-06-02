@@ -14,7 +14,11 @@ const resolvers = {
       }
 
       const userInDb = await User.findById(currentUser.id)
+        .populate("sentRequests")
+        .populate("receivedRequests")
       const friendInDb = await User.findOne({ tag })
+        .populate("sentRequests")
+        .populate("receivedRequests")
       if ((userInDb && userInDb.tag === tag) || (!userInDb || !friendInDb)) {
         throw new ApolloError("User not found")
       }
@@ -24,6 +28,11 @@ const resolvers = {
       (friendInDb.friends && friendInDb.friends.includes(userInDb._id))) {
         throw new ApolloError("The users are already friends.")
       }
+      // request has already been sent to that user or vice versa
+      if (userInDb.sentRequests.find(req => req.to.toString() === friendInDb._id.toString()) ||
+      userInDb.receivedRequests.find(req => req.from.toString() === friendInDb._id.toString())) {
+        throw new ApolloError("Request has already been sent to that person or they have sent one to you.")
+      }
 
       try {
         const newRequest = new FriendRequest({
@@ -31,7 +40,7 @@ const resolvers = {
           to: friendInDb._id,
         })
   
-        const savedReq = await newRequest.save()
+        let savedReq = await newRequest.save()
 
         if (!userInDb.sentRequests) {
           userInDb.sentRequests = []
@@ -44,6 +53,8 @@ const resolvers = {
         }
         friendInDb.receivedRequests = friendInDb.receivedRequests.concat(savedReq._id)
         await User.findByIdAndUpdate(friendInDb._id, friendInDb)
+
+        savedReq = await FriendRequest.findById(savedReq._id).populate("from to")
 
         pubsub.publish("REQUEST_RECEIVED", { requestReceived: savedReq.toJSON() })
         return savedReq

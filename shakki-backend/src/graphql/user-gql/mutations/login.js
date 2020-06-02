@@ -25,8 +25,20 @@ const resolvers = {
 
         const userInDb = await User.findOne({ username: validatedArgs.username })
           .populate("friends")
-          .populate("sentRequests")
-          .populate("receivedRequests")
+          .populate({
+            path: "sentRequests",
+            populate: {
+              path: "from to",
+              model: User,
+            }
+          })
+          .populate({
+            path: "receivedRequests",
+            populate: {
+              path: "from to",
+              model: User,
+            }
+          })
         if (!userInDb) {
           throw new UserInputError("Wrong username or password")
         }

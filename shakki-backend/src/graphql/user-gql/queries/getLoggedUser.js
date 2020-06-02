@@ -37,10 +37,8 @@ const resolvers = {
                 model: User,
               }
             })
-          
-          //User.populate(currentUser, { path: "receivedRequests.from" })
 
-          console.log(currentUser)
+          /* console.log(currentUser) */
   
           currentUser = currentUser.toJSON()
 

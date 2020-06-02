@@ -1,23 +1,24 @@
-import React from "react"
-import { AppBar, Toolbar, Button, makeStyles, Grid, IconButton, Badge } from "@material-ui/core"
+import React, { useState } from "react"
+import { AppBar, Toolbar, Button, Grid, IconButton, Badge } from "@material-ui/core"
 import { Link, } from "react-router-dom"
 import { useUser } from "../utils/stateHooks"
 import ProfileDrawer from "./ProfileDrawer"
 import { AccountCircle } from "@material-ui/icons"
 
-const useStyles = makeStyles(() => ({
+/* const useStyles = makeStyles(() => ({
   info: {
     marginRight: "80vh",
   }
-}))
+})) */
 
 const Menu = () => {
-  const { user } = useUser()
+  const { user, receivedInvs, } = useUser()
   const profileDrawerRef = React.createRef()
+  const [sentInvs, setSentInvs] = useState([])
 
-  const getFriendRequests = () => {
+  const getNotifications = () => {
     if (user && user.receivedRequests) {
-      return user.receivedRequests.length
+      return user.receivedRequests.length + receivedInvs.length + sentInvs.length
     }
     return 0
   }
@@ -47,7 +48,7 @@ const Menu = () => {
               :
               <React.Fragment>
                 <IconButton onClick={() => profileDrawerRef.current.openDrawer()}>
-                  <Badge badgeContent={getFriendRequests()} color="primary">
+                  <Badge badgeContent={getNotifications()} color="primary">
                     <AccountCircle />
                   </Badge>
                 </IconButton>
@@ -55,7 +56,12 @@ const Menu = () => {
             }
           </Grid>
         </Grid>
-        <ProfileDrawer ref={profileDrawerRef} />
+        <ProfileDrawer
+          receivedInvs={receivedInvs}
+          sentInvs={sentInvs}
+          setSentInvs={setSentInvs}
+          ref={profileDrawerRef}
+        />
       </Toolbar>
     </AppBar>
   )
