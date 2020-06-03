@@ -13,17 +13,17 @@ const argsSchema = yup.object({
     username: yup
       .string()
       .min(2)
-      .max(40)
+      .max(25)
       .required(),
     tag: yup
       .string()
       .min(2)
-      .max(20)
+      .max(25)
       .required(),
     password: yup
       .string()
       .min(8)
-      .max(50)
+      .max(40)
       .required()
   })
 })
