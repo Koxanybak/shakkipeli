@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { AppBar, Toolbar, Button, Grid, IconButton, Badge } from "@material-ui/core"
+import React from "react"
+import { AppBar, Toolbar, Button, Grid, IconButton, Badge, Typography } from "@material-ui/core"
 import { Link, } from "react-router-dom"
 import { useUser } from "../utils/stateHooks"
 import ProfileDrawer from "./ProfileDrawer"
@@ -12,13 +12,21 @@ import { AccountCircle } from "@material-ui/icons"
 })) */
 
 const Menu = () => {
-  const { user, receivedInvs, } = useUser()
+  const { user, } = useUser()
   const profileDrawerRef = React.createRef()
-  const [sentInvs, setSentInvs] = useState([])
+
+  //console.log("Menu is rendered and invs are", receivedInvs)
 
   const getNotifications = () => {
-    if (user && user.receivedRequests) {
-      return user.receivedRequests.length + receivedInvs.length + sentInvs.length
+    if (user) {
+      /* console.log(user.receivedRequests ? user.receivedRequests.length : 0)
+      console.log(user.receivedInvites ? user.receivedInvites.length : 0)
+      console.log(user.sentInvites ? user.sentInvites.length : 0)
+      console.log((user.receivedRequests ? user.receivedRequests.length : 0) + 
+        (user.receivedInvites ? user.receivedInvites.length : 0) + 
+        (user.sentInvites ? user.sentInvites.length : 0)) */
+      return (user.receivedRequests ? user.receivedRequests.length : 0) + 
+      (user.receivedInvites ? user.receivedInvites.length : 0)
     }
     return 0
   }
@@ -40,6 +48,11 @@ const Menu = () => {
             </Button>
           </Grid>
           <Grid item>
+            <Typography variant="subtitle2">
+              Ongelmatilanteessa sivun uudelleenlaataaminen yleensä auttaa.
+            </Typography>
+          </Grid>
+          <Grid item>
             {!user || user.guest 
               ?
               <Button color="inherit" component={Link} to="/login">
@@ -49,7 +62,7 @@ const Menu = () => {
               <React.Fragment>
                 <IconButton onClick={() => profileDrawerRef.current.openDrawer()}>
                   <Badge badgeContent={getNotifications()} color="primary">
-                    <AccountCircle />
+                    <AccountCircle style={{ color: "white" }} />
                   </Badge>
                 </IconButton>
               </React.Fragment>
@@ -57,9 +70,6 @@ const Menu = () => {
           </Grid>
         </Grid>
         <ProfileDrawer
-          receivedInvs={receivedInvs}
-          sentInvs={sentInvs}
-          setSentInvs={setSentInvs}
           ref={profileDrawerRef}
         />
       </Toolbar>

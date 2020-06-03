@@ -92,7 +92,7 @@ const resolvers = {
               console.log("white updated:",updated)
             }
             if (blackPlayerIsUser) {
-              const blackPlayer = await User.findById(game.whitePlayer)
+              const blackPlayer = await User.findById(game.blackPlayer)
               if (!blackPlayer.matches) {
                 blackPlayer.matches = []
               }

@@ -35,8 +35,8 @@ const resolvers = {
           gamesInProgress.push(game)
 
           const invite = {
-            from: userInDb.tag,
-            to: friendInDb.tag,
+            from: friendInDb.tag,
+            to: userInDb.tag,
             resolveStatus: "accepted",
             game,
           }
@@ -46,8 +46,8 @@ const resolvers = {
           return invite
         } else {
           const invite = {
-            from: userInDb.tag,
-            to: friendInDb.tag,
+            from: friendInDb.tag,
+            to: userInDb.tag,
             resolveStatus: "declined",
             game: null,
           }

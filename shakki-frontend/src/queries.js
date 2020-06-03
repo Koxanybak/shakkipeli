@@ -236,6 +236,17 @@ const REQUEST_DETAILS = gql`
     id
   }
 `
+const INVITE_DETAILS = gql`
+  fragment inviteDetails on GameInvite {
+    from
+    to
+    resolveStatus
+    game {
+      ...gameStateDetails
+    }
+  }
+  ${GAME_STATE_DETAILS}
+`
 const USER_DETAILS = gql`
   fragment userDetails on UserWithToken {
     username
@@ -252,19 +263,15 @@ const USER_DETAILS = gql`
     guest
     id
     token
-  }
-  ${REQUEST_DETAILS}
-`
-const INVITE_DETAILS = gql`
-  fragment inviteDetails on GameInvite {
-    from
-    to
-    resolveStatus
-    game {
-      ...gameStateDetails
+    sentInvites {
+      ...inviteDetails
+    }
+    receivedInvites {
+      ...inviteDetails
     }
   }
-  ${GAME_STATE_DETAILS}
+  ${INVITE_DETAILS}
+  ${REQUEST_DETAILS}
 `
 
 // rest

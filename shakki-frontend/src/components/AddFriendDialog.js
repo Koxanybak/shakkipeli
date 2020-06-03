@@ -4,11 +4,10 @@ import { useUser } from "../utils/stateHooks"
 import { FeedbackContext } from "../utils/context"
 import Feedback from "./Feedback"
 
-const AddFriendDialog = React.forwardRef((_, ref) => {
+const AddFriendDialog = React.forwardRef(({ sendReq }, ref) => {
   const [open, setOpen] = useState(false)
   const [tag, setTag] = useState("")
   const { setFeedback } = useContext(FeedbackContext)
-  const { sendReq } = useUser()
 
   React.useImperativeHandle(ref, () => {
     return {

@@ -1,19 +1,22 @@
-import React, { useState, useImperativeHandle } from "react"
+import React, { useState, useImperativeHandle, } from "react"
 import { SwipeableDrawer, List, ListItem, ListItemIcon, ListItemText, Link, Divider, IconButton, } from "@material-ui/core"
 import { ExitToApp, PersonAdd, Check, Close, SportsEsports, } from "@material-ui/icons"
 import AddFriendDialog from "./AddFriendDialog"
-import { useUser } from "../utils/stateHooks"
+import { useUser, useFriends } from "../utils/stateHooks"
 
-const ProfileDrawer = React.forwardRef(({ receivedInvs, sentInvs, setSentInvs, }, ref) => {
+const ProfileDrawer = React.forwardRef((_, ref) => {
   const [show, setShow] = useState(false)
   const {
     user,
     removeUser,
+  } = useUser()
+  const {
     acceptReq,
     declineReq,
     sendGameInv,
     resolveGameInv,
-  } = useUser()
+    sendReq,
+  } = useFriends(user)
   const friendRef = React.createRef()
 
   const openDrawer = () => {
@@ -27,24 +30,14 @@ const ProfileDrawer = React.forwardRef(({ receivedInvs, sentInvs, setSentInvs, }
   })
 
   const sendInvite = async tag => {
-    try {
-      let res = await sendGameInv({ variables: { tag } })
-      console.log(res)
-      if (res.data.sendGameInvite.resolveStatus === null && !sentInvs.find(inv => inv.to === tag)) {
-        setSentInvs(sentInvs.concat(res.data.sendGameInvite))
-      }
-    } catch (e) {
-      console.log(e.message)
+    if (!user.receivedInvites || !user.receivedInvites.find(inv => inv.from === tag)) {
+      await sendGameInv({ variables: { tag } })
     }
   }
 
   const resolveInvite = async (from, accepted) => {
     try {
-      let res = await resolveGameInv({ variables: { from, accepted, } })
-      console.log(res)
-      if (res.data.resolveGameInvite.resolveStatus === "accepted") {
-        
-      }
+      await resolveGameInv({ variables: { from, accepted, } })
     } catch (e) {
       console.log(e.message)
     }
@@ -53,6 +46,8 @@ const ProfileDrawer = React.forwardRef(({ receivedInvs, sentInvs, setSentInvs, }
   if (user && user.guest) {
     return null
   }
+
+  //console.log("ProfileDrawer is rendered and invs are", receivedInvs)
 
   return (
     <React.Fragment>
@@ -112,18 +107,18 @@ const ProfileDrawer = React.forwardRef(({ receivedInvs, sentInvs, setSentInvs, }
             <ListItem>
               <ListItemText primary="Lähetetyt pelikutsut" />
             </ListItem>
-            {sentInvs.map(inv => {
+            {(user && user.sentInvites) ? user.sentInvites.map(inv => {
               return (
                 <ListItem key={inv.to}>
                   <ListItemText secondary={`käyttäjälle ${inv.to}`} />
                 </ListItem>
               )
-            })}
+            }) : null}
             <Divider />
             <ListItem>
               <ListItemText primary="Vastaanotetut pelikutsut" />
             </ListItem>
-            {receivedInvs.map(inv => {
+            {(user && user.receivedInvites) ? user.receivedInvites.map(inv => {
               return (
                 <ListItem key={inv.from}>
                   <ListItemText secondary={`käyttäjältä ${inv.from}`} />
@@ -135,7 +130,7 @@ const ProfileDrawer = React.forwardRef(({ receivedInvs, sentInvs, setSentInvs, }
                   </IconButton>
                 </ListItem>
               )
-            })}
+            }) : null}
             <Divider />
             <ListItem
               button
@@ -157,13 +152,13 @@ const ProfileDrawer = React.forwardRef(({ receivedInvs, sentInvs, setSentInvs, }
             </ListItem>
             <ListItem>
               <ListItemText secondary="Huom. kaverilistassa ei näy, onko kaveri paikalla shakkipelissä,
-              ja pelikutsua ei voi lähettää hänen ollessa poissa.
-              Kaveripyynnön lähettäminen onnistuu kyllä." />
+              ja pelikutsu ei saavu perille hänen ollessa poissa.
+              Kaveripyynnön lähettäminen onnistuu kyllä, vaikka hän ei olisi paikalla." />
             </ListItem>
           </List>
         </div>
       </SwipeableDrawer>
-      <AddFriendDialog ref={friendRef} />
+      <AddFriendDialog sendReq={sendReq} ref={friendRef} />
     </React.Fragment>
   )
 })

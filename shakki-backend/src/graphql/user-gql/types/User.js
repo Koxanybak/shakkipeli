@@ -10,6 +10,8 @@ const typeDefs = gql`
     receivedRequests: [FriendRequest!]
     id: ID!
     guest: Boolean
+    receivedInvites: [GameInvite!]
+    sentInvites: [GameInvite!]
   }
   type UserWithToken {
     username: String!
@@ -21,6 +23,8 @@ const typeDefs = gql`
     sentRequests: [FriendRequest!]
     receivedRequests: [FriendRequest!]
     guest: Boolean
+    receivedInvites: [GameInvite!]
+    sentInvites: [GameInvite!]
   }
 
   input NewUserInput {

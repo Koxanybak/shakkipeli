@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Button, Link, Paper } from "@material-ui/core"
+import { Button, Link, Paper, Typography } from "@material-ui/core"
 import { useMutation } from "@apollo/client"
 import { CREATE_GAME } from "../queries"
 import { useUser } from "../utils/stateHooks"
@@ -35,23 +35,37 @@ const GameMenu = () => {
 
   return (
     <div>
-      <Button variant="contained" onClick={newGame}>
-        Peli linkin kautta
-      </Button>
-      {link
-        ?
-        <Paper style={{
-          background: `linear-gradient(135deg, rgb(${WHITESQUARE_COLOR}), rgb(${BLACKSQUARE_COLOR}))`,
-          padding: 10,}}
-        >
-          Jaa tämä linkki kaverillesi. Sen kautta pääset pelaamaan.{"  "}
-          <Link href={link}>
-            {link}
-          </Link>
-        </Paper>
-        :
-        null
-      }
+      <Paper style={{
+        background: `linear-gradient(135deg, rgb(${WHITESQUARE_COLOR}), rgb(${BLACKSQUARE_COLOR}))`,
+        padding: 10,}}
+      >
+        {link
+          ?
+          <React.Fragment>
+            <Paper style={{
+              background: `linear-gradient(135deg, rgb(${WHITESQUARE_COLOR}), rgb(${BLACKSQUARE_COLOR}))`,
+              padding: 10,}}
+            >
+              Jaa tämä linkki kaverillesi. Sen kautta pääset pelaamaan.{"  "}
+              <Link href={link}>
+                {link}
+              </Link>
+            </Paper>
+            <Typography variant="subtitle2">
+              voit myös kirjautua sisään ja kutsua kaverisi peliin profiilivalikosta.
+            </Typography>
+          </React.Fragment>
+          :
+          <React.Fragment>
+            <Button variant="contained" onClick={newGame}>
+              Peli linkin kautta
+            </Button>
+            <Typography variant="subtitle2">
+              tai kirjaudu sisään ja kutsu kaverisi peliin profiilivalikosta.
+            </Typography>
+          </React.Fragment>
+        }
+      </Paper>
     </div>
   )
 }

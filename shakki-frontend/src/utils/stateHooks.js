@@ -18,7 +18,7 @@ import {
   SEND_GAME_INVITE,
   RESOLVE_GAME_INVITE,
 } from "../queries"
-import { useParams } from "react-router-dom"
+import { useParams, useHistory } from "react-router-dom"
 import { handleApolloError } from "./errorHandlers"
 import { FeedbackContext } from "./context"
 
@@ -172,19 +172,6 @@ export const useUser = () => {
 
   let userDataInStore = null
 
-  let {
-    acceptReq,
-    acceptReqData,
-    sendReq,
-    sendReqData,
-    removeFriend,
-    declineReq,
-    declineReqData,
-    sendGameInv,
-    resolveGameInv,
-    receivedInvs,
-  } = useFriends((!loading && !error) && token ? data.getLoggedUser : null)
-
   if ((!loading && !error) && token) {
     /* console.log(token) */
     userDataInStore = client.readQuery({
@@ -201,23 +188,13 @@ export const useUser = () => {
     userError: error,
     setUser,
     removeUser,
-    acceptReq,
-    acceptReqData,
-    sendReq,
-    sendReqData,
-    removeFriend,
-    declineReq,
-    declineReqData,
-    sendGameInv,
-    resolveGameInv,
-    receivedInvs,
   }
 }
 
 // hook that manages friends
 export const useFriends = (user) => {
-  const [receivedInvs, setReceivedInvs] = useState([])
   const client = useApolloClient()
+  const history = useHistory()
   //console.log("used friends with", user)
 
   // cache update funcs
@@ -266,6 +243,28 @@ export const useFriends = (user) => {
       friends: user.friends.find(f => f.tag === req.to.tag)
         ? user.friends
         : user.friends.concat(fromMutation ? { tag: req.from.tag } : { tag: req.to.tag }),
+    } }
+    client.writeQuery({
+      query: GET_LOGGED_USER,
+      data: newUserData,
+      variables: { token: user.token },
+    })
+  }
+  const setReceivedInvs = (invList) => {
+    let newUserData = { getLoggedUser: {
+      ...user,
+      receivedInvites: invList,
+    } }
+    client.writeQuery({
+      query: GET_LOGGED_USER,
+      data: newUserData,
+      variables: { token: user.token },
+    })
+  }
+  const setSentInvs = (invList) => {
+    let newUserData = { getLoggedUser: {
+      ...user,
+      sentInvites: invList,
     } }
     client.writeQuery({
       query: GET_LOGGED_USER,
@@ -341,8 +340,13 @@ export const useFriends = (user) => {
     },
     onSubscriptionData: ({ subscriptionData }) => {
       console.log("Data from inv reception:", subscriptionData)
-      if (!receivedInvs.find(inv => inv.from === subscriptionData.data.inviteReceived.from)) {
-        setReceivedInvs(receivedInvs.concat(subscriptionData.data.inviteReceived))
+      if (!user.receivedInvites) {
+        setReceivedInvs([subscriptionData.data.inviteReceived])
+        console.log("were set to", [subscriptionData.data.inviteReceived])
+        return
+      }
+      if (!user.receivedInvites.find(inv => inv.from === subscriptionData.data.inviteReceived.from)) {
+        setReceivedInvs(user.receivedInvites.concat(subscriptionData.data.inviteReceived))
       }
     },
   })
@@ -354,12 +358,29 @@ export const useFriends = (user) => {
     },
     onSubscriptionData: ({ subscriptionData }) => {
       console.log("Data from inv resolving:", subscriptionData)
+      if (!user.sentInvites) {
+        setSentInvs([])
+      } else {
+        setSentInvs(user.sentInvites.filter(inv => {
+          return inv.to !== subscriptionData.data.inviteResolved.to
+        }))
+      }
+      if (subscriptionData.data.inviteResolved.resolveStatus === "accepted") {
+        history.push("/")
+        history.push(`play/${subscriptionData.data.inviteResolved.game.id}`)
+      }
     },
   })
 
   const [sendGameInv] = useMutation(SEND_GAME_INVITE, {
     onCompleted: data => {
       console.log("sent inv", data.sendGameInvite)
+      if (!user.receivedInvites || !user.receivedInvites.find(inv => inv.from === data.sendGameInvite.to)) {
+        if (!user.sentInvites) {
+          setSentInvs([data.sendGameInvite])
+        } else if (data.sendGameInvite.resolveStatus === null && !user.sentInvites.find(inv => inv.to === data.sendGameInvite.to))
+          setSentInvs(user.sentInvites.concat(data.sendGameInvite))
+      }
     }
   })
   const [resolveGameInv] = useMutation(RESOLVE_GAME_INVITE, {
@@ -368,12 +389,21 @@ export const useFriends = (user) => {
     },
     onCompleted: data => {
       console.log("resolved inv", data.resolveGameInvite)
-      setReceivedInvs(receivedInvs.filter(inv => {
-        if (inv.from !== data.resolveGameInvite.from) console.log("paskaa")
-        return inv.from !== data.resolveGameInvite.from
-      }))
+      if (!user.receivedInvites) {
+        setReceivedInvs([])
+      } else {
+        setReceivedInvs(user.receivedInvites.filter(inv => {
+          return inv.from !== data.resolveGameInvite.from
+        }))
+      }
+      if (data.resolveGameInvite.resolveStatus === "accepted") {
+        history.push("/")
+        history.push(`play/${data.resolveGameInvite.game.id}`)
+      }
     }
   })
+
+  //console.log("in friends recinvs", receivedInvs)
 
   return {
     acceptReq,
@@ -385,6 +415,5 @@ export const useFriends = (user) => {
     declineReqData,
     sendGameInv,
     resolveGameInv,
-    receivedInvs,
   }
 }
