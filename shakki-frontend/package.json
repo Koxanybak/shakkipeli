@@ -27,7 +27,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cypress:open": "cypress open"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -45,7 +46,9 @@
     ]
   },
   "devDependencies": {
+    "cypress": "^4.7.0",
     "eslint": "^7.0.0",
+    "eslint-plugin-cypress": "^2.11.1",
     "eslint-plugin-react": "^7.19.0",
     "react-draggable": "^4.3.1"
   }

@@ -33,7 +33,8 @@
     "dev": "cross-env NODE_ENV=development nodemon shakki-backend/src/index.js",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles",
     "build:ui": "rm -rf shakki-backend/public && cd C:/Users/Leevi/Documents/GitHub/shakkipeli/shakki-frontend && npm run build && mv build ../shakki-backend/public",
-    "deploy": "npm run build:ui && git add . && git commit -m herokudeployment && git push heroku master"
+    "deploy": "npm run build:ui && git add . && git commit -m herokudeployment && git push heroku master",
+    "start:test": "cross-env NODE_ENV=test node shakki-backend/src/index.js"
   },
   "nodemonConfig": {
     "ignore": [

@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { TextField, Button, Paper, } from "@material-ui/core"
 import { useMutation } from "@apollo/client"
 import { ADD_USER } from "../queries"
 import { useHistory } from "react-router-dom"
 import { WHITESQUARE_COLOR, BLACKSQUARE_COLOR } from "../utils/constants"
+import { FeedbackContext } from "../utils/context"
 
 const RegisterForm = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [confirmation, setConfirmation] = useState("")
   const [tag, setTag] = useState("")
+  const { setFeedback } = useContext(FeedbackContext)
   const history = useHistory()
 
   const [addUser, addedResult] = useMutation(ADD_USER, {
     onError: err => {
       console.log(err.graphQLErrors[0].message)
-      window.alert(err.graphQLErrors[0].message)
+      setFeedback({ message: err.message, severity: "error" })
     }
   })
 
@@ -32,7 +34,7 @@ const RegisterForm = () => {
       setPassword("")
       setTag("")
 
-      window.alert("Käyttäjä luotu onnistuneesti.")
+      setFeedback({ message: "Käyttäjä luotu onnistuneesti.", severity: "success" })
       history.push("/")
     }
   }, [addedResult.data, history])

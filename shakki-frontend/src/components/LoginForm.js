@@ -54,6 +54,7 @@ const LoginForm = () => {
         <form onSubmit={onSubmit}>
           <div>
             <TextField
+              id="username"
               label="Käyttäjänimi"
               value={username}
               onChange={e => {setUsername(e.target.value)}}
@@ -62,6 +63,7 @@ const LoginForm = () => {
           </div>
           <div>
             <TextField
+              id="password"
               label="Salasana"
               type="password"
               value={password}
@@ -83,7 +85,12 @@ const LoginForm = () => {
             />
           </div>
           <div>
-            <Button variant="contained" color="primary" type="submit">
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              id="login-button"
+            >
               Kirjaudu
             </Button>
           </div>

@@ -25,7 +25,7 @@ if (loc.protocol === "https:") {
   wsUri = "ws:"
 }
 wsUri += "//" + loc.host
-console.log(`${wsUri}/graphql`)
+//console.log(`${wsUri}/graphql`)
 
 const httpLink = new HttpLink({
   uri: "/graphql"

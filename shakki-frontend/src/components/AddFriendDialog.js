@@ -35,16 +35,17 @@ const AddFriendDialog = React.forwardRef(({ sendReq }, ref) => {
             Kirjoita tähän kaverisi pelinimi.
           </DialogContentText>
           <TextField
+            id="add-friend-tag"
             value={tag}
             label="Pelinimi"
             onChange={e => setTag(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>
+          <Button onClick={() => setOpen(false)} id="friend-request-cancel">
             Peruuta
           </Button>
-          <Button onClick={() => sendFriendRequest()}>
+          <Button onClick={() => sendFriendRequest()} id="friend-request-send">
             Lisää
           </Button>
         </DialogActions>

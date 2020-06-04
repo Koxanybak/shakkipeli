@@ -60,7 +60,7 @@ const Menu = () => {
               </Button>
               :
               <React.Fragment>
-                <IconButton onClick={() => profileDrawerRef.current.openDrawer()}>
+                <IconButton onClick={() => profileDrawerRef.current.openDrawer()} id="profile-button">
                   <Badge badgeContent={getNotifications()} color="primary">
                     <AccountCircle style={{ color: "white" }} />
                   </Badge>

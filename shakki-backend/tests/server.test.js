@@ -2,6 +2,7 @@ const server = require("../src/gqlServer")
 const { createTestClient } = require("apollo-server-testing")
 const mongoose = require("mongoose")
 const User = require("../data/models/user")
+const FriendRequest = require("../data/models/friendRequest")
 const { initialUsers } = require("./data")
 const {
   ADD_USER,
@@ -10,7 +11,7 @@ const {
   DECLINE_FRIEND_REQUEST,
   LOGIN,
 } = require("./queries")
-const { validTokenForTesti } = require("./helper")
+const { getValidTokenFor } = require("./helper")
 
 const { query, mutate } = createTestClient(server)
 
@@ -87,17 +88,111 @@ describe("user", () => {
 })
 
 describe("friendRequest", () => {
-  beforeEach(async () => {
+  describe("when users are not friends", () => {
+    test.only("can be sent", async () => {
+      const tag = "Koxanybak"
+      const /* { data: { sendFriendRequest } } */res = await mutate({
+        mutation: SEND_FRIEND_REQUEST,
+        variables: { tag },
+        http: { headers: { authorization: `bearer ${getValidTokenFor("testi")}`} },
+      })
+      console.log({...res})
+  
+      const friendInDb = await User.findOne({ tag })
+      const userInDb = await User.findOne({ tag: "testi" })
+      const reqInDb = await FriendRequest.findOne({ to: friendInDb._id })
+  
+      expect(sendFriendRequest.to.tag).toBe(tag)
+      expect(friendInDb.receivedRequests).toContainEqual(reqInDb._id)
+      expect(userInDb.sentRequests).toContainEqual(reqInDb._id)
+    })
 
+    test("can't be sent to one self", async () => {
+      const tag = "testi"
+      const { errors } = await mutate({
+        mutation: SEND_FRIEND_REQUEST,
+        variables: { tag },
+        http: { headers: { authorization: `bearer ${getValidTokenFor("testi")}`} },
+      })
+      const userInDb = await User.findOne({ tag })
+
+      expect(errors.length).toBeGreaterThan(0)
+      expect(userInDb.sentRequests).toHaveLength(0)
+      expect(userInDb.receivedRequests).toHaveLength(0)
+    })
+
+    describe("when a request has been sent", () => {
+      beforeEach(async () => {
+        await FriendRequest.deleteMany({})
+        const tag = "Koxanybak"
+        await mutate({
+          mutation: SEND_FRIEND_REQUEST,
+          variables: { tag },
+          http: { headers: { authorization: `bearer ${getValidTokenFor("testi")}`} },
+        })
+      })
+
+      test("can not be sent", async () => {
+        const tag = "Koxanybak"
+        const { data: { sendFriendRequest } } = await mutate({
+          mutation: SEND_FRIEND_REQUEST,
+          variables: { tag },
+          http: { headers: { authorization: `bearer ${getValidTokenFor("testi")}`} },
+        })
+
+        const friendInDb = await User.findOne({ tag })
+        const userInDb = await User.findOne({ tag: "testi" })
+    
+        expect(sendFriendRequest.to.tag).not.toBe(tag)
+        expect(friendInDb.receivedRequests).toHaveLength(1)
+        expect(userInDb.sentRequests).toHaveLength(1)
+      })
+      
+      test("can be accepted", async () => {
+        const userInDb = await User.findOne({ tag: "Koxanybak" })
+        const friendInDb = await User.findOne({ tag: "testi" })
+        const reqInDb = await FriendRequest.findOne({ to: userInDb._id })
+        const { data: { acceptFriendRequest }, errors } = await mutate({
+          mutation: ACCEPT_FRIEND_REQUEST,
+          variables: { requestId: reqInDb._id.toString() },
+          http: { headers: { authorization: `bearer ${getValidTokenFor("Koxanybak")}`} },
+        })
+
+        expect(errors).toBeNull
+        expect(acceptFriendRequest.to.tag).toBe("Koxanybak")
+        expect(await FriendRequest.find({})).toHaveLength(0)
+        expect(userInDb.receivedRequests).toHaveLength(0)
+        expect(friendInDb.sentRequests).toHaveLength(0)
+        expect(userInDb.friends).toContainEqual(friendInDb._id)
+        expect(friendInDb.friends).toContainEqual(userInDb._id)
+      })
+
+      test("can be declined", async () => {
+        const userInDb = await User.findOne({ tag: "Koxanybak" })
+        const friendInDb = await User.findOne({ tag: "testi" })
+        const reqInDb = await FriendRequest.findOne({ to: userInDb._id })
+        const { data: { declineFriendRequest }, errors } = await mutate({
+          mutation: DECLINE_FRIEND_REQUEST,
+          variables: { requestId: reqInDb._id.toString() },
+          http: { headers: { authorization: `bearer ${getValidTokenFor("Koxanybak")}`} },
+        })
+
+        expect(errors).toBeNull
+        expect(declineFriendRequest.to.tag).toBe("Koxanybak")
+        expect(await FriendRequest.find({})).toHaveLength(0)
+        expect(userInDb.receivedRequests).toHaveLength(0)
+        expect(friendInDb.sentRequests).toHaveLength(0)
+        expect(userInDb.friends).toHaveLength(0)
+        expect(friendInDb.friends).toHaveLength(0)
+      })
+    })
   })
 
-  test("can be sent", async () => {
-    const res = await mutate({ mutation: SEND_FRIEND_REQUEST, variables: { tag:  8} })
-  })
+  /* describe("when users are friends", async () => {
+    test("can not be sent", async () => {
 
-  test("can not be sent when invalid", async () => {
-
-  })
+    })
+  }) */
 })
 
 afterAll(async () => {

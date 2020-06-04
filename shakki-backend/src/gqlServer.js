@@ -37,6 +37,7 @@ const server = new ApolloServer({
     let context = { pubsub, gamesInProgress, models: { User, Match, FriendRequest, } }
 
     const auth = req ? req.headers.authorization : null
+    //console.log(req)
     //console.log(auth)
 
     if (auth && auth.toLowerCase().startsWith("bearer ")) {
