@@ -310,6 +310,16 @@ export const ADD_USER = gql`
   }
 `
 
+export const GET_USER_BY_ID = gql`
+  query getUserById($userId: String) {
+    getUserById(
+      userId: $userId
+    ) {
+      tag
+    }
+  }
+`
+
 // friend related
 export const REQUEST_RECEIVED = gql`
   subscription requestReceived($userId: String) {

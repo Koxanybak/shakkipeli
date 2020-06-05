@@ -11,6 +11,7 @@ import { useUser } from "./utils/stateHooks"
 import { Container, makeStyles } from "@material-ui/core"
 import { FeedbackContext } from "./utils/context"
 import Feedback from "./components/Feedback"
+import Info from "./components/Info"
 
 const useStyles = makeStyles({
   root: {
@@ -50,6 +51,9 @@ const App = () => {
               </Route>
               <Route path="/register">
                 <RegisterForm />
+              </Route>
+              <Route path="/info">
+                <Info />
               </Route>
             </Switch>
             : <CircularProgress />

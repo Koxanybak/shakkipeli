@@ -32,12 +32,15 @@ export const isValidPiece = ({ clickedPiece, game, user }) => {
   console.log("clickedPiece.side === game.whitePlayer === user.id ? white : black",clickedPiece.side === (game.whitePlayer === user.id ? "white" : "black"))
   console.log("!game.promotionPlayerID",!game.promotionPlayerID)
   console.log("!game.gameOver",!game.gameOver) */
-  return (
+  return ((
     user.id === game.currentPlayer &&
     clickedPiece.side === (game.whitePlayer === user.id ? "white" : "black")
   ) &&
   (
     !game.promotionPlayerID &&
     !game.gameOver
+  )) &&
+  (
+    game.whitePlayer && game.blackPlayer
   )
 }

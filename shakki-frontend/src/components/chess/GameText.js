@@ -66,7 +66,7 @@ const GameText = ({game: { check, currentPlayer, gameOver, promotionPlayerID, wi
         {
           user.id === promotionPlayerID
             ?
-            <div>
+            <Paper className={classes.turnText}>
               Valitse nappula, joksi haluat muuttaa sotilaan{" "}
               <Button onClick={() => promote("queen")}>
                 Kuningatar
@@ -74,7 +74,7 @@ const GameText = ({game: { check, currentPlayer, gameOver, promotionPlayerID, wi
               <Button onClick={() => promote("knight")}>
                 Ratsu
               </Button>
-            </div>
+            </Paper>
             :
             null
         }

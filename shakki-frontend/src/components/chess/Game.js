@@ -137,13 +137,14 @@ const Game = () => {
       spacing={2}
       wrap="wrap"
     >
-      <Grid item xs={3} lg={2}>
+      <Grid item xs={5} lg={2}>
         <GameButtons
           skipTurn={skipTurn}
           disabled={
             (user.id !== currentPlayer || promotionPlayerID !== null) || 
             (check !== null || (whitePlayer === null || blackPlayer === null))
           }
+          opponentId={user.id === whitePlayer ? blackPlayer : whitePlayer}
         />
       </Grid>
       <Grid

@@ -47,6 +47,7 @@ const resolvers = {
         })
         friendInDb.sentRequests = friendInDb.sentRequests.filter(req => req.toString() !== requestId)
 
+        requestInDb = await FriendRequest.findById(requestInDb._id).populate("from to")
         await User.findByIdAndUpdate(userInDb._id, userInDb)
         await User.findByIdAndUpdate(friendInDb._id, friendInDb)
         await FriendRequest.findByIdAndDelete(requestId)

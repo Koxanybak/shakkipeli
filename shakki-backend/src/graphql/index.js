@@ -4,6 +4,7 @@ const { merge } = require("lodash")
 const User = require("./user-gql/types/User")
 const Game = require("./game-gql/types/Game")
 const getLoggerUserQuery = require("./user-gql/queries/getLoggedUser")
+const getUserByIdQuery = require("./user-gql/queries/getUserById")
 const addUserMutation = require("./user-gql/mutations/addUser")
 const loginMutation = require("./user-gql/mutations/login")
 const getGameQuery = require("./game-gql/queries/getGame")
@@ -52,6 +53,7 @@ const typeDefs = [
   getLoggerUserQuery.typeDefs,
   addUserMutation.typeDefs,
   loginMutation.typeDefs,
+  getUserByIdQuery.typeDefs,
 
   requestAcceptedSubscription.typeDefs,
   requestReceivedSubscription.typeDefs,
@@ -78,6 +80,7 @@ const resolvers = merge(
   getLoggerUserQuery.resolvers,
   addUserMutation.resolvers,
   loginMutation.resolvers,
+  getUserByIdQuery.resolvers,
 
   requestAcceptedSubscription.resolvers,
   requestReceivedSubscription.resolvers,

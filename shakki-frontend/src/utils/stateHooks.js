@@ -1,5 +1,5 @@
-import { useEffect, useCallback, useState, useContext } from "react"
-import { useQuery, useMutation, useSubscription, useApolloClient, useLazyQuery, } from "@apollo/client"
+import { useEffect, useCallback, useState } from "react"
+import { useQuery, useMutation, useSubscription, useApolloClient, /* useLazyQuery, */ } from "@apollo/client"
 import {
   GET_GAME,
   MAKE_MOVE,
@@ -20,7 +20,6 @@ import {
 } from "../queries"
 import { useParams, useHistory } from "react-router-dom"
 import { handleApolloError } from "./errorHandlers"
-import { FeedbackContext } from "./context"
 
 // hook that gets the game state
 export const useGame = () => {
@@ -109,7 +108,7 @@ export const useUser = () => {
   const [token, setToken] = useState(null)
 
   // lazy user query
-  const [getUser] = useLazyQuery(GET_LOGGED_USER, {
+  /* const [getUser] = useLazyQuery(GET_LOGGED_USER, {
     variables: {
       token: window.localStorage.getItem("loggedChessUser")
         ? window.localStorage.getItem("loggedChessUser")
@@ -121,7 +120,7 @@ export const useUser = () => {
     onError: err => {
       handleApolloError(err)
     },
-  })
+  }) */
   
   // user query
   const { loading, data, error } = useQuery(GET_LOGGED_USER, {
@@ -144,7 +143,7 @@ export const useUser = () => {
     setToken(null)
     await client.cache.reset()
     return
-  }, [])
+  }, [client.cache])
 
   const setUser = useCallback((user, remember,) => {
     let newUserData = { getLoggedUser: user }

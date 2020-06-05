@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken")
 const { SECRET } = require("../../../config")
 const { gql, UserInputError } = require("apollo-server-express")
 const { v4: uuid } = require("uuid")
+const logger = require("../../../utils/logger")
 
 const typeDefs = gql`
   extend type Query {
@@ -65,7 +66,7 @@ const resolvers = {
         }
         const token = jwt.sign(userForToken, SECRET)
         
-        console.log("created a new guest")
+        logger.info("created a new guest")
   
         return {
           token,

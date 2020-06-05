@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react"
 import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button } from "@material-ui/core"
-import { useUser } from "../utils/stateHooks"
 import { FeedbackContext } from "../utils/context"
 import Feedback from "./Feedback"
 

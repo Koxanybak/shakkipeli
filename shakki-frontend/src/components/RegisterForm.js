@@ -37,7 +37,7 @@ const RegisterForm = () => {
       setFeedback({ message: "Käyttäjä luotu onnistuneesti.", severity: "success" })
       history.push("/")
     }
-  }, [addedResult.data, history])
+  }, [addedResult.data, history, setFeedback])
 
   const style = {
     background: `linear-gradient(135deg, rgb(${WHITESQUARE_COLOR}), rgb(${BLACKSQUARE_COLOR}))`,
