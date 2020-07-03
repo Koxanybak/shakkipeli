@@ -3,6 +3,8 @@ Fullstackopen 2020 harjoitustyö
 
 Työaikakirjaus: https://docs.google.com/spreadsheets/d/1Xoqlym1Z9twADQsRbSQYkNGetG32rLCuKSkfw2rWBMs/edit?usp=sharing
 
+Sivu on käynnisssä osoitteessa https://maailman-paras-shakkipeli.herokuapp.com/
+
 OHJEET:
 
 - Shakkia pääsee pelaamaan klikaamalla "pelaa" -nappia ja sitten klikaamalla "peli linkin kautta" ja klikaamalla sen antamaa linkkiä. Linkki (tai sen viemän osoite) pitää jakaa kaverille, ja sitten voitte pelata.
