@@ -5,6 +5,10 @@ Työaikakirjaus: https://docs.google.com/spreadsheets/d/1Xoqlym1Z9twADQsRbSQYkNG
 
 Sivu on käynnisssä osoitteessa https://maailman-paras-shakkipeli.herokuapp.com/
 
+STACK:
+- backend: apollo-serverillä toteutettu graphql-rajapinta
+- frontend: React ja tilanhallintakirjasto apollo-client
+
 OHJEET:
 
 - Shakkia pääsee pelaamaan klikaamalla "pelaa" -nappia ja sitten klikaamalla "peli linkin kautta" ja klikaamalla sen antamaa linkkiä. Linkki (tai sen viemän osoite) pitää jakaa kaverille, ja sitten voitte pelata.
